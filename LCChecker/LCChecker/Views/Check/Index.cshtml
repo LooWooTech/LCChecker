@@ -1,0 +1,33 @@
+﻿@{
+    Layout = null;
+}
+@model LCChecker.Models.User
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    <div>
+        @using (Html.BeginForm())
+        {
+            @Html.ValidationSummary(true)
+
+            @Html.AntiForgeryToken()
+
+            
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <input type="text" name="logName" />
+                        <input type="text" name="password" />
+                        <button type="submit" class="btn btn-primary">登陆</button>
+                    </div>
+                </div>
+            </div> 
+        }
+    </div>
+</body>
+</html>
