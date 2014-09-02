@@ -5,6 +5,7 @@ using System.Web;
 
 namespace LCChecker.Models
 {
+    //各个区域提交情况
     public class Detect
     {
         public int Id { get; set; }
@@ -14,5 +15,6 @@ namespace LCChecker.Models
         public int totalScale { get; set; }//总规模
         public int AddArea { get; set; }//新增耕地面积
         public int available { get; set; }//可用于占补平衡面积
+        public bool flag { get; set; }//提交的项目是否全部通过
     }
 }
