@@ -14,7 +14,7 @@ namespace LCChecker.Models
         private List<RuleInfo> rules = new List<RuleInfo>();
         //private Dictionary<int, Dictionary<int, List<string>>> summaryError = new Dictionary<int, Dictionary<int, List<string>>>();
         //总表中存在的错误
-        public Dictionary<int, List<string>> Error = new Dictionary<int, List<string>>();
+        public Dictionary<string , List<string>> Error = new Dictionary<string , List<string>>();
         //总表中 每行数据对应的行号关系字典
         private Dictionary<string, int> Relatship = new Dictionary<string, int>(); 
         //public int submit;
@@ -252,7 +252,7 @@ namespace LCChecker.Models
                     }
                     if (ErrorRow.Count() != 0)
                     {
-                        Error.Add(h, ErrorRow);
+                        Error.Add(value, ErrorRow);
                     }
                     h++;
                     Row = sheet.GetRow(h);
@@ -272,7 +272,7 @@ namespace LCChecker.Models
          * subError 字典 key 是提交表格中错误行数据的行号（不需要加1 在NPOI中）
          * 成功检索数据  返回true ；否则为false
          */
-        public bool CheckSubmitExcel(string SubmitPath,string summaryPath,ref Dictionary<int,List<string>> subError)
+        public bool CheckSubmitExcel(string SubmitPath,string summaryPath,ref Dictionary<string,List<string>> subError)
         {
             try
             {
@@ -287,14 +287,14 @@ namespace LCChecker.Models
                     int startRow = 0, startCell = 0;
                     if (!FindHeader(sheet, ref startRow, ref startCell))
                     {
-                        subError.Add(0, new List<string>() { "未找到表头,导致未能检索表格数据" });
+                        subError.Add("", new List<string>() { "未找到表头,导致未能检索表格数据" });
                         return false;
                     }
                     startRow++;
                     IRow Row ;
                     int Rowsum = sheet.LastRowNum;
 
-                    for (int irow = startRow; irow <= sheet.LastRowNum; irow++)
+                    for (int irow = startRow; irow <= Rowsum; irow++)
                     {
                         Row = sheet.GetRow(irow);
                         bool flag = false;
@@ -308,22 +308,21 @@ namespace LCChecker.Models
                                 flag = true;
                             }
                         }
+                        var value = Row.GetCell(startCell + 2, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
                         //有错误 对于提交的表格的某一行有错误，那么将错误信息保存在
                         if (flag)
                         {
                             //第几行 错误列表
-                            subError.Add(irow, ErrorRow);
+                            subError.Add(value, ErrorRow);
                         }
                         //没有错误
                         else
                         {
-                            var value = Row.GetCell(startCell + 2, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
-                            //获取正确的这行在总表的行号
-                            int rownumber = Relatship[value];
                             //查看总表是否有错误记录
-                            if (Error.ContainsKey(rownumber))
+                            if (Error.ContainsKey(value))
                             {
-                                IRow changeRow = summSheet.GetRow(rownumber);
+                                int rowNumber = Relatship[value];
+                                IRow changeRow = summSheet.GetRow(rowNumber);
                                 int j = 0;
                                 for (int i = startCell; i <= Row.LastCellNum; i++)
                                 {
@@ -333,7 +332,7 @@ namespace LCChecker.Models
                                     changeRow.CreateCell(j).SetCellValue(Correctvalue);
                                 }
                                 //将正确的数据更新到总表之后，那么删除该行在错误字典中的信息
-                                Error.Remove(rownumber);
+                                Error.Remove(value);
                             }
                         }
                     }

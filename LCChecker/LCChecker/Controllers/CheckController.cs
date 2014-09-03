@@ -17,16 +17,11 @@ namespace LCChecker.Controllers
     public class CheckController : BaseController
     {
         private LCDbContext db = new LCDbContext();
-
-        public int beginCell = 0;
-        public Dictionary<string, int> Relatship = new Dictionary<string, int>(43);
         //
         // GET: /Check/
 
         public ActionResult Index()
         {
-
-
             return View();
         }
 
@@ -76,8 +71,14 @@ namespace LCChecker.Controllers
                 return View();
             }
 
-            var file = Request.Files[0];
-            if (file.ContentLength == 0)
+            HttpPostedFileBase file = Request.Files[0];
+            string ext=Path.GetExtension(file.FileName);
+            if (ext != ".xls" && ext != ".xlsx")
+            {
+                return RedirectToAction("Region", new { regionName = name });
+            }
+
+            if (file.ContentLength == 0||file.ContentLength>20971520)
             {
                 return View();
             }
@@ -107,16 +108,16 @@ namespace LCChecker.Controllers
                 }
                 catch { 
                 
-                }
-                
-                HttpPostedFileBase files = Request.Files[0];
+                }  
                 try
                 {
                     FileStream fs = new FileStream(filePath, FileMode.Create);
+                    fs.Close();
                 }
                 catch { 
                 
                 }
+         
                 
                 file.SaveAs(filePath);
                 return RedirectToAction("Check", "Base", new { region = name });
@@ -169,43 +170,6 @@ namespace LCChecker.Controllers
 
 
 
-
-
-
-        //public ActionResult jiancha(string fPath)
-        //{
-        //    if(Session["name"]==null)
-        //        return HttpNotFound();
-            
-        //    string name=Session["name"].ToString();
-        //    Detect record=db.DETECT.Where(x=>x.region==name).FirstOrDefault();
-        //    if(record==null)
-        //    {
-        //        return HttpNotFound();
-        //    }
-
-        //    string xmlPath=Path.Combine(HttpContext.Server.MapPath("../Uploads/"+name),record.submit+".xml");
-        //    List<Mistake> information = CheckExcel(@"E:\LCChecker\trunk\LCChecker\LCChecker\Uploads\湖州市\No8.xls",name,record.submit);
-        //    XmlWriterSettings settings = new XmlWriterSettings();
-        //    settings.Indent = true;
-        //    settings.NewLineOnAttributes = true;
-        //    XmlWriter writer = XmlWriter.Create(xmlPath, settings);
-        //    writer.WriteStartDocument();
-        //    foreach (var item in information)
-        //    {
-        //        //if (item.flag)
-        //        //{
-        //        //    writer.WriteStartElement("Error");
-        //        //    writer.WriteElementString("ErrorType", item.Error);
-        //        //    writer.WriteElementString("row", item.row.ToString());
-        //        //    writer.WriteEndElement();
-        //        //}
-        //    }
-        //    writer.WriteEndDocument();
-            
-        //    return View(information);
-        //}
-
         /*
          * 管理员下载区域检查情况
          */
@@ -239,34 +203,6 @@ namespace LCChecker.Controllers
             byte[] fileContents = ms.ToArray();
             return File(fileContents, "application/ms-excel", "区域提交汇报.xls");
         }
-
-        /*区域用户下载错误表格*/
-        //public FileResult MistakeDown(string name)
-        //{
-        //    Detect record = db.DETECT.Where(x => x.region == name).FirstOrDefault();
-        //    string xmlPath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + name), record.submit + ".xml");
-        //    string filePath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + name), name + ".xls");
-        //    List<Mistake> mistakes = new List<Mistake>();
-        //    XmlReaderSettings settings = new XmlReaderSettings();
-        //    XmlReader rdr = XmlReader.Create(xmlPath);
-        //    while (rdr.Read())
-        //    {
-        //        if (rdr.NodeType == XmlNodeType.Text)
-        //        {
-        //            mistakes.Add(new Mistake() { Error = rdr.Value, row = int.Parse(rdr.Value) });
-        //        }
-        //    }
-        //    int count = mistakes.Count();
-        //    MemoryStream ms = new MemoryStream();
-        //    IWorkbook workbook = new HSSFWorkbook();
-        //    ISheet sheet = workbook.CreateSheet();
-        //    IRow row = sheet.CreateRow(0);
-        //    for (int i = 0; i < 43; i++)
-        //    {
-        //        row.CreateCell(i).SetCellValue(string.Format("{0}栏", i + 1));
-        //    }
-            
-        //}
 
 
     }

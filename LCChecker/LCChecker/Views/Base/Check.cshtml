@@ -1,4 +1,5 @@
-﻿@{
+﻿@model  Dictionary<string ,List<string>>
+@{
     Layout = null;
 }
 
@@ -12,6 +13,26 @@
 </head>
 <body>
     <div class="container">
+        <div class="row">
+            <table class="table">
+                <tr>
+                    <th>编号</th>
+                    <th>错误信息</th>
+                </tr>
+                @foreach (var item in Model.Keys)
+                {
+                    <tr>
+                        <td>@item</td>
+                        <td>
+                            @foreach (var ittem in Model[item])
+                            {
+                                <p>@ittem</p> 
+                            }
+                        </td>
+                    </tr> 
+                }
+            </table>
+        </div>
         @Html.ActionLink("下载提交表格中的错误", "DownErrorExcel", "Check", new { file="sub"}, new { @class="btn btn-primary"})
         @Html.ActionLink("下载总表中存在的错误", "DownErrorExcel", "Check", new { file="sum"}, new { @class="btn btn-success"})
 
