@@ -2,6 +2,7 @@
 using LCChecker.Rules;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -9,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Xml;
 
 namespace LCChecker.Controllers
 {
@@ -78,50 +80,67 @@ namespace LCChecker.Controllers
                 return View();
             }
             else {
-                HttpPostedFileBase files = Request.Files[0];
-                string Catalogue = HttpContext.Server.MapPath("../Uploads/"+name);
-                if (!Directory.Exists(Catalogue))
-                {
-                    Directory.CreateDirectory(Catalogue);
-                }
                 Detect record = db.DETECT.Where(x => x.region == name).FirstOrDefault();
                 string filePath = null;
                 if (record == null)
                 {
-                    Detect NewRecord = new Detect();
-                    NewRecord.region = name;
-                    NewRecord.submit = 1;
+                    record = new Detect() {  region = name,submit = 1};
                     if (ModelState.IsValid)
                     {
-                        db.DETECT.Add(NewRecord);
+                        db.DETECT.Add(record);
                         db.SaveChanges();
                     }
-                    filePath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + name), name+".xls");
                 }
                 else {
                     record.submit++;
-                    if (ModelState.IsValid)
-                    {
-                        db.Entry(record).State = EntityState.Modified;
-                        db.SaveChanges();
-                    }
-                    filePath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + name), "No" + record.submit + ".xls");
-
+                    db.Entry(record).State = EntityState.Modified;
+                    db.SaveChanges();
+                    
                 }
+                filePath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + name + "/" + record.submit), "NO" + record.submit + ".xlsx");
+                string Catalogue = HttpContext.Server.MapPath("../Uploads/" + name+"/"+record.submit);
+                Directory.CreateDirectory(Catalogue);
+                HttpPostedFileBase files = Request.Files[0];
                 using (FileStream fs = new FileStream(filePath, FileMode.Create)) { }
                 file.SaveAs(filePath);
-                return RedirectToAction("shangchuan", new { fPath = filePath });
-
+                return RedirectToAction("Check", "Base", new { region = name });
             }
-            return RedirectToAction("Region", new { regionName = name });
         }
 
 
-        public ActionResult jiancha(string fPath)
-        {
-            List<Mistake> information = CheckExcel(@"E:\LCChecker\trunk\LCChecker\LCChecker\Uploads\湖州市\No8.xls");
-            return View(information);
-        }
+        //public ActionResult jiancha(string fPath)
+        //{
+        //    if(Session["name"]==null)
+        //        return HttpNotFound();
+            
+        //    string name=Session["name"].ToString();
+        //    Detect record=db.DETECT.Where(x=>x.region==name).FirstOrDefault();
+        //    if(record==null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+
+        //    string xmlPath=Path.Combine(HttpContext.Server.MapPath("../Uploads/"+name),record.submit+".xml");
+        //    List<Mistake> information = CheckExcel(@"E:\LCChecker\trunk\LCChecker\LCChecker\Uploads\湖州市\No8.xls",name,record.submit);
+        //    XmlWriterSettings settings = new XmlWriterSettings();
+        //    settings.Indent = true;
+        //    settings.NewLineOnAttributes = true;
+        //    XmlWriter writer = XmlWriter.Create(xmlPath, settings);
+        //    writer.WriteStartDocument();
+        //    foreach (var item in information)
+        //    {
+        //        //if (item.flag)
+        //        //{
+        //        //    writer.WriteStartElement("Error");
+        //        //    writer.WriteElementString("ErrorType", item.Error);
+        //        //    writer.WriteElementString("row", item.row.ToString());
+        //        //    writer.WriteEndElement();
+        //        //}
+        //    }
+        //    writer.WriteEndDocument();
+            
+        //    return View(information);
+        //}
 
         /*
          * 管理员下载区域检查情况
@@ -155,6 +174,36 @@ namespace LCChecker.Controllers
             ms.Flush();
             byte[] fileContents = ms.ToArray();
             return File(fileContents, "application/ms-excel", "区域提交汇报.xls");
-        }     
+        }
+
+        /*区域用户下载错误表格*/
+        //public FileResult MistakeDown(string name)
+        //{
+        //    Detect record = db.DETECT.Where(x => x.region == name).FirstOrDefault();
+        //    string xmlPath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + name), record.submit + ".xml");
+        //    string filePath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + name), name + ".xls");
+        //    List<Mistake> mistakes = new List<Mistake>();
+        //    XmlReaderSettings settings = new XmlReaderSettings();
+        //    XmlReader rdr = XmlReader.Create(xmlPath);
+        //    while (rdr.Read())
+        //    {
+        //        if (rdr.NodeType == XmlNodeType.Text)
+        //        {
+        //            mistakes.Add(new Mistake() { Error = rdr.Value, row = int.Parse(rdr.Value) });
+        //        }
+        //    }
+        //    int count = mistakes.Count();
+        //    MemoryStream ms = new MemoryStream();
+        //    IWorkbook workbook = new HSSFWorkbook();
+        //    ISheet sheet = workbook.CreateSheet();
+        //    IRow row = sheet.CreateRow(0);
+        //    for (int i = 0; i < 43; i++)
+        //    {
+        //        row.CreateCell(i).SetCellValue(string.Format("{0}栏", i + 1));
+        //    }
+            
+        //}
+
+
     }
 }

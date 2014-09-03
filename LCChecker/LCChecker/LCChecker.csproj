@@ -148,8 +148,9 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="IRowRule.cs" />
-    <Compile Include="Models\CheckEngine.cs" />
+    <Compile Include="Models\Address.cs" />
     <Compile Include="Models\Detect.cs" />
+    <Compile Include="Models\DetectEngine.cs" />
     <Compile Include="Models\LCDbContext.cs" />
     <Compile Include="Models\Mistake.cs" />
     <Compile Include="Models\RuleInfo.cs" />
@@ -252,7 +253,10 @@
     <Content Include="Views\Check\Index.cshtml" />
     <Content Include="Views\Check\Admin.cshtml" />
     <Content Include="Views\Check\Region.cshtml" />
-    <Content Include="Views\Check\shangchuan.cshtml" />
+    <Content Include="Views\Check\jiancha.cshtml" />
+    <Content Include="Views\Base\Check.cshtml" />
+    <Content Include="Views\Base\First.cshtml" />
+    <Content Include="Views\Base\Success.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
