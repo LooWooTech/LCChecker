@@ -323,7 +323,7 @@ namespace LCChecker.Models
                             {
                                 IRow changeRow = summSheet.GetRow(rownumber);
                                 int j = 0;
-                                for (int i = startCell; i < Row.LastCellNum; i++)
+                                for (int i = startCell; i <= Row.LastCellNum; i++)
                                 {
                                     //获取提交表格的 Row行的数据
                                     var Correctvalue = Row.GetCell(i, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();

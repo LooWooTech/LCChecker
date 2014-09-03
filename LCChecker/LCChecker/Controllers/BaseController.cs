@@ -64,7 +64,7 @@ namespace LCChecker.Controllers
                     return false;
                 }
                 int h = 0;
-                for (int i = OldRow; i < OldSheet.LastRowNum; i++)
+                for (int i = OldRow; i <= OldSheet.LastRowNum; i++)
                 {
                     IRow orow = OldSheet.GetRow(i);
                     IRow NewRow = NewSheet.CreateRow(h++);
@@ -171,7 +171,44 @@ namespace LCChecker.Controllers
                 return View("Summary");
             }
             //最终的最终 返回总表错误 提交表格也存在错误
+            ViewBag.name = region;
             return View();
+        }
+
+        /*
+         * 数据采集  
+         * 采集数据种类：项目个数
+         */
+        public bool CollectData(string region)
+        {
+            string DataPath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region), "summary.xlsx");
+            using (FileStream fs = new FileStream(DataPath, FileMode.Open, FileAccess.Read))
+            {
+                XSSFWorkbook workbook = new XSSFWorkbook(fs);
+                ISheet sheet = workbook.GetSheetAt(0);
+                int startRow = 0, startCell = 0;
+                if (!FindHeader(sheet, ref startRow, ref startCell))
+                {
+                    return false;
+                }
+                int sum = sheet.LastRowNum - startRow;
+                Detect record = db.DETECT.Where(x => x.region == region).FirstOrDefault();
+                if (record == null)
+                {
+                    return false;
+                }
+                //检查该表中存在错误的行
+                DetectEngine Engine = new DetectEngine();
+                Engine.CheckSummaryExcel(DataPath);
+                record.Correct = sum - Engine.Error.Count();//正确的行（项目）个数 
+                record.sum = sum;
+                if (ModelState.IsValid)
+                {
+                    db.Entry(record).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+            }
+            return true;
         }
         
         

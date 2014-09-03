@@ -25,6 +25,8 @@ namespace LCChecker.Controllers
 
         public ActionResult Index()
         {
+
+
             return View();
         }
 
@@ -106,6 +108,43 @@ namespace LCChecker.Controllers
                 return RedirectToAction("Check", "Base", new { region = name });
             }
         }
+
+
+        /*
+         * 下载存在错误的表格
+         * 根据file的名称来判断是下载提交表格中的错误还是总表依然存在的全部错误
+         */
+        public ActionResult DownErrorExcel(string file)
+        {
+            if (Session["name"] == null)
+            {
+                return HttpNotFound();
+            }
+            string region = Session["name"].ToString();
+            Detect Area = db.DETECT.Where(x => x.region == region).FirstOrDefault();
+            if (Area == null)
+            {
+                return RedirectToAction("Index");
+            }
+            string DownFilePath ;
+            if (file == "sub")
+            {
+                DownFilePath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit), "SubError.xlsx");
+            }
+            else {
+                DownFilePath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit), "summaryError.xlsx");
+            }
+            
+            FileStream fs = new FileStream(DownFilePath, FileMode.Open, FileAccess.ReadWrite);
+            byte[] fileContents = new byte[(int)fs.Length];
+            fs.Read(fileContents, 0, fileContents.Length);
+            fs.Close();
+            return File(fileContents, "application/ms-excel", "区域提交汇报.xls");
+        }
+
+
+
+
 
 
         //public ActionResult jiancha(string fPath)

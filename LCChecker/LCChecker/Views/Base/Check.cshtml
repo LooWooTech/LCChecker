@@ -7,11 +7,14 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Check</title>
+    <title>检查结果</title>
+    <link href="~/Content/bootstrap.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-    <div>
-        
+    <div class="container">
+        @Html.ActionLink("下载提交表格中的错误", "DownErrorExcel", "Check", new { file="sub"}, new { @class="btn btn-primary"})
+        @Html.ActionLink("下载总表中存在的错误", "DownErrorExcel", "Check", new { file="sum"}, new { @class="btn btn-success"})
+
     </div>
 </body>
 </html>
