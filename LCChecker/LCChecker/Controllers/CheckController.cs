@@ -101,9 +101,23 @@ namespace LCChecker.Controllers
                 }
                 filePath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + name + "/" + record.submit), "NO" + record.submit + ".xlsx");
                 string Catalogue = HttpContext.Server.MapPath("../Uploads/" + name+"/"+record.submit);
-                Directory.CreateDirectory(Catalogue);
+                try
+                {
+                    Directory.CreateDirectory(Catalogue);
+                }
+                catch { 
+                
+                }
+                
                 HttpPostedFileBase files = Request.Files[0];
-                using (FileStream fs = new FileStream(filePath, FileMode.Create)) { }
+                try
+                {
+                    FileStream fs = new FileStream(filePath, FileMode.Create);
+                }
+                catch { 
+                
+                }
+                
                 file.SaveAs(filePath);
                 return RedirectToAction("Check", "Base", new { region = name });
             }
@@ -127,19 +141,30 @@ namespace LCChecker.Controllers
                 return RedirectToAction("Index");
             }
             string DownFilePath ;
+            string fileName;
             if (file == "sub")
             {
+                fileName = "提交错误表.xlsx";
                 DownFilePath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit), "SubError.xlsx");
             }
             else {
+                fileName = "总错误表.xlsx";
                 DownFilePath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit), "summaryError.xlsx");
             }
+            byte[] fileContents;
+            try
+            {
+                FileStream fs = new FileStream(DownFilePath, FileMode.Open, FileAccess.ReadWrite);
+                fileContents = new byte[(int)fs.Length];
+                fs.Read(fileContents, 0, fileContents.Length);
+                fs.Close();
+            }
+            catch {
+                return HttpNotFound();
+            }
             
-            FileStream fs = new FileStream(DownFilePath, FileMode.Open, FileAccess.ReadWrite);
-            byte[] fileContents = new byte[(int)fs.Length];
-            fs.Read(fileContents, 0, fileContents.Length);
-            fs.Close();
-            return File(fileContents, "application/ms-excel", "区域提交汇报.xls");
+            
+            return File(fileContents, "application/ms-excel", fileName);
         }
 
 

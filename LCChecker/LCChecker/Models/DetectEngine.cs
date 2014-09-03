@@ -16,7 +16,7 @@ namespace LCChecker.Models
         //总表中存在的错误
         public Dictionary<int, List<string>> Error = new Dictionary<int, List<string>>();
         //总表中 每行数据对应的行号关系字典
-        private Dictionary<Address, int> Relatship = new Dictionary<Address, int>(); 
+        private Dictionary<string, int> Relatship = new Dictionary<string, int>(); 
         //public int submit;
 
         public DetectEngine()
@@ -229,22 +229,20 @@ namespace LCChecker.Models
         /*
          * 检查该区域的总表格 错误信息保存在Error中
          */
-        public void CheckSummaryExcel(string summaryPath)
+        public bool CheckSummaryExcel(string summaryPath)
         {
-            using (FileStream fs = new FileStream(summaryPath, FileMode.Open, FileAccess.Read))
+            try
             {
+                FileStream fs = new FileStream(summaryPath, FileMode.Open, FileAccess.Read);
                 XSSFWorkbook summWorkbook = new XSSFWorkbook(fs);
                 ISheet sheet = summWorkbook.GetSheetAt(0);
-                int h=1;
+                int h = 1;
                 IRow Row = sheet.GetRow(h);
                 while (Row != null)
                 {
                     List<string> ErrorRow = new List<string>();
-                    Address ship = new Address();
-                    var value = Row.GetCell(0, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString();
-                    ship.Id = int.Parse(value);
-                    ship.Area = Row.GetCell(1, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
-                    Relatship.Add(ship,h);
+                    var value = Row.GetCell(2, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+                    Relatship.Add(value, h);
                     foreach (var item in rules)
                     {
                         if (!item.Rule.Check(Row))
@@ -259,7 +257,12 @@ namespace LCChecker.Models
                     h++;
                     Row = sheet.GetRow(h);
                 }
+
             }
+            catch {
+                return false;
+            }
+            return true;
         }
 
         /*
@@ -271,12 +274,14 @@ namespace LCChecker.Models
          */
         public bool CheckSubmitExcel(string SubmitPath,string summaryPath,ref Dictionary<int,List<string>> subError)
         {
-            using (FileStream summ = new FileStream(summaryPath, FileMode.Open, FileAccess.ReadWrite))
+            try
             {
+                FileStream summ = new FileStream(summaryPath, FileMode.Open, FileAccess.ReadWrite);
                 XSSFWorkbook summaryBook = new XSSFWorkbook(summ);
                 ISheet summSheet = summaryBook.GetSheetAt(0);
-                using (FileStream fs = new FileStream(SubmitPath, FileMode.Open, FileAccess.Read))
+                try
                 {
+                    FileStream fs = new FileStream(SubmitPath, FileMode.Open, FileAccess.Read);
                     XSSFWorkbook workbook = new XSSFWorkbook(fs);
                     ISheet sheet = workbook.GetSheetAt(0);
                     int startRow = 0, startCell = 0;
@@ -312,12 +317,9 @@ namespace LCChecker.Models
                         //没有错误
                         else
                         {
-                            Address ship = new Address();
-                            var value = Row.GetCell(startCell, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
-                            ship.Id = int.Parse(value);
-                            ship.Area = Row.GetCell(startCell + 1, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+                            var value = Row.GetCell(startCell + 2, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
                             //获取正确的这行在总表的行号
-                            int rownumber = Relatship[ship];
+                            int rownumber = Relatship[value];
                             //查看总表是否有错误记录
                             if (Error.ContainsKey(rownumber))
                             {
@@ -336,7 +338,12 @@ namespace LCChecker.Models
                         }
                     }
                 }
-            
+                catch {
+                    return false;
+                }
+            }
+            catch {
+                return false;
             }
             return true;
         }

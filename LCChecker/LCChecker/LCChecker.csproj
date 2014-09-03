@@ -148,7 +148,6 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="IRowRule.cs" />
-    <Compile Include="Models\Address.cs" />
     <Compile Include="Models\Detect.cs" />
     <Compile Include="Models\DetectEngine.cs" />
     <Compile Include="Models\LCDbContext.cs" />

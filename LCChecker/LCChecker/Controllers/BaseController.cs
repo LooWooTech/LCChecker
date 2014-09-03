@@ -54,8 +54,9 @@ namespace LCChecker.Controllers
         {
             XSSFWorkbook NewWorkbook = new XSSFWorkbook();
             ISheet NewSheet = NewWorkbook.CreateSheet("表1");
-            using (FileStream os = new FileStream(OrigionPath, FileMode.Open, FileAccess.Read))
+            try
             {
+                FileStream os = new FileStream(OrigionPath, FileMode.Open, FileAccess.Read);
                 XSSFWorkbook OldWorkbook = new XSSFWorkbook(os);
                 ISheet OldSheet = OldWorkbook.GetSheetAt(0);
                 int OldRow = 0, OldCell = 0;
@@ -76,16 +77,25 @@ namespace LCChecker.Controllers
                     }
                 }
             }
-            using (FileStream fs = System.IO.File.OpenWrite(Path))
+            catch 
             {
+                return false;
+            }
+            try
+            {
+                FileStream fs = System.IO.File.OpenWrite(Path);
                 NewWorkbook.Write(fs);
+            }
+            catch
+            {
+                return false;
             }
             return true;
 
         }
 
         //根据错误行 将存在错误的表格中相应的错误行 独立保存一份错误表格 Path即要创建的错误表格路径 origPath为存在错误的表格路径 error错误信息
-        public void  NewExcel(string Path, string origPath, Dictionary<int, List<string>> error)
+        public bool  NewExcel(string Path, string origPath, Dictionary<int, List<string>> error)
         {
             //新建表
             XSSFWorkbook eWorkbook = new XSSFWorkbook();
@@ -96,9 +106,9 @@ namespace LCChecker.Controllers
                 rHeader.CreateCell(i).SetCellValue(string.Format("{0}栏", i + 1));
             }
             int rNumber = 1;
-            using (FileStream os = new FileStream(origPath, FileMode.Open, FileAccess.ReadWrite))
-            {
-                //数据表
+            try { 
+                FileStream os = new FileStream(origPath, FileMode.Open, FileAccess.ReadWrite);
+                 //数据表
                 XSSFWorkbook oWorkbook = new XSSFWorkbook(os);
                 ISheet oSheet = oWorkbook.GetSheetAt(0);
                 int startRow = 0, startCell = 0;
@@ -117,10 +127,19 @@ namespace LCChecker.Controllers
                     }
                 }
             }
-            using (FileStream fs = System.IO.File.OpenWrite(Path))
+            catch{
+                return  false;
+            }
+            try
             {
+                FileStream fs = System.IO.File.OpenWrite(Path);
                 eWorkbook.Write(fs);
             }
+            catch {
+                return false;
+            }
+
+            return true;
         }
 
         /*检查
@@ -139,6 +158,7 @@ namespace LCChecker.Controllers
             string summaryFile = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region), "summary.xlsx");
             if (Area.submit == 1)
             {
+                
                 if(!CreateExcel(summaryFile, SubmitFile))
                 {
                     return Redirect("First");
@@ -182,8 +202,9 @@ namespace LCChecker.Controllers
         public bool CollectData(string region)
         {
             string DataPath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region), "summary.xlsx");
-            using (FileStream fs = new FileStream(DataPath, FileMode.Open, FileAccess.Read))
+            try
             {
+                FileStream fs = new FileStream(DataPath, FileMode.Open, FileAccess.Read);
                 XSSFWorkbook workbook = new XSSFWorkbook(fs);
                 ISheet sheet = workbook.GetSheetAt(0);
                 int startRow = 0, startCell = 0;
@@ -207,6 +228,10 @@ namespace LCChecker.Controllers
                     db.Entry(record).State = EntityState.Modified;
                     db.SaveChanges();
                 }
+            }
+            catch
+            {
+                return false;
             }
             return true;
         }
