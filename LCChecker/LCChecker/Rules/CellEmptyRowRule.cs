@@ -18,7 +18,7 @@ namespace LCChecker.Rules
                     return string.Format(isNumeric ? "第{0}栏无面积" : "第{0}栏无填写", ColumnIndex + 1);
                 }
                 else {
-                    return string.Format(isNumeric ? "第{0}栏有面积" : "第{0}已填写", ColumnIndex + 1);
+                    return string.Format(isNumeric ? "第{0}栏有面积" : "第{0}栏要填写", ColumnIndex + 1);
                 }
 
             }
@@ -27,19 +27,20 @@ namespace LCChecker.Rules
         public bool Check(NPOI.SS.UserModel.IRow row, int xoffset = 0)
         {
             var value1=row.GetCell(xoffset+ColumnIndex,MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString();
-            if (isEmpty && string.IsNullOrEmpty(value1))
+            if (isEmpty && string.IsNullOrEmpty(value1))// isEmpty :true  里面空的  1）无填写
                 return true;
 
             double sum;
             var ret = double.TryParse(value1, out sum);
 
-            if (isNumeric)
+            if (isNumeric)//  面积问题
             {
                 if (ret)
                 {
-                    return isEmpty ^ Math.Abs(sum) <= double.Epsilon;
+                    return isEmpty ^ Math.Abs(sum) <= double.Epsilon; 
                 }
                 return false;
+                
             }
             else
             {

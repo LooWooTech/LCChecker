@@ -9,15 +9,27 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>@ViewBag.name</title>
+    <link href="~/Content/bootstrap.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-    <div>
-        @using (Html.BeginForm("FileUpload", "Check", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="row">
+                    <h5>你已经提交了 @ViewBag.submits 次表格</h5>
+                </div>
+                @using (Html.BeginForm("FileUpload", "Check", FormMethod.Post, new { enctype = "multipart/form-data" }))
         {
-            <text>选择文件：</text><input name="file"type="file" id="file" />
+                    <text>选择上传文件：</text>
+                    <input name="file" type="file" id="file" class="input-file" />
+                    
             
-            <input type="submit" name="Upload" value="上传文件" /> 
+                    <button class="btn btn-primary" name="Upload" type="submit">提交表格</button>
+            
         }
+            </div>
+        </div>
+        
     </div>
 </body>
 </html>

@@ -11,7 +11,7 @@ namespace LCChecker.Rules
         public IRowRule Rule { get; set; }
 
         public string Name {
-            get { return string.Format("{0}时，{1}",Condition.Name,Rule.Name);}
+            get { return string.Format("{0} 时，{1}",Condition.Name,Rule.Name);}
         }
 
         public bool Check(NPOI.SS.UserModel.IRow row, int xoffset = 0)

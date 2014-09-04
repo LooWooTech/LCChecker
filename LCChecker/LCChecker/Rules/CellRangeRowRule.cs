@@ -13,8 +13,8 @@ namespace LCChecker.Rules
         public string[] Values { get; set; }
         public string Name {
             get {
-                var sb = new StringBuilder(string.Format("第{0}栏是否全部选‘{1}’", ColumnIndex + 1, Values[0]));
-                for (var i = 0; i < Values.Length; i++)
+                var sb = new StringBuilder(string.Format("第{0}栏填写为：‘{1}’ ", ColumnIndex + 1, Values[0]));
+                for (var i = 1; i < Values.Length; i++)
                 {
                     sb.AppendFormat("或“{0}”",Values[i]+1);
                 }

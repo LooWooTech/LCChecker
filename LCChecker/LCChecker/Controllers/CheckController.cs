@@ -22,6 +22,17 @@ namespace LCChecker.Controllers
 
         public ActionResult Index()
         {
+            string str = "abcdefg.";
+            string[] str2 = new string[] { };
+            str2 = str.Split('.');
+
+            //double a = double.Epsilon;
+            //double mm = 0;
+            //double b = Math.Abs(mm);
+            //if (b <= a)
+            //{
+            //    return View();
+            //}
             return View();
         }
 
@@ -47,12 +58,22 @@ namespace LCChecker.Controllers
         public ActionResult Admin()
         {
 
-            return View();
+            return View(db.DETECT);
         }
 
         /*区域用户登录*/
         public ActionResult Region(string regionName)
         {
+            int submits = 0;
+            Detect record = db.DETECT.Where(x => x.region == regionName).FirstOrDefault();
+            if (record == null)
+            {
+                submits = 0;
+            }
+            else {
+                submits = record.submit;
+            }
+            ViewBag.submits = submits;
             ViewBag.name = regionName;
             return View();
         }

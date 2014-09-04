@@ -69,11 +69,24 @@ namespace LCChecker.Controllers
                 {
                     IRow orow = OldSheet.GetRow(i);
                     IRow NewRow = NewSheet.CreateRow(h++);
-                    int l = 0;
-                    for (int j = OldCell; j < orow.LastCellNum; j++)
+                    for (int j = OldCell,l=0; j < orow.LastCellNum; j++,l++)
                     {
-                        var value = orow.GetCell(j, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
-                        NewRow.CreateCell(l++).SetCellValue(value);
+                        var oCell = orow.GetCell(j);
+                        if (oCell == null)
+                            continue;
+                        var nCell = NewRow.CreateCell(l, oCell.CellType);
+                        switch (oCell.CellType)
+                        {
+                            case CellType.Boolean:
+                                nCell.SetCellValue(oCell.BooleanCellValue);
+                                break;
+                            case CellType.Numeric:
+                                nCell.SetCellValue(oCell.NumericCellValue);
+                                break;
+                            case CellType.String:
+                                nCell.SetCellValue(oCell.StringCellValue);
+                                break;
+                        }
                     }
                 }
             }
@@ -83,7 +96,8 @@ namespace LCChecker.Controllers
             }
             try
             {
-                FileStream fs = System.IO.File.OpenWrite(Path);
+                FileStream fs = new FileStream(Path, FileMode.Create);
+                //FileStream fs = System.IO.File.OpenWrite(Path);
                 NewWorkbook.Write(fs);
             }
             catch
@@ -122,11 +136,24 @@ namespace LCChecker.Controllers
                     if (error.ContainsKey(value))
                     {
                         IRow NRow = eSheet.CreateRow(rNumber++);
-                        int CellNumber = 0;
-                        for (int j = startCell; j <= startCell+43; j++)
+                        for (int j = startCell,CellNumber=0; j <= startCell+43; j++,CellNumber++)
                         {
-                            value = oRow.GetCell(j, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
-                            NRow.CreateCell(CellNumber++).SetCellValue(value);
+                            var oCell = oRow.GetCell(j);
+                            if (oCell == null)
+                                continue;
+                            var nCell = NRow.CreateCell(CellNumber,oCell.CellType);
+                            switch (oCell.CellType)
+                            {
+                                case CellType.Boolean:
+                                    nCell.SetCellValue(oCell.BooleanCellValue);
+                                    break;
+                                case CellType.Numeric:
+                                    nCell.SetCellValue(oCell.NumericCellValue);
+                                    break;
+                                case CellType.String:
+                                    nCell.SetCellValue(oCell.StringCellValue);
+                                    break;
+                            }
                         }
                     }
                 }
@@ -137,7 +164,8 @@ namespace LCChecker.Controllers
             }
             try
             {
-                FileStream fs = System.IO.File.OpenWrite(Path);
+                FileStream fs = new FileStream(Path, FileMode.Create);
+                //FileStream fs = System.IO.File.OpenWrite(Path);
                 eWorkbook.Write(fs);
             }
             catch {
@@ -180,11 +208,25 @@ namespace LCChecker.Controllers
                     db.SaveChanges();
                     return Redirect("First");
                 }
+                CollectData(region);
             }
             Dictionary<string ,List<string>> subError=new Dictionary<string ,List<string>>();
-            DetectEngine Engine = new DetectEngine();
-            Engine.CheckSummaryExcel(summaryFile);//检查数据总表
-            Engine.CheckSubmitExcel(SubmitFile,summaryFile,ref subError);
+            DetectEngine Engine = new DetectEngine(summaryFile);
+            if (!Engine.CheckSummaryExcel(summaryFile))
+            {
+                return HttpNotFound();
+            }
+            string result = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit), "After.xlsx");
+            //Engine.CheckSubmitExcel();
+            if (!Engine.CheckSubmitExcel(SubmitFile, summaryFile, result, ref subError))
+            {
+                return HttpNotFound();
+            }
+            //Engine.CheckSummaryExcel(summaryFile);//检查数据总表
+           
+
+            CollectData(region);
+
             //将第N次提交之后的总表现状 拷贝一份到提交次数文件夹下
             string statusPath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit), "Status.xlsx");
             CreateExcel(statusPath, summaryFile);
@@ -214,13 +256,22 @@ namespace LCChecker.Controllers
 
         /*
          * 数据采集  
-         * 采集数据种类：项目个数
+         * 采集数据种类：项目个数 flag 用于判断是否第一次采集 /更新数据
          */
         public bool CollectData(string region)
         {
             string DataPath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region), "summary.xlsx");
+            //检查该表中存在错误的行
+            DetectEngine Engine = new DetectEngine(DataPath);
+            Engine.CheckSummaryExcel(DataPath);
+
             try
             {
+                Detect record = db.DETECT.Where(x => x.region == region).FirstOrDefault();
+                if (record == null)
+                {
+                    return false;
+                }
                 FileStream fs = new FileStream(DataPath, FileMode.Open, FileAccess.Read);
                 XSSFWorkbook workbook = new XSSFWorkbook(fs);
                 ISheet sheet = workbook.GetSheetAt(0);
@@ -229,17 +280,9 @@ namespace LCChecker.Controllers
                 {
                     return false;
                 }
-                int sum = sheet.LastRowNum - startRow;
-                Detect record = db.DETECT.Where(x => x.region == region).FirstOrDefault();
-                if (record == null)
-                {
-                    return false;
-                }
-                //检查该表中存在错误的行
-                DetectEngine Engine = new DetectEngine();
-                Engine.CheckSummaryExcel(DataPath);
-                record.Correct = sum - Engine.Error.Count();//正确的行（项目）个数 
+                int sum = sheet.LastRowNum - startRow;    
                 record.sum = sum;
+                record.Correct = sum - Engine.Error.Count();//正确的行（项目）个数 
                 if (ModelState.IsValid)
                 {
                     db.Entry(record).State = EntityState.Modified;
@@ -253,6 +296,9 @@ namespace LCChecker.Controllers
             return true;
         }
 
+
+
+    
 
 
         

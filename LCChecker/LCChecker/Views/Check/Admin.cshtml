@@ -1,4 +1,5 @@
-﻿@{
+﻿@model IEnumerable<LCChecker.Models.Detect>
+@{
     Layout = null;
 }
 
@@ -8,10 +9,42 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>管理员</title>
+    <link href="~/Content/bootstrap.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-    <div>
-        @Html.ActionLink("导出表格", "Download", "Check", new { }, new { @class="btn btn-success"})
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table">
+                    <tr>
+                        <th>序号</th>
+                        <th>行政单位</th>
+                        <th>项目个数</th>
+                        <th>总规模</th>
+                        <th>新增耕地面积</th>
+                        <th>可用于占补平衡面积</th>
+                        <th>通过个数</th>
+                        <td>提交次数</td>
+                    </tr>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Id</td>
+                            <td>@item.region</td>
+                            <td>@item.sum</td>
+                            <td>@item.totalScale</td>
+                            <td>@item.AddArea</td>
+                            <td>@item.available</td>
+                            <td>@item.Correct</td>
+                            <td>@item.submit</td>
+                        </tr> 
+                    }
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            @Html.ActionLink("导出表格", "Download", "Check", new { }, new { @class="btn btn-success"})
+        </div>
     </div>
 </body>
 </html>

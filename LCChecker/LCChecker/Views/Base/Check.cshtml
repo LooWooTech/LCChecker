@@ -14,6 +14,7 @@
 <body>
     <div class="container">
         <div class="row">
+            <h5 class="text-center">你上传的表格 存在以下错误</h5>
             <table class="table">
                 <tr>
                     <th>编号</th>
@@ -33,9 +34,10 @@
                 }
             </table>
         </div>
-        @Html.ActionLink("下载提交表格中的错误", "DownErrorExcel", "Check", new { file="sub"}, new { @class="btn btn-primary"})
-        @Html.ActionLink("下载总表中存在的错误", "DownErrorExcel", "Check", new { file="sum"}, new { @class="btn btn-success"})
-
+        <div class="row">
+             @Html.ActionLink("下载提交表格中的错误", "DownErrorExcel", "Check", new { file="sub"}, new { @class="btn btn-primary"})
+            @Html.ActionLink("下载总表中存在的错误", "DownErrorExcel", "Check", new { file="sum"}, new { @class="btn btn-success"})
+        </div>
     </div>
 </body>
 </html>
