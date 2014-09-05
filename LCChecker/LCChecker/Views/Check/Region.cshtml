@@ -19,14 +19,11 @@
                     <h5>你已经提交了 @ViewBag.submits 次表格</h5>
                 </div>
                 @using (Html.BeginForm("FileUpload", "Check", FormMethod.Post, new { enctype = "multipart/form-data" }))
-        {
+                {
                     <text>选择上传文件：</text>
-                    <input name="file" type="file" id="file" class="input-file" />
-                    
-            
+                    <input name="file" type="file" id="file" class="input-file" /> 
                     <button class="btn btn-primary" name="Upload" type="submit">提交表格</button>
-            
-        }
+                }
             </div>
         </div>
         

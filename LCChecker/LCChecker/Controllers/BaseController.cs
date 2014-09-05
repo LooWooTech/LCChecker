@@ -1,6 +1,4 @@
 ﻿using LCChecker.Models;
-using LCChecker.Rules;
-using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System;
@@ -10,7 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System.Xml;
 
 namespace LCChecker.Controllers
 {
@@ -50,31 +47,114 @@ namespace LCChecker.Controllers
 
 
         //创建表格(拷贝 但是没有简单的拷贝 拷贝的那份整齐)  Path新创建表格的路径 OrigionPath原数据表格路径 将混乱（或者从0,0开始）的数据表格拷贝一份
-        public bool CreateExcel(string Path, string OrigionPath)
+        public bool CreateExcel(string Path, string OrigionPath,out string mistakes)
         {
             XSSFWorkbook NewWorkbook = new XSSFWorkbook();
             ISheet NewSheet = NewWorkbook.CreateSheet("表1");
+            IWorkbook OldWorkbook;
             try
             {
                 FileStream os = new FileStream(OrigionPath, FileMode.Open, FileAccess.Read);
-                XSSFWorkbook OldWorkbook = new XSSFWorkbook(os);
-                ISheet OldSheet = OldWorkbook.GetSheetAt(0);
-                int OldRow = 0, OldCell = 0;
-                if (!FindHeader(OldSheet, ref OldRow, ref OldCell))
+                OldWorkbook = WorkbookFactory.Create(os);
+            }
+            catch (Exception er)
+            {
+                mistakes = er.Message;
+                return false;
+            }
+            ISheet OldSheet = OldWorkbook.GetSheetAt(0);
+            int OldRow = 0, OldCell = 0;
+            if (!FindHeader(OldSheet, ref OldRow, ref OldCell))
+            {
+                mistakes = "未能找到表格：" + OrigionPath + "的表头，导致未能检索表格数据";
+                return false;
+            }
+            int h = 0;
+            for (int i = OldRow; i <= OldSheet.LastRowNum; i++)
+            {
+                IRow orow = OldSheet.GetRow(i);
+                IRow NewRow = NewSheet.CreateRow(h++);
+                for (int j = OldCell, l = 0; j < orow.LastCellNum; j++, l++)
                 {
-                    return false;
-                }
-                int h = 0;
-                for (int i = OldRow; i <= OldSheet.LastRowNum; i++)
-                {
-                    IRow orow = OldSheet.GetRow(i);
-                    IRow NewRow = NewSheet.CreateRow(h++);
-                    for (int j = OldCell,l=0; j < orow.LastCellNum; j++,l++)
+                    var oCell = orow.GetCell(j);
+                    if (oCell == null)
+                        continue;
+                    var nCell = NewRow.CreateCell(l, oCell.CellType);
+                    switch (oCell.CellType)
                     {
-                        var oCell = orow.GetCell(j);
+                        case CellType.Boolean:
+                            nCell.SetCellValue(oCell.BooleanCellValue);
+                            break;
+                        case CellType.Numeric:
+                            nCell.SetCellValue(oCell.NumericCellValue);
+                            break;
+                        case CellType.String:
+                            nCell.SetCellValue(oCell.StringCellValue);
+                            break;
+                    }
+                }
+            }
+            try
+            {
+                FileStream fs = new FileStream(Path, FileMode.Create);
+                NewWorkbook.Write(fs);
+            }
+            catch(Exception er)
+            {
+                mistakes = er.Message;
+                return false;
+            }
+            mistakes = "";
+            return true;
+
+        }
+
+        //根据错误行 将存在错误的表格中相应的错误行 独立保存一份错误表格 Path即要创建的错误表格路径 origPath为存在错误的表格路径 error错误信息
+        public bool  NewExcel(string Path, string origPath, Dictionary<string, List<string>> error,out string mistakes)
+        {
+            //新建表
+            XSSFWorkbook eWorkbook = new XSSFWorkbook();
+            ISheet eSheet = eWorkbook.CreateSheet("错误行");
+            IRow rHeader = eSheet.CreateRow(0);
+            for (int i = 0; i < 43; i++)
+            {
+                rHeader.CreateCell(i).SetCellValue(string.Format("{0}栏", i + 1));
+            }
+            int rNumber = 1;
+            IWorkbook oWorkbook;
+            try
+            {
+                FileStream os = new FileStream(origPath, FileMode.Open, FileAccess.ReadWrite);
+                //数据表
+                oWorkbook = WorkbookFactory.Create(os);
+            }
+            catch (Exception er)
+            {
+                mistakes = er.Message;
+                return false;
+            }
+            ISheet oSheet = oWorkbook.GetSheetAt(0);
+            int startRow = 0, startCell = 0;
+            //找到原始数据开始的行 列
+            if (!FindHeader(oSheet, ref startRow, ref startCell))
+            {
+                mistakes = "未能找到源数据表格,导致未能检索表格数据";
+                return false;
+            }
+            startRow++;
+            for (int i = startRow; i <= oSheet.LastRowNum; i++)
+            {
+                IRow oRow = oSheet.GetRow(i);
+                var value = oRow.GetCell(startCell + 2, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+                if (error.ContainsKey(value))
+                {
+                    IRow NRow = eSheet.CreateRow(rNumber++);
+                    for (int j = startCell, CellNumber = 0; j <= startCell + 43; j++, CellNumber++)
+                    {
+                        var oCell = oRow.GetCell(j);
                         if (oCell == null)
                             continue;
-                        var nCell = NewRow.CreateCell(l, oCell.CellType);
+                        var nCell = NRow.CreateCell(CellNumber, oCell.CellType);
                         switch (oCell.CellType)
                         {
                             case CellType.Boolean:
@@ -90,88 +170,17 @@ namespace LCChecker.Controllers
                     }
                 }
             }
-            catch 
-            {
-                return false;
-            }
-            try
-            {
-                FileStream fs = new FileStream(Path, FileMode.Create);
-                //FileStream fs = System.IO.File.OpenWrite(Path);
-                NewWorkbook.Write(fs);
-            }
-            catch
-            {
-                return false;
-            }
-            return true;
-
-        }
-
-        //根据错误行 将存在错误的表格中相应的错误行 独立保存一份错误表格 Path即要创建的错误表格路径 origPath为存在错误的表格路径 error错误信息
-        public bool  NewExcel(string Path, string origPath, Dictionary<string, List<string>> error)
-        {
-            //新建表
-            XSSFWorkbook eWorkbook = new XSSFWorkbook();
-            ISheet eSheet = eWorkbook.CreateSheet("错误行");
-            IRow rHeader = eSheet.CreateRow(0);
-            for (int i = 0; i < 43; i++)
-            {
-                rHeader.CreateCell(i).SetCellValue(string.Format("{0}栏", i + 1));
-            }
-            int rNumber = 1;
-            try { 
-                FileStream os = new FileStream(origPath, FileMode.Open, FileAccess.ReadWrite);
-                 //数据表
-                XSSFWorkbook oWorkbook = new XSSFWorkbook(os);
-                ISheet oSheet = oWorkbook.GetSheetAt(0);
-                int startRow = 0, startCell = 0;
-                //找到原始数据开始的行 列
-                FindHeader(oSheet, ref startRow, ref startCell);
-                startRow++;
-                for (int i = startRow; i <= oSheet.LastRowNum; i++)
-                {
-                    IRow oRow = oSheet.GetRow(i);
-                    var value = oRow.GetCell(startCell + 2, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
-                    if (error.ContainsKey(value))
-                    {
-                        IRow NRow = eSheet.CreateRow(rNumber++);
-                        for (int j = startCell,CellNumber=0; j <= startCell+43; j++,CellNumber++)
-                        {
-                            var oCell = oRow.GetCell(j);
-                            if (oCell == null)
-                                continue;
-                            var nCell = NRow.CreateCell(CellNumber,oCell.CellType);
-                            switch (oCell.CellType)
-                            {
-                                case CellType.Boolean:
-                                    nCell.SetCellValue(oCell.BooleanCellValue);
-                                    break;
-                                case CellType.Numeric:
-                                    nCell.SetCellValue(oCell.NumericCellValue);
-                                    break;
-                                case CellType.String:
-                                    nCell.SetCellValue(oCell.StringCellValue);
-                                    break;
-                            }
-                        }
-                    }
-                }
-            }
-            catch(Exception er){
-                string message = er.Message;
-                return  false;
-            }
             try
             {
                 FileStream fs = new FileStream(Path, FileMode.Create);
                 //FileStream fs = System.IO.File.OpenWrite(Path);
                 eWorkbook.Write(fs);
             }
-            catch {
+            catch (Exception er){
+                mistakes = er.Message;
                 return false;
             }
-
+            mistakes = "";
             return true;
         }
 
@@ -183,21 +192,21 @@ namespace LCChecker.Controllers
         /*检查
          * 过程：首先检查总表中的错误信息；检查提交表格 将总表中错误但是提交表中正确的内容更新到总表 假如提交表格中依然还有还有错误，那么在本地目录下保存提交错误表
          */
-        public ActionResult Check(string region)
+        public ActionResult Check(string region,string SubmitFile)
         {
+            string errorinfomation = null;
             Detect Area = db.DETECT.Where(x => x.region == region).FirstOrDefault();
             if (Area == null)
             {
                 return Redirect("/Check/Index");
             }
-            /*最近一次上传表格是在Uploads/region/area.submit/目录下的NOarea.submit.xls*/
-            string SubmitFile = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit + "/"), "NO" + Area.submit + ".xlsx");
             /*该用户的数据总表是在Uploads/region目录下的summary.xls*/
+            
             string summaryFile = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region), "summary.xlsx");
             if (Area.submit == 1)
             {
                 
-                if(!CreateExcel(summaryFile, SubmitFile))
+                if(!CreateExcel(summaryFile, SubmitFile,out errorinfomation))
                 {
                     //创建总表失败 那个删除第一次本地保存的文件夹
                     string FirstPath=HttpContext.Server.MapPath("../Uploads/"+region+"/1");
@@ -212,29 +221,32 @@ namespace LCChecker.Controllers
             }
             Dictionary<string ,List<string>> subError=new Dictionary<string ,List<string>>();
             DetectEngine Engine = new DetectEngine(summaryFile);
-            if (!Engine.CheckSummaryExcel(summaryFile))
+            if (!Engine.CheckSummaryExcel(summaryFile,out errorinfomation))
             {
+                ViewBag.ErrorMessage = "检查总表失败，错误："+errorinfomation;
                 return HttpNotFound();
             }
             string result = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit), "After.xlsx");
-            //Engine.CheckSubmitExcel();
-            if (!Engine.CheckSubmitExcel(SubmitFile, summaryFile, result, ref subError))
+            
+            if (!Engine.CheckSubmitExcel(SubmitFile, summaryFile, result, ref subError,out errorinfomation))
             {
+                ViewBag.ErrorMessage = errorinfomation;
                 return HttpNotFound();
             }
-            //Engine.CheckSummaryExcel(summaryFile);//检查数据总表
-           
-
             CollectData(region);
 
             //将第N次提交之后的总表现状 拷贝一份到提交次数文件夹下
             string statusPath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit), "Status.xlsx");
-            CreateExcel(statusPath, summaryFile);
+
+            if (!CreateExcel(statusPath, summaryFile, out errorinfomation))
+            {
+                ViewBag.ErrorMessage = "建立总表现状失败,错误原因："+errorinfomation;
+            }
             if (Engine.Error.Count() != 0)
             {
                 string sumErrorExcel = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit), "summaryError.xlsx");
-                NewExcel(sumErrorExcel, summaryFile, Engine.Error);
-            }//总表中都不存在错误信息了，那么提交表格中当然就没有错误的行了 存在错误的行也是之前正确现在被改错了  返回成功提交视图
+                NewExcel(sumErrorExcel, summaryFile, Engine.Error,out errorinfomation);
+            }//总表中都不存在错误信息了，此时存在的问题：总表中改对了，但是提交表格中把对的改错了
             else {
                 return View("Success");
             }
@@ -243,13 +255,17 @@ namespace LCChecker.Controllers
             {
                 string subErrorExcel = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit ), "SubError.xlsx");
                 //提交表格中依然还有错误 那么就保存提交表格中的 错误
-                NewExcel(subErrorExcel, SubmitFile, subError);
+                NewExcel(subErrorExcel, SubmitFile, subError,out errorinfomation);
             }
                 //这个时候是总表中存在错误 提交表格都正确
             else {
-                return View("Summary");
+                ViewBag.ErrorMessage = errorinfomation;
+                ViewBag.sign = "summary";
+                return View(Engine.Error);
             }
             //最终的最终 返回总表错误 提交表格也存在错误
+            ViewBag.sign = "submit";
+            ViewBag.ErrorMessage = errorinfomation;
             ViewBag.name = region;
             return View(subError);
         }
@@ -260,10 +276,11 @@ namespace LCChecker.Controllers
          */
         public bool CollectData(string region)
         {
+            string errorInformation = null;
             string DataPath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region), "summary.xlsx");
             //检查该表中存在错误的行
             DetectEngine Engine = new DetectEngine(DataPath);
-            Engine.CheckSummaryExcel(DataPath);
+            Engine.CheckSummaryExcel(DataPath,out errorInformation);
 
             try
             {

@@ -1,8 +1,6 @@
 ﻿using LCChecker.Models;
-using LCChecker.Rules;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
-using NPOI.XSSF.UserModel;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -10,7 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System.Xml;
 
 namespace LCChecker.Controllers
 {
@@ -22,17 +19,6 @@ namespace LCChecker.Controllers
 
         public ActionResult Index()
         {
-            string str = "abcdefg.";
-            string[] str2 = new string[] { };
-            str2 = str.Split('.');
-
-            //double a = double.Epsilon;
-            //double mm = 0;
-            //double b = Math.Abs(mm);
-            //if (b <= a)
-            //{
-            //    return View();
-            //}
             return View();
         }
 
@@ -89,6 +75,7 @@ namespace LCChecker.Controllers
             string name=Session["name"].ToString();
             if (Request.Files.Count == 0)
             {
+                ViewBag.ErrorMessage = "请选择文件上传";
                 return View();
             }
 
@@ -96,11 +83,13 @@ namespace LCChecker.Controllers
             string ext=Path.GetExtension(file.FileName);
             if (ext != ".xls" && ext != ".xlsx")
             {
+                ViewBag.ErrorMessage = "你上传的文件格式不对，目前支持.xls以及.xlsx格式的EXCEL表格";
                 return RedirectToAction("Region", new { regionName = name });
             }
 
             if (file.ContentLength == 0||file.ContentLength>20971520)
             {
+                ViewBag.ErrorMessage = "你上传的文件0字节或者大于20M 无法读取表格";
                 return View();
             }
             else {
@@ -121,27 +110,38 @@ namespace LCChecker.Controllers
                     db.SaveChanges();
                     
                 }
-                filePath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + name + "/" + record.submit), "NO" + record.submit + ".xlsx");
-                string Catalogue = HttpContext.Server.MapPath("../Uploads/" + name+"/"+record.submit);
-                try
+                if (ext == ".xls")
                 {
-                    Directory.CreateDirectory(Catalogue);
+                    filePath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + name + "/" + record.submit), "NO" + record.submit + ".xls");
                 }
-                catch { 
+                else {
+                    filePath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + name + "/" + record.submit), "NO" + record.submit + ".xlsx");
+                }
                 
-                }  
+                string Catalogue = HttpContext.Server.MapPath("../Uploads/" + name+"/"+record.submit);
+                if (!Directory.Exists(Catalogue))
+                {
+                    try
+                    {
+                        Directory.CreateDirectory(Catalogue);
+                    }
+                    catch(Exception er)
+                    {
+                        ViewBag.ErrorMessage = "服务器本地创建目录失败,错误信息："+er.Message;
+                    }  
+                }
+                
                 try
                 {
                     FileStream fs = new FileStream(filePath, FileMode.Create);
                     fs.Close();
                 }
-                catch { 
-                
-                }
-         
-                
+                catch {
+                    ViewBag.ErrorMessage = "服务器保存上传文件失败";
+                    return HttpNotFound();
+                } 
                 file.SaveAs(filePath);
-                return RedirectToAction("Check", "Base", new { region = name });
+                return RedirectToAction("Check", "Base", new { region = name, SubmitFile=filePath});
             }
         }
 

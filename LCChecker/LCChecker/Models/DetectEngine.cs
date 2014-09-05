@@ -1,4 +1,5 @@
 ﻿using LCChecker.Rules;
+using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System;
@@ -240,7 +241,7 @@ namespace LCChecker.Models
         /*
          * 检查该区域的总表格 错误信息保存在Error中
          */
-        public bool CheckSummaryExcel(string summaryPath)
+        public bool CheckSummaryExcel(string summaryPath,out string mistakes)
         {
             XSSFWorkbook summWorkbook;
             try
@@ -248,7 +249,8 @@ namespace LCChecker.Models
                 FileStream fs = new FileStream(summaryPath, FileMode.Open, FileAccess.Read);
                 summWorkbook = new XSSFWorkbook(fs);
             }
-            catch {
+            catch (Exception er){
+                mistakes = er.Message;
                 return false;
             }
             ISheet sheet = summWorkbook.GetSheetAt(0);
@@ -276,6 +278,7 @@ namespace LCChecker.Models
                 }
 
             }
+            mistakes = "";
             return true;
         }
 
@@ -286,24 +289,26 @@ namespace LCChecker.Models
          * subError 字典 key 是提交表格中错误行数据的行号（不需要加1 在NPOI中）
          * 成功检索数据  返回true ；否则为false
          */
-        public bool CheckSubmitExcel(string SubmitPath,string summaryPath,string resultPath,ref Dictionary<string,List<string>> subError)
+        public bool CheckSubmitExcel(string SubmitPath,string summaryPath,string resultPath,ref Dictionary<string,List<string>> subError,out string mistakes)
         {
             XSSFWorkbook summaryBook;
-            XSSFWorkbook workbook;
+            IWorkbook workbook;
             try
             {
                 FileStream summ = new FileStream(summaryPath, FileMode.Open, FileAccess.ReadWrite);
                 summaryBook = new XSSFWorkbook(summ);
             }
-            catch {
+            catch (Exception er){
+                mistakes = er.Message;
                 return false;
             }
             try
             {
                 FileStream fs = new FileStream(SubmitPath, FileMode.Open, FileAccess.Read);
-                workbook = new XSSFWorkbook(fs);
+                workbook = WorkbookFactory.Create(fs);
             }
-            catch {
+            catch (Exception er){
+                mistakes = er.Message;
                 return false;
             }
             ISheet summSheet = summaryBook.GetSheetAt(0);
@@ -313,6 +318,7 @@ namespace LCChecker.Models
             if (!FindHeader(sheet, ref startRow, ref startCell))
             {
                 subError.Add("", new List<string>() { "未找到表头,导致未能检索表格数据" });
+                mistakes = "未找到表头，导致未能检索表格数据";
                 return false;
             }
             startRow++;
@@ -342,11 +348,8 @@ namespace LCChecker.Models
                         int ErrorNumer=Relatship[value];
                         IRow errorRow=summSheet.GetRow(ErrorNumer);
                         int MaxCell=startCell+43;
-                        //int j=0;
                         for (int i = startCell,j=0; i <= MaxCell; i++,j++)
                         {
-                            //var value1 = Row.GetCell(i, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
-                            //errorRow.CreateCell(j).SetCellValue(value1);
                             var CorrectCell = Row.GetCell(i);
                             if (CorrectCell == null)
                                 continue;
@@ -377,10 +380,11 @@ namespace LCChecker.Models
                 FileStream summfs = new FileStream(summaryPath, FileMode.Open, FileAccess.Write);
                 summaryBook.Write(summfs);
             }
-            catch {
+            catch (Exception er){
+                mistakes = er.Message;
                 return false;
             }
-
+            mistakes = "";
             return true;
         }
 

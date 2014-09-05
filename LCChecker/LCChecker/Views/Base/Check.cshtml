@@ -1,4 +1,5 @@
 ﻿@model  Dictionary<string ,List<string>>
+
 @{
     Layout = null;
 }
@@ -14,7 +15,20 @@
 <body>
     <div class="container">
         <div class="row">
-            <h5 class="text-center">你上传的表格 存在以下错误</h5>
+            @if (ViewBag.sign == "summary")
+            {
+                 <h5>你提交的表格中已不存在错误，但是很不幸总表中依然还有错误</h5>
+                 @Html.ActionLink("下载总表中存在的错误", "DownErrorExcel", "Check", new { file="sum"}, new { @class="btn btn-success"})
+            }
+            else
+            {
+                <h5 class="text-center">你上传的表格 存在以下错误</h5>   
+                @Html.ActionLink("下载提交表格中的错误", "DownErrorExcel", "Check", new { file="sub"}, new { @class="btn btn-primary"})
+                @Html.ActionLink("下载总表中存在的错误", "DownErrorExcel", "Check", new { file="sum"}, new { @class="btn btn-success"})
+            }
+            @Html.ActionLink("继续提交表格", "Region", "Check", new { regionName=@ViewBag.name}, new { @class="btn btn-info"})
+        </div>
+        <div class="row">
             <table class="table">
                 <tr>
                     <th>编号</th>
@@ -35,8 +49,9 @@
             </table>
         </div>
         <div class="row">
-             @Html.ActionLink("下载提交表格中的错误", "DownErrorExcel", "Check", new { file="sub"}, new { @class="btn btn-primary"})
-            @Html.ActionLink("下载总表中存在的错误", "DownErrorExcel", "Check", new { file="sum"}, new { @class="btn btn-success"})
+             
+
+            
         </div>
     </div>
 </body>

@@ -150,6 +150,7 @@
     <Compile Include="IRowRule.cs" />
     <Compile Include="Models\Detect.cs" />
     <Compile Include="Models\DetectEngine.cs" />
+    <Compile Include="Models\LCCheckerInitializer.cs" />
     <Compile Include="Models\LCDbContext.cs" />
     <Compile Include="Models\RuleInfo.cs" />
     <Compile Include="Models\shiyan.cs" />
