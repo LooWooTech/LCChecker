@@ -19,12 +19,7 @@ namespace LCChecker.Controllers
 
         public ActionResult Index()
         {
-            string str = "0.00001";
-            double n = double.Parse(str);
-            int x = 9;
-            //double m = 9.0000;
-            double y = x;
-            float z = x;
+            
             return View();
         }
 
