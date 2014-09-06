@@ -153,7 +153,6 @@
     <Compile Include="Models\LCCheckerInitializer.cs" />
     <Compile Include="Models\LCDbContext.cs" />
     <Compile Include="Models\RuleInfo.cs" />
-    <Compile Include="Models\shiyan.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rules\AndRule.cs" />
@@ -256,9 +255,9 @@
     <Content Include="Views\Check\Index.cshtml" />
     <Content Include="Views\Check\Admin.cshtml" />
     <Content Include="Views\Check\Region.cshtml" />
-    <Content Include="Views\Base\Check.cshtml" />
-    <Content Include="Views\Base\First.cshtml" />
-    <Content Include="Views\Base\Success.cshtml" />
+    <Content Include="Views\Check\Success.cshtml" />
+    <Content Include="Views\Check\Check.cshtml" />
+    <Content Include="Views\Check\First.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

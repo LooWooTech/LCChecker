@@ -12,15 +12,15 @@ namespace LCChecker.Models
         public RuleInfo()
         {
             Id = count;
-            Enabled = true;
+          //  Enabled = true;
             count++;
         }
 
 
         public int Id { get; set; }
-        public int SheetIndex { get; set; }//表格号
-        public int CheckSheetColumnIndex { get; set; }//行号
+        //public int SheetIndex { get; set; }//表格号
+        //public int CheckSheetColumnIndex { get; set; }//行号
         public IRowRule Rule { get; set; }//验证rule
-        public bool Enabled { get; set; }//验证成功与否
+        //public bool Enabled { get; set; }//验证成功与否
     }
 }

@@ -1,12 +1,10 @@
 ﻿using LCChecker.Rules;
-using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Web;
 
 namespace LCChecker.Models
 {
@@ -38,20 +36,22 @@ namespace LCChecker.Models
 
 
 
-            //list.Add(new CellRangeRowRule() { ColumnIndex = 7, Values = new[] { "是", "否" } });
-            //list.Add(new ConditionalRowRule()
-            //{
-            //    Condition = new CellEmptyRowRule() { ColumnIndex = 17, isEmpty = false, isNumeric = false },
-            //    Rule = new CellEmptyRowRule() { ColumnIndex = 18, isEmpty = true, isNumeric = true }
-            //});
-            //list.Add(new ConditionalRowRule()
-            //{
-            //    Condition = new CellEmptyRowRule() { ColumnIndex = 17, isEmpty = true, isNumeric = false },
-            //    Rule = new CellEmptyRowRule() { ColumnIndex = 18, isEmpty = false, isNumeric = true }
-            //});
+            list.Add(new CellRangeRowRule() { ColumnIndex = 7, Values = new[] { "是", "否" } });
+            list.Add(new ConditionalRowRule()
+            {
+                Condition = new CellEmptyRowRule() { ColumnIndex = 17, isEmpty = false, isNumeric = false },
+                Rule = new CellEmptyRowRule() { ColumnIndex = 18, isEmpty = true, isNumeric = true }
+            });
 
 
-            //list.Add(new UniqueValueRowRule(region) { ColumnIndex = 3, Keyword = "综合整治" });
+            list.Add(new ConditionalRowRule()
+            {
+                Condition = new CellEmptyRowRule() { ColumnIndex = 17, isEmpty = true, isNumeric = false },
+                Rule = new CellEmptyRowRule() { ColumnIndex = 18, isEmpty = false, isNumeric = true }
+            });
+
+
+            list.Add(new UniqueValueRowRule(region) { ColumnIndex = 3, Keyword = "综合整治" });
 
 
 

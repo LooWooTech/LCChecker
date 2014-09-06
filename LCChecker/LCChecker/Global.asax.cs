@@ -18,7 +18,7 @@ namespace LCChecker
     {
         protected void Application_Start()
         {
-            Database.SetInitializer(new LCCheckerInitializer());
+            //Database.SetInitializer(new LCCheckerInitializer());
             AreaRegistration.RegisterAllAreas();
 
             WebApiConfig.Register(GlobalConfiguration.Configuration);

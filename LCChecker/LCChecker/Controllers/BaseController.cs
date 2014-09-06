@@ -1,4 +1,6 @@
 ﻿using LCChecker.Models;
+using NPOI.HSSF.UserModel;
+using NPOI.HSSF.Util;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System;
@@ -118,7 +120,9 @@ namespace LCChecker.Controllers
             IRow rHeader = eSheet.CreateRow(0);
             for (int i = 0; i < 43; i++)
             {
-                rHeader.CreateCell(i).SetCellValue(string.Format("{0}栏", i + 1));
+                ICell cell = rHeader.CreateCell(i);
+                //cell.CellStyle = GetCellStyle(eWorkbook, stylexls.小头);
+                cell.SetCellValue(string.Format("{0}栏",i+1));
             }
             int rNumber = 1;
             IWorkbook oWorkbook;
@@ -155,6 +159,9 @@ namespace LCChecker.Controllers
                         if (oCell == null)
                             continue;
                         var nCell = NRow.CreateCell(CellNumber, oCell.CellType);
+
+                       // nCell.CellStyle = GetCellStyle(eWorkbook,stylexls.默认);
+                        
                         switch (oCell.CellType)
                         {
                             case CellType.Boolean:
@@ -189,86 +196,7 @@ namespace LCChecker.Controllers
 
 
 
-        /*检查
-         * 过程：首先检查总表中的错误信息；检查提交表格 将总表中错误但是提交表中正确的内容更新到总表 假如提交表格中依然还有还有错误，那么在本地目录下保存提交错误表
-         */
-        public ActionResult Check(string region,string SubmitFile)
-        {
-            string errorinfomation = null;
-            Detect Area = db.DETECT.Where(x => x.region == region).FirstOrDefault();
-            if (Area == null)
-            {
-                return Redirect("/Check/Index");
-            }
-            /*该用户的数据总表是在Uploads/region目录下的summary.xls*/
-            
-            string summaryFile = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region), "summary.xlsx");
-            if (Area.submit == 1)
-            {
-                
-                if(!CreateExcel(summaryFile, SubmitFile,out errorinfomation))
-                {
-                    //创建总表失败 那个删除第一次本地保存的文件夹
-                    string FirstPath=HttpContext.Server.MapPath("../Uploads/"+region+"/1");
-                    System.IO.Directory.Delete(FirstPath, true);
-                    //更新数据库
-                    Area.submit = 0;
-                    db.Entry(Area).State = EntityState.Modified;
-                    db.SaveChanges();
-                    return Redirect("First");
-                }
-                CollectData(region);
-            }
-            Dictionary<string ,List<string>> subError=new Dictionary<string ,List<string>>();
-            DetectEngine Engine = new DetectEngine(summaryFile);
-            if (!Engine.CheckSummaryExcel(summaryFile,out errorinfomation))
-            {
-                ViewBag.ErrorMessage = "检查总表失败，错误："+errorinfomation;
-                return HttpNotFound();
-            }
-            string result = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit), "After.xlsx");
-            
-            if (!Engine.CheckSubmitExcel(SubmitFile, summaryFile, result, ref subError,out errorinfomation))
-            {
-                ViewBag.ErrorMessage = errorinfomation;
-                return HttpNotFound();
-            }
-            CollectData(region);
-
-            //将第N次提交之后的总表现状 拷贝一份到提交次数文件夹下
-            string statusPath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit), "Status.xlsx");
-
-            if (!CreateExcel(statusPath, summaryFile, out errorinfomation))
-            {
-                ViewBag.ErrorMessage = "建立总表现状失败,错误原因："+errorinfomation;
-            }
-            if (Engine.Error.Count() != 0)
-            {
-                string sumErrorExcel = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit), "summaryError.xlsx");
-                NewExcel(sumErrorExcel, summaryFile, Engine.Error,out errorinfomation);
-            }//总表中都不存在错误信息了，此时存在的问题：总表中改对了，但是提交表格中把对的改错了
-            else {
-                return View("Success");
-            }
-            //假如新上传的数据存在错误 ，那么就建立提交错误表
-            if (subError.Count() != 0)
-            {
-                string subErrorExcel = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit ), "SubError.xlsx");
-                //提交表格中依然还有错误 那么就保存提交表格中的 错误
-                NewExcel(subErrorExcel, SubmitFile, subError,out errorinfomation);
-            }
-                //这个时候是总表中存在错误 提交表格都正确
-            else {
-                ViewBag.ErrorMessage = errorinfomation;
-                ViewBag.sign = "summary";
-                return View(Engine.Error);
-            }
-            //最终的最终 返回总表错误 提交表格也存在错误
-            ViewBag.sign = "submit";
-            ViewBag.ErrorMessage = errorinfomation;
-            ViewBag.name = region;
-            return View(subError);
-        }
+        
 
         /*
          * 数据采集  
@@ -315,10 +243,126 @@ namespace LCChecker.Controllers
 
 
 
-    
 
 
-        
+        public enum stylexls
+        {
+            大头,
+            小头,
+            小小头,
+            默认
+        }
+
+        public static ICellStyle GetCellStyle(IWorkbook workbook, stylexls str)
+        {
+            ICellStyle cellStyle = workbook.CreateCellStyle();
+
+            IFont fontBigheader = workbook.CreateFont();
+            fontBigheader.FontHeightInPoints = 22;
+            fontBigheader.FontName = "微软雅黑";
+            fontBigheader.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
+
+            IFont fontSmallheader = workbook.CreateFont();
+            fontSmallheader.FontHeightInPoints = 14;
+            fontSmallheader.FontName = "黑体";
+
+            IFont fontText = workbook.CreateFont();
+            fontText.FontHeightInPoints = 12;
+            fontText.FontName = "宋体";
+
+            IFont fontthinheader = workbook.CreateFont();
+            fontthinheader.FontName = "宋体";
+            fontthinheader.FontHeightInPoints = 11;
+            fontthinheader.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
+
+
+            cellStyle.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
+            cellStyle.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
+            cellStyle.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
+            cellStyle.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
+
+            //边框颜色
+            cellStyle.BottomBorderColor = HSSFColor.OliveGreen.Black.Index;
+            cellStyle.TopBorderColor = HSSFColor.OliveGreen.Black.Index;
+
+            //背景图形
+            cellStyle.FillForegroundColor = HSSFColor.White.Index;
+            cellStyle.FillBackgroundColor = HSSFColor.Black.Index;
+
+            //文本对齐  左对齐  居中  右对齐  现在是居中
+            cellStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+
+            //垂直对齐
+            cellStyle.VerticalAlignment = VerticalAlignment.Center;
+
+            //自动换行
+            cellStyle.WrapText = true;
+
+            //缩进
+            cellStyle.Indention = 0;
+
+            switch (str)
+            {
+                case stylexls.大头:
+                    cellStyle.SetFont(fontBigheader);
+                    break;
+                case stylexls.小头:
+                    cellStyle.SetFont(fontSmallheader);
+                    break;
+                case stylexls.默认:
+                    cellStyle.SetFont(fontText);
+                    break;
+                case stylexls.小小头:
+                    cellStyle.SetFont(fontthinheader);
+                    break;
+            }
+
+
+            return cellStyle;
+        }
+
+
+        public bool AddCssExcel(string filePath,out string mistakes,out MemoryStream stream)
+        {
+            IWorkbook workbook;
+            stream = new MemoryStream();
+            try
+            {
+                FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                workbook = WorkbookFactory.Create(fs);
+            }
+            catch (Exception er)
+            {
+                mistakes = er.Message;
+                stream = null;
+                //workbook = null;
+                return false;
+            }
+            ISheet sheet = workbook.GetSheetAt(0);
+            IRow row = sheet.GetRow(0);
+            row.Height = 20 * 20;
+            for (int x = 0; x < 43; x++)
+            {
+                ICell cell = row.GetCell(x);
+                cell.CellStyle = GetCellStyle(workbook, stylexls.小小头);
+            }
+
+            for (int y = 1; y < sheet.LastRowNum; y++)
+            {
+                IRow drow = sheet.GetRow(y);
+                for (int x = 0; x < 43; x++)
+                {
+                    ICell cell = drow.GetCell(x);
+                    cell.CellStyle = GetCellStyle(workbook, stylexls.默认);
+                }
+            }
+            mistakes = "";
+            stream = null;
+            workbook.Write(stream);
+            stream.Flush();
+            stream.Position = 0;
+            return true;
+        }
         
         
         

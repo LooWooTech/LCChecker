@@ -11,6 +11,5 @@ namespace LCChecker.Models
         public LCDbContext() : base("LC") { }
         public DbSet<User> USER { get; set; }
         public DbSet<Detect> DETECT { get; set; }
-        //public DbSet<RuleInfo> RULEINFO { get; set; }
     }
 }
