@@ -1,10 +1,11 @@
 ﻿@model System.Web.HttpContextBase
 @{
     Layout = null;
-    string ErrorMessage="";
-    if(Session["Error"]!=null)
+    string ErrorMessage = "";
+    if (Session["Error"] != null)
     {
         ErrorMessage = Session["Error"].ToString();
+        Session["Error"] = null;
     }
 }
 
@@ -19,29 +20,36 @@
 </head>
 <body>
     <div class="container">
+        <br />
+        <br />
+        <br />
         <div class="row">
             <div class="col-md-4 part_one_body">
-                <h3 class="text-center">表格提交记录</h3>
-                @for (int x = 0; x < ViewBag.submits; x++)
+                <h3 class="text-center text-success">表格提交记录</h3>
+                @foreach (var item in ViewBag.records)
                 {
-                    <p>@Html.ActionLink((x + 1).ToString(), "DownSubExcel", "Check", new {region=@ViewBag.name,submits=@x+1 }, new {@class="btn btn-info" })</p> 
+                    <p>第 @item.submits 次提交的表格：  @Html.ActionLink(item.name as string, "DownSubExcel", "Check", new { region = @ViewBag.name, times = @item.submits, Type = @item.Format, fileName = @item.name }, new { @class = "btn btn-default" })</p> 
                 }
             </div>
             <div class="col-md-8 ">
-                <h3 class="text-center text-primary">提交表格</h3>
-                <div class="row"> 
-                    <h1 class="text-danger"> @ErrorMessage</h1> 
-                    <h5>你已经提交了 @ViewBag.submits 次表格</h5>
+                <h3 class="text-center">提交表格</h3>
+                <div class="row col-md-8 col-md-offset-2">
+                    <div class="row">
+                        <h3 class="text-danger">@ErrorMessage</h3>
+                        <h5 class="text-success">你已经提交了 @ViewBag.submits 次表格</h5>
+                        @using (Html.BeginForm("FileUpload", "Check", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                        {
+                            <div class="row">
+                                <label class="col-md-6">选择上传文件：</label>
+                                <input name="file" type="file" id="file" class="input-file col-md-6" />
+                            </div>
+                            <button class="btn btn-primary" name="Upload" type="submit">提交表格</button>
+                        }
+                    </div>
                 </div>
-                @using (Html.BeginForm("FileUpload", "Check", FormMethod.Post, new { enctype = "multipart/form-data" }))
-                {
-                    <text>选择上传文件：</text>
-                    <input name="file" type="file" id="file" class="input-file" /> 
-                    <button class="btn btn-primary" name="Upload" type="submit">提交表格</button>
-                }
+
             </div>
         </div>
-        
     </div>
 </body>
 </html>

@@ -37,7 +37,7 @@ namespace LCChecker.Rules
             {
                 if (ret)
                 {
-                    return isEmpty ^ Math.Abs(sum) <= double.Epsilon; 
+                    return isEmpty ^ Math.Abs(sum) >= double.Epsilon; 
                 }
                 return false;
                 

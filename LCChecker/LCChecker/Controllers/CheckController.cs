@@ -50,23 +50,19 @@ namespace LCChecker.Controllers
         /*区域用户登录*/
         public ActionResult Region(string regionName)
         {
-            int submits = 0;
             Detect record = db.DETECT.Where(x => x.region == regionName).FirstOrDefault();
             if (record == null)
             {
-                submits = 0;
+                return RedirectToAction("Index");
             }
-            else {
-                submits = record.submit;
-            }
-
-            ViewBag.submits = submits;
+            ViewBag.submits = record.submit;
             ViewBag.name = regionName;
             if (record.flag)
             {
                 return View("success");
             }
             else {
+                ViewBag.records = db.SUBRECORD.Where(x => x.regionId==record.Id).ToList();
                 return View();
             }
         }
@@ -150,6 +146,16 @@ namespace LCChecker.Controllers
                     return RedirectToAction("Region", new { regionName = name });
                 } 
                 file.SaveAs(filePath);
+                SubRecord submit = new SubRecord();
+                submit.Format = ext;
+                submit.regionId = record.Id;
+                submit.name = file.FileName;
+                submit.submits = record.submit;
+                if (ModelState.IsValid)
+                {
+                    db.SUBRECORD.Add(submit);
+                    db.SaveChanges();
+                }
                 return RedirectToAction("Check", "Check", new { region = name, SubmitFile=filePath});
             }
         }
@@ -192,10 +198,10 @@ namespace LCChecker.Controllers
 
         /*下载提交表格
          */
-        public ActionResult DownSubExcel(string region, int submits)
+        public ActionResult DownSubExcel(string region, string times,string Type,string fileName)
         {
-            string fileName = "No" + submits + ".xlsx";
-            string FilePath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + submits), fileName);
+            string SourcePath = "NO" + times+Type;
+            string FilePath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + times),SourcePath);
             FileStream fs ;
             try {
                 fs = new FileStream(FilePath, FileMode.Open, FileAccess.Read);
