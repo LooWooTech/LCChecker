@@ -111,6 +111,10 @@ namespace LCChecker.Controllers
 
         }
 
+
+
+
+
         //根据错误行 将存在错误的表格中相应的错误行 独立保存一份错误表格 Path即要创建的错误表格路径 origPath为存在错误的表格路径 error错误信息
         public bool  NewExcel(string Path, string origPath, Dictionary<string, List<string>> error,out string mistakes)
         {
@@ -192,6 +196,9 @@ namespace LCChecker.Controllers
         }
 
 
+
+        
+
         
 
 
@@ -202,48 +209,51 @@ namespace LCChecker.Controllers
          * 数据采集  
          * 采集数据种类：项目个数 flag 用于判断是否第一次采集 /更新数据
          */
-        public bool CollectData(string region)
+        public bool CollectData(string region,ref string errorInformation)
         {
-            string errorInformation = null;
             string DataPath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region), "summary.xlsx");
             //检查该表中存在错误的行
             DetectEngine Engine = new DetectEngine(DataPath);
-            Engine.CheckSummaryExcel(DataPath,out errorInformation);
-
-            try
-            {
-                Detect record = db.DETECT.Where(x => x.region == region).FirstOrDefault();
-                if (record == null)
-                {
-                    return false;
-                }
-                FileStream fs = new FileStream(DataPath, FileMode.Open, FileAccess.Read);
-                XSSFWorkbook workbook = new XSSFWorkbook(fs);
-                ISheet sheet = workbook.GetSheetAt(0);
-                int startRow = 0, startCell = 0;
-                if (!FindHeader(sheet, ref startRow, ref startCell))
-                {
-                    return false;
-                }
-                int sum = sheet.LastRowNum - startRow;    
-                record.sum = sum;
-                record.Correct = sum - Engine.Error.Count();//正确的行（项目）个数 
-                if (ModelState.IsValid)
-                {
-                    db.Entry(record).State = EntityState.Modified;
-                    db.SaveChanges();
-                }
-            }
-            catch
+            if (!Engine.CheckSummaryExcel(DataPath, ref errorInformation))
             {
                 return false;
             }
+            Detect record = db.DETECT.Where(x => x.region == region).FirstOrDefault();
+            if (record == null)
+            {
+                errorInformation = "未找到相关记录";
+                return false;
+            }
+            IWorkbook workbook;
+            try
+            {
+                FileStream fs = new FileStream(DataPath, FileMode.Open, FileAccess.Read);
+                workbook = WorkbookFactory.Create(fs);
+                fs.Close();
+            }
+            catch (Exception er)
+            {
+                errorInformation = er.Message;
+                return false;
+            }
+            ISheet sheet = workbook.GetSheetAt(0);
+            int startRow = 0, startCell = 0;
+            if (!FindHeader(sheet, ref startRow, ref startCell))
+            {
+                errorInformation = "错误：未找到表头；";
+                return false;
+            }
+            int sum = sheet.LastRowNum - startRow;
+            record.sum = sum;
+            record.Correct = sum - Engine.Error.Count();//正确的行（项目）个数 
+            if (ModelState.IsValid)
+            {
+                db.Entry(record).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+            errorInformation = "";
             return true;
         }
-
-
-
-
 
         public enum stylexls
         {
@@ -252,7 +262,9 @@ namespace LCChecker.Controllers
             小小头,
             默认
         }
-
+        /*
+         * 设置单元格  格式
+         */
         public static ICellStyle GetCellStyle(IWorkbook workbook, stylexls str)
         {
             ICellStyle cellStyle = workbook.CreateCellStyle();
@@ -321,59 +333,134 @@ namespace LCChecker.Controllers
             return cellStyle;
         }
 
-
-        public bool AddCssExcel(string filePath,out string mistakes,out MemoryStream stream)
+        /*用途：当用户第一次上传表格的时候，保存总表  文件拷贝好像有自己的函数 ，貌似总是出问题 
+         */
+        public bool Copy(string source, string reborn,ref string mistakes)
         {
             IWorkbook workbook;
-            stream = new MemoryStream();
+            try {
+                FileStream fs = new FileStream(source, FileMode.Open, FileAccess.Read);
+                workbook = WorkbookFactory.Create(fs);
+                fs.Close();
+            }
+            catch(Exception er)
+            {
+                mistakes = er.Message;
+                return false;
+            }
+
             try
             {
-                FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-                workbook = WorkbookFactory.Create(fs);
+                FileStream fs = new FileStream(reborn, FileMode.Create, FileAccess.Write);
+                workbook.Write(fs);
+                fs.Close();
             }
             catch (Exception er)
             {
                 mistakes = er.Message;
-                stream = null;
-                //workbook = null;
                 return false;
             }
-            ISheet sheet = workbook.GetSheetAt(0);
-            IRow row = sheet.GetRow(0);
-            row.Height = 20 * 20;
-            for (int x = 0; x < 43; x++)
-            {
-                ICell cell = row.GetCell(x);
-                cell.CellStyle = GetCellStyle(workbook, stylexls.小小头);
-            }
-
-            for (int y = 1; y < sheet.LastRowNum; y++)
-            {
-                IRow drow = sheet.GetRow(y);
-                for (int x = 0; x < 43; x++)
-                {
-                    ICell cell = drow.GetCell(x);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.默认);
-                }
-            }
-            mistakes = "";
-            stream = null;
-            workbook.Write(stream);
-            stream.Flush();
-            stream.Position = 0;
             return true;
         }
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+
+
+
+
+
+
+
+
+
+
+
+        public bool ceshi()
+        {
+            string message = null;
+            string summath = @"E:\LCChecker\trunk\LCChecker\LCChecker\Uploads\湖州市\1\NO1.xlsx";
+            string Newpath = @"E:\LCChecker\trunk\LCChecker\LCChecker\Uploads\湖州市\New.xls";
+            //string summath = System.IO.Path.Combine(HttpContext.Server.MapPath("../Uploads/湖州市/1"), "NO1.xlsx");
+            //string Newpath = System.IO.Path.Combine(HttpContext.Server.MapPath("../Uploads/湖州市"), "New.xlsx");
+            IWorkbook workbook;
+            IWorkbook NewWorkbook=new HSSFWorkbook();
+            try
+            {
+                FileStream fs = new FileStream(summath, FileMode.Open, FileAccess.Read);
+                workbook = WorkbookFactory.Create(fs);
+                fs.Close();
+            }
+            catch (Exception er)
+            {
+                message = er.Message;
+                return false;
+            }
+            //try
+            //{
+            //    FileStream fs = new FileStream(Newpath, FileMode.Create, FileAccess.Write);
+            //    NewWorkbook = WorkbookFactory.Create(fs);
+            //    fs.Close();
+            //}
+            //catch (Exception er)
+            //{
+            //    message = er.Message;
+            //    return false;
+            //}
+            ISheet newSheet=NewWorkbook.CreateSheet("sheet1");
+            int newnumer=0;
+
+            ISheet sheet = workbook.GetSheetAt(0);
+            int startRow = 0, startCell = 0;
+            if (!FindHeader(sheet, ref startRow, ref startCell))
+            {
+                message = "not find header";
+                return false;
+            }
+            //startRow++;
+            int MaxRow = sheet.LastRowNum;
+            for (int y = startRow; y <= MaxRow; y++)
+            {
+                IRow row = sheet.GetRow(y);
+                if (row == null)
+                    continue;
+                IRow newRow = newSheet.CreateRow(newnumer++);
+                int MAxCell=row.LastCellNum;
+                for (int x = startCell,xNumer=0; x <= MAxCell; x++,xNumer++)
+                {
+                    ICell cell = row.GetCell(x);
+                    if (cell == null)
+                        continue;
+                    ICell newcell = newRow.CreateCell(xNumer,cell.CellType);
+                    string str = cell.CellStyle.GetDataFormatString();
+                    newcell.CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat(str);
+                    //newcell.CellStyle.DataFormat = (short)cell.CellStyle.GetDataFormatString();
+                    
+                    switch (cell.CellType)
+                    {
+                        case CellType.Boolean:
+                            newcell.SetCellValue(cell.BooleanCellValue);
+                            break;
+                        case CellType.Numeric:
+                            newcell.SetCellValue(cell.NumericCellValue);
+                            break;
+                        case CellType.String:
+                            newcell.SetCellValue(cell.StringCellValue);
+                            break;
+                    }
+                }
+            }
+            try
+            {
+                FileStream fs = new FileStream(Newpath, FileMode.Create, FileAccess.Write);
+                NewWorkbook.Write(fs);
+               // fs.Flush();
+                fs.Close();
+            }
+            catch (Exception er)
+            {
+                message = er.Message;
+            }
+
+                return true;
+        }
         
         
         

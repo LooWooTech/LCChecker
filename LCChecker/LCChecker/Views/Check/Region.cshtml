@@ -1,6 +1,11 @@
 ﻿@model System.Web.HttpContextBase
 @{
     Layout = null;
+    string ErrorMessage="";
+    if(Session["Error"]!=null)
+    {
+        ErrorMessage = Session["Error"].ToString();
+    }
 }
 
 <!DOCTYPE html>
@@ -10,12 +15,22 @@
     <meta name="viewport" content="width=device-width" />
     <title>@ViewBag.name</title>
     <link href="~/Content/bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/LCChecker.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
     <div class="container">
         <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <div class="row">
+            <div class="col-md-4 part_one_body">
+                <h3 class="text-center">表格提交记录</h3>
+                @for (int x = 0; x < ViewBag.submits; x++)
+                {
+                    <p>@Html.ActionLink((x + 1).ToString(), "DownSubExcel", "Check", new {region=@ViewBag.name,submits=@x+1 }, new {@class="btn btn-info" })</p> 
+                }
+            </div>
+            <div class="col-md-8 ">
+                <h3 class="text-center text-primary">提交表格</h3>
+                <div class="row"> 
+                    <h1 class="text-danger"> @ErrorMessage</h1> 
                     <h5>你已经提交了 @ViewBag.submits 次表格</h5>
                 </div>
                 @using (Html.BeginForm("FileUpload", "Check", FormMethod.Post, new { enctype = "multipart/form-data" }))

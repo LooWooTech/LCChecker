@@ -30,7 +30,7 @@
                     {
                         <tr>
                             <td>@item.Id</td>
-                            <td>@Html.ActionLink(item.region as string, "DownExcel", "Check", new {file="region",region=@item.region }, new { })</td>
+                            <td>@Html.ActionLink(item.region as string, "DownExcel", "Check", new {fileType="region",region=@item.region }, new { })</td>
                             <td>@item.sum</td>
                             <td>@item.totalScale</td>
                             <td>@item.AddArea</td>

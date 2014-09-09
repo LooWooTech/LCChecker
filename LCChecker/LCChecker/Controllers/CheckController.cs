@@ -19,7 +19,7 @@ namespace LCChecker.Controllers
 
         public ActionResult Index()
         {
-            
+            //ceshi();
             return View();
         }
 
@@ -44,7 +44,6 @@ namespace LCChecker.Controllers
         /*管理员*/
         public ActionResult Admin()
         {
-
             return View(db.DETECT);
         }
 
@@ -91,14 +90,15 @@ namespace LCChecker.Controllers
             string ext=Path.GetExtension(file.FileName);
             if (ext != ".xls" && ext != ".xlsx")
             {
-                ViewBag.ErrorMessage = "你上传的文件格式不对，目前支持.xls以及.xlsx格式的EXCEL表格";
+                string error= "你上传的文件格式不对，目前支持.xls以及.xlsx格式的EXCEL表格";
+                Session["Error"] = error;
                 return RedirectToAction("Region", new { regionName = name });
             }
 
             if (file.ContentLength == 0||file.ContentLength>20971520)
             {
-                ViewBag.ErrorMessage = "你上传的文件0字节或者大于20M 无法读取表格";
-                return View();
+                Session["Error"] = "你上传的文件0字节或者大于20M 无法读取表格";
+                return RedirectToAction("Region", new { regionName = name });
             }
             else {
                 Detect record = db.DETECT.Where(x => x.region == name).FirstOrDefault();
@@ -135,7 +135,8 @@ namespace LCChecker.Controllers
                     }
                     catch(Exception er)
                     {
-                        ViewBag.ErrorMessage = "服务器本地创建目录失败,错误信息："+er.Message;
+                        Session["Error"] = "错误：服务器创建目录失败,错误信息："+er.Message;
+                        return RedirectToAction("Region", new { regionName = name });
                     }  
                 }
                 
@@ -145,8 +146,8 @@ namespace LCChecker.Controllers
                     fs.Close();
                 }
                 catch {
-                    ViewBag.ErrorMessage = "服务器保存上传文件失败";
-                    return HttpNotFound();
+                    Session["Error"] ="错误：服务器保存上传文件失败";
+                    return RedirectToAction("Region", new { regionName = name });
                 } 
                 file.SaveAs(filePath);
                 return RedirectToAction("Check", "Check", new { region = name, SubmitFile=filePath});
@@ -155,10 +156,11 @@ namespace LCChecker.Controllers
 
 
         /*
-         * 下载存在错误的表格
-         * 根据file的名称来判断是下载提交表格中的错误还是总表依然存在的全部错误
+         * 下载表格
+         * 根据fileType来判断下载那种表格 fileType为sub 提交错误表  fileType 为sum 下载总表错误 
+         * region 指定那个区域 
          */
-        public ActionResult DownExcel(string file,string region)
+        public ActionResult DownExcel(string fileType,string region)
         {
             Detect Area = db.DETECT.Where(x => x.region == region).FirstOrDefault();
             if (Area == null)
@@ -167,15 +169,15 @@ namespace LCChecker.Controllers
             }
             string DownFilePath ;
             string fileName;
-            if (file == "sub")
+            if (fileType == "sub")
             {
                 fileName = "提交错误表.xlsx";
-                DownFilePath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit), "SubError.xlsx");
+                DownFilePath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit), "subErrorExcel.xlsx");
             }
-            else if (file == "sum")
+            else if (fileType == "sum")
             {
                 fileName = "总错误表.xlsx";
-                DownFilePath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit), "summaryError.xlsx");
+                DownFilePath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit), "summaryErrorExcel.xlsx");
             }
             else {
                 fileName = region + ".xlsx";
@@ -188,8 +190,25 @@ namespace LCChecker.Controllers
             return File(fileContents, "application/ms-excel", fileName);
         }
 
-
-
+        /*下载提交表格
+         */
+        public ActionResult DownSubExcel(string region, int submits)
+        {
+            string fileName = "No" + submits + ".xlsx";
+            string FilePath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + submits), fileName);
+            FileStream fs ;
+            try {
+                fs = new FileStream(FilePath, FileMode.Open, FileAccess.Read);
+            }
+            catch {
+                return View();
+            }
+            byte[] fileContents = new byte[(int)fs.Length];
+            fs.Read(fileContents, 0, fileContents.Length);
+            fs.Close();
+            return File(fileContents, "application/ms-excel", fileName);
+            
+        }
         
 
         /*
@@ -382,71 +401,42 @@ namespace LCChecker.Controllers
             string summaryFile = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region), "summary.xlsx");
             if (Area.submit == 1)
             {
+                string message=null;
+                Copy(SubmitFile, summaryFile, ref message);
 
-                if (!CreateExcel(summaryFile, SubmitFile, out errorinfomation))
+                if (!CollectData(region, ref errorinfomation))
                 {
-                    //创建总表失败 那个删除第一次本地保存的文件夹
-                    string FirstPath = HttpContext.Server.MapPath("../Uploads/" + region + "/1");
-                    System.IO.Directory.Delete(FirstPath, true);
-                    //更新数据库
-                    Area.submit = 0;
-                    db.Entry(Area).State = EntityState.Modified;
-                    db.SaveChanges();
-                    return Redirect("First");
+                    Session["Error"] = errorinfomation;
+                    return RedirectToAction("Region", new { regionName = region });
                 }
-                CollectData(region);
             }
-            Dictionary<string, List<string>> subError = new Dictionary<string, List<string>>();
+            string summaryErrorExcel = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit),"summaryErrorExcel.xlsx");
+            string subErrorExcel = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit), "subErrorExcel.xlsx");
+            string Error;
             DetectEngine Engine = new DetectEngine(summaryFile);
-            if (!Engine.CheckSummaryExcel(summaryFile, out errorinfomation))
+            if (!Engine.Check(summaryFile, SubmitFile, summaryErrorExcel, subErrorExcel,out Error))
             {
-                ViewBag.ErrorMessage = "检查总表失败，错误：" + errorinfomation;
-                return HttpNotFound();
+                Session["Error"] = "检索失败，失败原因："+Error;
+                return RedirectToAction("Region", new { regionName = region });
             }
-            string result = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit), "After.xlsx");
-
-            if (!Engine.CheckSubmitExcel(SubmitFile, summaryFile, result, ref subError, out errorinfomation))
+            if (Engine.subError.Count() != 0)
             {
-                ViewBag.ErrorMessage = errorinfomation;
-                return HttpNotFound();
+                ViewBag.sign = "sub";
+                ViewBag.name = region;
+                return View(Engine.subError);
             }
-            CollectData(region);
-
-            //将第N次提交之后的总表现状 拷贝一份到提交次数文件夹下
-            string statusPath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit), "Status.xlsx");
-
-            if (!CreateExcel(statusPath, summaryFile, out errorinfomation))
+            if (Engine.summaryError.Count() != 0)
             {
-                ViewBag.ErrorMessage = "建立总表现状失败,错误原因：" + errorinfomation;
-            }
-            if (Engine.Error.Count() != 0)
-            {
-                string sumErrorExcel = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit), "summaryError.xlsx");
-                NewExcel(sumErrorExcel, summaryFile, Engine.Error, out errorinfomation);
-            }//总表中都不存在错误信息了，此时存在的问题：总表中改对了，但是提交表格中把对的改错了
-            else
-            {
-                return View("Success");
-            }
-            //假如新上传的数据存在错误 ，那么就建立提交错误表
-            if (subError.Count() != 0)
-            {
-                string subErrorExcel = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit), "SubError.xlsx");
-                //提交表格中依然还有错误 那么就保存提交表格中的 错误
-                NewExcel(subErrorExcel, SubmitFile, subError, out errorinfomation);
-            }
-            //这个时候是总表中存在错误 提交表格都正确
-            else
-            {
-                ViewBag.ErrorMessage = errorinfomation;
                 ViewBag.sign = "summary";
-                return View(Engine.Error);
+                ViewBag.name = region;
+                return View(Engine.summaryError);
             }
-            //最终的最终 返回总表错误 提交表格也存在错误
-            ViewBag.sign = "submit";
-            ViewBag.ErrorMessage = errorinfomation;
-            ViewBag.name = region;
-            return View(subError);
+            else {
+                Area.flag = true;
+                db.Entry(Area).State = EntityState.Modified;
+                db.SaveChanges();
+                return View("success");
+            }
         }
 
 

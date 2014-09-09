@@ -17,29 +17,67 @@ namespace LCChecker.Rules
         private Dictionary<string, int> nameDict = new Dictionary<string, int>();
         public UniqueValueRowRule(string summary)
         {
+            IWorkbook workbook = null;
             try
             {
                 FileStream fs = new FileStream(summary, FileMode.Open, FileAccess.Read);
-                XSSFWorkbook workbook = new XSSFWorkbook(fs);
-                ISheet sheet = workbook.GetSheetAt(0);
-                int all = sheet.LastRowNum;
-                for (int i = 0; i <= all; i++)
+                workbook = WorkbookFactory.Create(fs);
+            }
+            catch
+            {
+ 
+            }
+            ISheet sheet = workbook.GetSheetAt(0);
+            int startRow = 0, startCell = 0;
+            FindHeader(sheet, ref startRow, ref startCell);
+            startRow++;
+            int LastNumber = sheet.LastRowNum;
+            for (int y = startRow; y <= LastNumber; y++)
+            {
+                IRow row = sheet.GetRow(y);
+                var value = row.GetCell(startCell + 3, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+                if (nameDict.ContainsKey(value))
                 {
-                    IRow row = sheet.GetRow(i);
-                    var value = row.GetCell(3, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
-                    if (nameDict.ContainsKey(value))
+                    nameDict[value]=nameDict[value]+1;
+                }
+                else{
+                    nameDict.Add(value,1);
+                }
+            } 
+        }
+        private bool FindHeader(ISheet sheet, ref int startrow, ref int startcol)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                IRow row = sheet.GetRow(i);
+                if (row != null)
+                {
+                    for (int j = 0; j < 5; j++)
                     {
-                        nameDict[value] = nameDict[value] + 1;
-                    }
-                    else {
-                        nameDict.Add(value, 1);
+                        var value = row.GetCell(j, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+                        if (value == "1栏")
+                        {
+                            for (int k = 0; k < 43; k++)
+                            {
+                                value = row.GetCell(k + j, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+                                if (value != string.Format("{0}栏", k + 1))
+                                {
+                                    return false;
+                                }
+                            }
+                            startrow = i;
+                            startcol = j;
+                            return true;
+                        }
                     }
                 }
             }
-            catch { 
-                
-            }
+            return false;
         }
+
+
+
+
 
 
         public string Name {
@@ -66,6 +104,8 @@ namespace LCChecker.Rules
             }
             return true;
         }
+
+
 
         
     }
