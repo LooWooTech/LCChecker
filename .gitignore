@@ -1,6 +1,8 @@
 ﻿################################################################################
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
-
+*.suo
 /LCChecker/LCChecker/obj/Debug
 /LCChecker/LCChecker/bin
+/LCChecker/LCChecker/Uploads/衢州市
+/LCChecker/packages

@@ -12,5 +12,6 @@ namespace LCChecker.Models
         public DbSet<User> USER { get; set; }
         public DbSet<Detect> DETECT { get; set; }
         public DbSet<SubRecord> SUBRECORD { get; set; }
+        public DbSet<Project> Projects { get; set; }
     }
 }
