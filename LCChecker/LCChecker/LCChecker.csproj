@@ -256,11 +256,11 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Check\Index.cshtml" />
-    <Content Include="Views\Check\Check.cshtml" />
     <Content Include="Views\Check\First.cshtml" />
     <Content Include="Views\Check\Success.cshtml" />
     <Content Include="Views\Check\Admin.cshtml" />
     <Content Include="Views\Check\Region.cshtml" />
+    <Content Include="Views\Check\Check.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

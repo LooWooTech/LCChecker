@@ -35,18 +35,19 @@ namespace LCChecker.Models
 
 
             list.Add(new CellRangeRowRule() { ColumnIndex = 7, Values = new[] { "是", "否" } });
-            list.Add(new ConditionalRowRule()
-            {
-                Condition = new CellEmptyRowRule() { ColumnIndex = 17, isEmpty = false, isNumeric = false },
-                Rule = new CellEmptyRowRule() { ColumnIndex = 18, isEmpty = true, isNumeric = true }
-            });
+
+            //list.Add(new ConditionalRowRule()
+            //{
+            //    Condition = new CellEmptyRowRule() { ColumnIndex = 17, isEmpty = false, isNumeric = false },
+            //    Rule = new CellEmptyRowRule() { ColumnIndex = 18, isEmpty = true, isNumeric = true }
+            //});
 
 
-            list.Add(new ConditionalRowRule()
-            {
-                Condition = new CellEmptyRowRule() { ColumnIndex = 17, isEmpty = true, isNumeric = false },
-                Rule = new CellEmptyRowRule() { ColumnIndex = 18, isEmpty = false, isNumeric = true }
-            });
+            //list.Add(new ConditionalRowRule()
+            //{
+            //    Condition = new CellEmptyRowRule() { ColumnIndex = 17, isEmpty = true, isNumeric = false },
+            //    Rule = new CellEmptyRowRule() { ColumnIndex = 18, isEmpty = false, isNumeric = true }
+            //});
 
 
             list.Add(new UniqueValueRowRule(region) { ColumnIndex = 3, Keyword = "综合整治" });
@@ -228,7 +229,7 @@ namespace LCChecker.Models
 
 
 
-            list.Add(new CellEmptyRowRule() { ColumnIndex = 36, isEmpty = false, isNumeric = false });
+           // list.Add(new CellEmptyRowRule() { ColumnIndex = 36, isEmpty = false, isNumeric = false });
 
             list.Add(new Format() { ColumnIndex = 35, form = "0.0" });
 

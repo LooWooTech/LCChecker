@@ -163,6 +163,29 @@ namespace LCChecker.Controllers
             return true;
         }
 
+
+        public ActionResult Home()
+        {
+            if (Session["id"] == null)
+            {
+                return Redirect("/Check/Index");
+            }
+            int id = (int)Session["id"];
+            User log = db.USER.Find(id);
+            if (log == null)
+            {
+                return Redirect("/Check/Index");
+            }
+            if (log.flag)
+            {
+                return Redirect("/Check/Admin");
+            }
+            else {
+                return RedirectToAction("Region", "Check", new { regionName = log.name });
+            }
+
+        }
+
         
     }
 }
