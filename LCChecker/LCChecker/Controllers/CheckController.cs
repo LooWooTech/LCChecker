@@ -189,7 +189,15 @@ namespace LCChecker.Controllers
                 fileName = region + ".xlsx";
                 DownFilePath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region), "summary.xlsx");
             }
-            FileStream fs = new FileStream(DownFilePath, FileMode.Open, FileAccess.Read);
+            FileStream fs;
+            try { 
+                fs = new FileStream(DownFilePath, FileMode.Open, FileAccess.Read);
+            }
+            catch(Exception er)
+            {
+                Session["Error"] = "该用户可能还没有提交表格，错误原因：" + er.Message;
+                return RedirectToAction("admin");
+            }
             byte[] fileContents = new byte[(int)fs.Length];
             fs.Read(fileContents, 0, fileContents.Length);
             fs.Close();
@@ -418,9 +426,10 @@ namespace LCChecker.Controllers
             }
             string summaryErrorExcel = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit),"summaryErrorExcel.xlsx");
             string subErrorExcel = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit), "subErrorExcel.xlsx");
+            string AfterExcel = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + region + "/" + Area.submit), "Status.xlsx");
             string Error;
             DetectEngine Engine = new DetectEngine(summaryFile);
-            if (!Engine.Check(summaryFile, SubmitFile, summaryErrorExcel, subErrorExcel,out Error))
+            if (!Engine.Check(summaryFile, SubmitFile,AfterExcel, summaryErrorExcel, subErrorExcel,out Error))
             {
                 Session["Error"] = "检索失败，失败原因："+Error;
                 return RedirectToAction("Region", new { regionName = region });
@@ -443,6 +452,14 @@ namespace LCChecker.Controllers
                 db.SaveChanges();
                 return View("success");
             }
+        }
+
+
+        public ActionResult LogOut()
+        {
+            Session["id"] = null;
+            Session["name"] = null;
+            return RedirectToAction("Index");
         }
 
 

@@ -18,7 +18,7 @@ namespace LCChecker.Rules
                     return string.Format(isNumeric ? "第{0}栏无面积" : "第{0}栏无填写", ColumnIndex + 1);
                 }
                 else {
-                    return string.Format(isNumeric ? "第{0}栏有面积" : "第{0}栏要填写", ColumnIndex + 1);
+                    return string.Format(isNumeric ? "第{0}栏有面积" : "第{0}栏填写", ColumnIndex + 1);
                 }
 
             }

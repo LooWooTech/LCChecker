@@ -1,55 +1,42 @@
 ﻿@model System.Web.HttpContextBase
 @{
-    Layout = null;
+    ViewBag.Title = ViewBag.name;
     string ErrorMessage = "";
-    if (Session["Error"] != null)
+    if(Session["Error"]!=null)
     {
         ErrorMessage = Session["Error"].ToString();
         Session["Error"] = null;
     }
 }
 
-<!DOCTYPE html>
-
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>@ViewBag.name</title>
-    <link href="~/Content/bootstrap.css" rel="stylesheet" type="text/css" />
-    <link href="~/Content/LCChecker.css" rel="stylesheet" type="text/css" />
-</head>
-<body>
-    <div class="container">
-        <br />
-        <br />
-        <br />
-        <div class="row">
-            <div class="col-md-4 part_one_body">
-                <h3 class="text-center text-success">表格提交记录</h3>
-                @foreach (var item in ViewBag.records)
-                {
-                    <p>第 @item.submits 次提交的表格：  @Html.ActionLink(item.name as string, "DownSubExcel", "Check", new { region = @ViewBag.name, times = @item.submits, Type = @item.Format, fileName = @item.name }, new { @class = "btn btn-default" })</p> 
-                }
-            </div>
-            <div class="col-md-8 ">
-                <h3 class="text-center">提交表格</h3>
-                <div class="row col-md-8 col-md-offset-2">
-                    <div class="row">
-                        <h3 class="text-danger">@ErrorMessage</h3>
-                        <h5 class="text-success">你已经提交了 @ViewBag.submits 次表格</h5>
-                        @using (Html.BeginForm("FileUpload", "Check", FormMethod.Post, new { enctype = "multipart/form-data" }))
-                        {
-                            <div class="row">
-                                <label class="col-md-6">选择上传文件：</label>
-                                <input name="file" type="file" id="file" class="input-file col-md-6" />
-                            </div>
-                            <button class="btn btn-primary" name="Upload" type="submit">提交表格</button>
-                        }
-                    </div>
+<div class="container">
+    <br />
+    <br />
+    <br />
+    <div class="row">
+        <div class="col-md-4 part_one-body">
+            <h3 class="text-center text-success">表格提交记录</h3>
+            @foreach (var item in ViewBag.records)
+            {
+                <p>第 @item.submits 次提交的表格：  @Html.ActionLink(item.name as string, "DownSubExcel", "Check", new { region = @ViewBag.name, times = @item.submits, Type = @item.Format, fileName = @item.name }, new { @class = "btn btn-default" })</p> 
+            }
+        </div>
+        <div class="col-md-8">
+            <h3 class="text-center">提交表格</h3>
+            <div class="row col-md-8 col-md-offset-2">
+                <div class="row">
+                    <h3 class="text-danger">@ErrorMessage</h3>
+                    <h5 class="text-success">你已经提交了 @ViewBag.submits 次表格</h5>
+                    @using (Html.BeginForm("FileUpload", "Check", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
+                        <div class="row">
+                            <label class="col-md-6">选择上传文件：</label>
+                            <input name="file" type="file" id="file" class="input-file col-md-6" />
+                        </div>
+                        <button class="btn btn-primary" name="Upload" type="submit">提交表格</button>
+                    }
                 </div>
-
             </div>
         </div>
     </div>
-</body>
-</html>
+</div>

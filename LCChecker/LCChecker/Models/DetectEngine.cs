@@ -23,7 +23,7 @@ namespace LCChecker.Models
 
             list.Add(new NoLessThanRowRule() { Column1Index = 5, Column2Index = 6 });
             list.Add(new SumRowRule() { SumColumnIndex = 6, ColumnIndices = new[] { 18, 23 } });
-            list.Add(new SumRowRule() { SumColumnIndex = 6, ColumnIndices = new[] { 13, 18, 23 } });
+            //list.Add(new SumRowRule() { SumColumnIndex = 6, ColumnIndices = new[] { 13, 18, 23 } });
             list.Add(new SumRowRule() { SumColumnIndex = 13, ColumnIndices = new[] { 14, 15 } });
             list.Add(new SumRowRule() { SumColumnIndex = 18, ColumnIndices = new[] { 19, 20 } });
             list.Add(new SumRowRule() { SumColumnIndex = 20, ColumnIndices = new[] { 21, 22 } });
@@ -225,9 +225,14 @@ namespace LCChecker.Models
                 }
             });
 
+
+
+
             list.Add(new CellEmptyRowRule() { ColumnIndex = 36, isEmpty = false, isNumeric = false });
 
             list.Add(new Format() { ColumnIndex = 35, form = "0.0" });
+
+
 
 
             foreach (var item in list)
@@ -358,16 +363,25 @@ namespace LCChecker.Models
         }
 
         
-
-        public bool Check(string summaryPath, string subPath,string summaryErrorExcel,string subErrorExcel,out string fault)
+        /*检查
+         * summaryPath 该区域的总表
+         * subPath 本次检查所提交的表格
+         * statusPath 将提交表格中正确的更新到总表之后，保存一份总表的副本
+         * summaryErrorExcel 检查更新之后，总表中还存在的错误
+         * subErrorExcel 检查提交表格之后，还存在的错误表格
+         * fault本次检查之后，可能发生的错误
+         */
+        public bool Check(string summaryPath, string subPath,string statusPath,string summaryErrorExcel,string subErrorExcel,out string fault)
         {
             Dictionary<string, int> summaryShip = new Dictionary<string, int>();
             string Mistakes=null;
+            /*检查总表*/
             if (!CheckExcel(summaryPath, ref Mistakes,ref summaryError,ref summaryShip))
             {
                 fault = Mistakes;
                 return false;
             }   
+            /*检查提交表格*/
             Dictionary<string, int> subShip = new Dictionary<string, int>();
             if (!CheckExcel(subPath, ref Mistakes,ref subError, ref subShip))
             {
@@ -419,6 +433,10 @@ namespace LCChecker.Models
                 fault = Mistakes;
                 return false;
             }
+            /*遍历提交表格中的每一行
+             * 根据检查出来的错误来判断该行正确与否
+             * 当该行正确的时候，假如总表中错误 则更新该行到总表  
+             */
             foreach (string item in subShip.Keys)
             {
                 if (subError.ContainsKey(item))
@@ -458,6 +476,7 @@ namespace LCChecker.Models
                 }
                
             }
+            /*更新总表*/
             try
             {
                 FileStream fs = new FileStream(summaryPath, FileMode.Open, FileAccess.Write);
@@ -470,6 +489,19 @@ namespace LCChecker.Models
                 fault = Mistakes;
                 return false;
             }
+            /*保存总表副本*/
+            try
+            {
+                FileStream fs = new FileStream(statusPath, FileMode.Create, FileAccess.Write);
+                summWorkbook.Write(fs);
+                fs.Close();
+            }
+            catch (Exception er)
+            {
+                fault = er.Message;
+                return false;
+            }
+            /*保存总表中存在错误的行*/
             if (!OutputError(summaryPath, summaryErrorExcel, summaryError,ref Mistakes))
             {
                 Mistakes = "保存总表错误失败；";
