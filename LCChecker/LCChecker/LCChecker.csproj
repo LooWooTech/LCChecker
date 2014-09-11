@@ -155,14 +155,11 @@
     <Compile Include="Rules\MultipleCellRangeRowRule.cs" />
     <Compile Include="Rules\NoLessThanRowRule.cs" />
     <Compile Include="Rules\SumRowRule.cs" />
-    <Compile Include="Rules\Type.cs" />
     <Compile Include="Rules\UniqueValueRowRule.cs" />
     <Compile Include="UploadHelper.cs" />
     <Compile Include="UserAuthorizeAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="bin\LCChecker.dll" />
-    <Content Include="bin\LCChecker.pdb" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -183,6 +180,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Content\bootstrap.css.map" />
+    <None Include="Properties\PublishProfiles\LCChecker.pubxml" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\jquery-2.1.1.js" />
@@ -201,35 +199,15 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Check\Index.cshtml" />
-    <Content Include="Views\Check\First.cshtml" />
-    <Content Include="Views\Check\Success.cshtml" />
-    <Content Include="Views\Check\Admin.cshtml" />
-    <Content Include="Views\Check\Region.cshtml" />
-    <Content Include="Views\Check\Check.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Scripts\jquery-2.1.1.min.map" />
-    <Content Include="Views\Base\Check.cshtml" />
-    <Content Include="Views\Base\First.cshtml" />
-    <Content Include="Views\Base\Success.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\User\Index.cshtml" />
     <Content Include="Views\User\Index2.cshtml" />
+    <Content Include="Views\Shared\_pagination.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
-    <Folder Include="obj\Debug\" />
-    <Folder Include="Uploads\丽水市\" />
-    <Folder Include="Uploads\台州市\" />
-    <Folder Include="Uploads\嘉兴市\" />
-    <Folder Include="Uploads\宁波市\" />
-    <Folder Include="Uploads\杭州市\" />
-    <Folder Include="Uploads\温州市\" />
-    <Folder Include="Uploads\湖州市\" />
-    <Folder Include="Uploads\绍兴市\" />
-    <Folder Include="Uploads\舟山市\" />
-    <Folder Include="Uploads\衢州市\" />
-    <Folder Include="Uploads\金华市\" />
+    <Folder Include="Uploads\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

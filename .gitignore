@@ -7,3 +7,6 @@
 /LCChecker/LCChecker/Uploads/衢州市
 /LCChecker/packages
 /LCChecker/LCChecker/ExcelTemplates
+/LCChecker/LCChecker/obj/Release/Package/PackageTmp
+/LCChecker/LCChecker/obj/Release
+*.user
