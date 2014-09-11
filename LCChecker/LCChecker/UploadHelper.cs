@@ -40,7 +40,7 @@ namespace LCChecker
         {
 
             var ext = Path.GetExtension(file.FileName);
-            if (ext != ".xls" || ext != "xlsx")
+            if (ext != ".xls" && ext != "xlsx")
             {
                 throw new ArgumentException("你上传的文件格式不对，目前支持.xls以及.xlsx格式的EXCEL表格");
             }

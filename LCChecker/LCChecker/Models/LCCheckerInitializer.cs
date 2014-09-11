@@ -24,17 +24,17 @@ namespace LCChecker.Models
             context.USER.Add(new User { Username = "zhoushan", City = City.舟山市, Password = "0580", Flag = false });
 
 
-            context.DETECT.Add(new Detect { region = "杭州市", sum = 0, submit = 0, Correct = 0, totalScale = 0, AddArea = 0, available = 0, flag = false });
-            context.DETECT.Add(new Detect { region = "湖州市", sum = 0, submit = 0, Correct = 0, totalScale = 0, AddArea = 0, available = 0, flag = false });
-            context.DETECT.Add(new Detect { region = "嘉兴市", sum = 0, submit = 0, Correct = 0, totalScale = 0, AddArea = 0, available = 0, flag = false });
-            context.DETECT.Add(new Detect { region = "宁波市", sum = 0, submit = 0, Correct = 0, totalScale = 0, AddArea = 0, available = 0, flag = false });
-            context.DETECT.Add(new Detect { region = "绍兴市", sum = 0, submit = 0, Correct = 0, totalScale = 0, AddArea = 0, available = 0, flag = false });
-            context.DETECT.Add(new Detect { region = "台州市", sum = 0, submit = 0, Correct = 0, totalScale = 0, AddArea = 0, available = 0, flag = false });
-            context.DETECT.Add(new Detect { region = "温州市", sum = 0, submit = 0, Correct = 0, totalScale = 0, AddArea = 0, available = 0, flag = false });
-            context.DETECT.Add(new Detect { region = "丽水市", sum = 0, submit = 0, Correct = 0, totalScale = 0, AddArea = 0, available = 0, flag = false });
-            context.DETECT.Add(new Detect { region = "金华市", sum = 0, submit = 0, Correct = 0, totalScale = 0, AddArea = 0, available = 0, flag = false });
-            context.DETECT.Add(new Detect { region = "舟山市", sum = 0, submit = 0, Correct = 0, totalScale = 0, AddArea = 0, available = 0, flag = false });
-            context.DETECT.Add(new Detect { region = "衢州市", sum = 0, submit = 0, Correct = 0, totalScale = 0, AddArea = 0, available = 0, flag = false });
+            //context.DETECT.Add(new Detect { region = "杭州市", sum = 0, submit = 0, Correct = 0, totalScale = 0, AddArea = 0, available = 0, flag = false });
+            //context.DETECT.Add(new Detect { region = "湖州市", sum = 0, submit = 0, Correct = 0, totalScale = 0, AddArea = 0, available = 0, flag = false });
+            //context.DETECT.Add(new Detect { region = "嘉兴市", sum = 0, submit = 0, Correct = 0, totalScale = 0, AddArea = 0, available = 0, flag = false });
+            //context.DETECT.Add(new Detect { region = "宁波市", sum = 0, submit = 0, Correct = 0, totalScale = 0, AddArea = 0, available = 0, flag = false });
+            //context.DETECT.Add(new Detect { region = "绍兴市", sum = 0, submit = 0, Correct = 0, totalScale = 0, AddArea = 0, available = 0, flag = false });
+            //context.DETECT.Add(new Detect { region = "台州市", sum = 0, submit = 0, Correct = 0, totalScale = 0, AddArea = 0, available = 0, flag = false });
+            //context.DETECT.Add(new Detect { region = "温州市", sum = 0, submit = 0, Correct = 0, totalScale = 0, AddArea = 0, available = 0, flag = false });
+            //context.DETECT.Add(new Detect { region = "丽水市", sum = 0, submit = 0, Correct = 0, totalScale = 0, AddArea = 0, available = 0, flag = false });
+            //context.DETECT.Add(new Detect { region = "金华市", sum = 0, submit = 0, Correct = 0, totalScale = 0, AddArea = 0, available = 0, flag = false });
+            //context.DETECT.Add(new Detect { region = "舟山市", sum = 0, submit = 0, Correct = 0, totalScale = 0, AddArea = 0, available = 0, flag = false });
+            //context.DETECT.Add(new Detect { region = "衢州市", sum = 0, submit = 0, Correct = 0, totalScale = 0, AddArea = 0, available = 0, flag = false });
         }
 
     }

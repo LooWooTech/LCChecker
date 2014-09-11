@@ -125,8 +125,6 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="AuthUtility.cs" />
     <Compile Include="Controllers\AdminController.cs" />
-    <Compile Include="Controllers\BaseController.cs" />
-    <Compile Include="Controllers\CheckController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ControllerBase.cs" />
     <Compile Include="Controllers\UserController.cs" />
@@ -145,6 +143,7 @@
     <Compile Include="Models\Project.cs" />
     <Compile Include="Models\RuleInfo.cs" />
     <Compile Include="Models\SubRecord.cs" />
+    <Compile Include="Models\Summary.cs" />
     <Compile Include="Models\UploadFile.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -214,21 +213,12 @@
     <Content Include="Views\Base\Success.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\User\Index.cshtml" />
+    <Content Include="Views\Shared\_pagination.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="obj\Debug\" />
-    <Folder Include="Uploads\丽水市\" />
-    <Folder Include="Uploads\台州市\" />
-    <Folder Include="Uploads\嘉兴市\" />
-    <Folder Include="Uploads\宁波市\" />
-    <Folder Include="Uploads\杭州市\" />
-    <Folder Include="Uploads\温州市\" />
-    <Folder Include="Uploads\湖州市\" />
-    <Folder Include="Uploads\绍兴市\" />
-    <Folder Include="Uploads\舟山市\" />
-    <Folder Include="Uploads\衢州市\" />
-    <Folder Include="Uploads\金华市\" />
+    <Folder Include="Uploads\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

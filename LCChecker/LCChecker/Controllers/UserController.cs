@@ -24,7 +24,7 @@ namespace LCChecker.Controllers
             if (page != null)
             {
                 page.RecordCount = query.Count();
-                query = query.Skip(page.PageSize * (page.PageIndex - 1)).Take(page.PageSize);
+                query = query.OrderBy(e => e.ID).Skip(page.PageSize * (page.PageIndex - 1)).Take(page.PageSize);
             }
 
             return query.ToList();
@@ -33,9 +33,25 @@ namespace LCChecker.Controllers
 
         public ActionResult Index(bool? result, int page = 1)
         {
+            var summary = new Summary
+            {
+                City = CurrentUser.City,
+                TotalCount = db.Projects.Count(e => e.City == CurrentUser.City),
+                SuccessCount = db.Projects.Count(e => e.City == CurrentUser.City && e.Result == true),
+                ErrorCount = db.Projects.Count(e => e.City == CurrentUser.City && e.Result == false),
+
+            };
+            //全部结束，进入第二阶段
+            if (summary.TotalCount == summary.SuccessCount)
+            {
+
+                return View("Index2");
+            }
+
             var paging = new Page(page);
             ViewBag.Projects = GetProjects(result, paging);
             ViewBag.Page = paging;
+            ViewBag.Summary = summary;
             return View();
         }
 

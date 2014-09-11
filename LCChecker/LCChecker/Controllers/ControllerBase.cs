@@ -26,5 +26,11 @@ namespace LCChecker.Controllers
         {
             get { return _db == null ? _db = new LCDbContext() : _db; }
         }
+
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            ViewBag.CurrentUser = CurrentUser;
+            base.OnActionExecuting(filterContext);
+        }
     }
 }

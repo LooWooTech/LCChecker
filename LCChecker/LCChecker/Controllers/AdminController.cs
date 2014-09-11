@@ -26,6 +26,13 @@ namespace LCChecker.Controllers
 
         public ActionResult Index()
         {
+            ViewBag.Summary = db.Projects.GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
+            {
+                TotalCount = g.Count(),
+                ErrorCount = g.Count(e => e.Result == false),
+                SuccessCount = g.Count(e => e.Result == true),
+                City = g.Key
+            });
             return View();
         }
 
@@ -38,21 +45,7 @@ namespace LCChecker.Controllers
         [HttpPost]
         public ActionResult UploadProjects()
         {
-            if (Request.Files.Count == 0)
-            {
-                throw new ArgumentException("请选择文件上传");
-            }
-
-            HttpPostedFileBase file = Request.Files[0];
-            string ext = Path.GetExtension(file.FileName);
-            if (ext != ".xls" || ext != "xlsx")
-            {
-                throw new ArgumentException("你上传的文件格式不对，目前支持.xls以及.xlsx格式的EXCEL表格");
-            }
-            if (file.ContentLength == 0 || file.ContentLength > 20971520)
-            {
-                throw new ArgumentException("你上传的文件数据太大或者没有");
-            }
+            var file = UploadHelper.GetPostedFile(HttpContext);
 
             var list = new List<Project>();
 
@@ -72,12 +65,12 @@ namespace LCChecker.Controllers
                 }
 
                 City city = 0;
-                
+
                 if (Enum.TryParse<City>(cityNames[1], out city))
                 {
                     list.Add(new Project
                     {
-                        ID = row.Cells[1].StringCellValue,
+                        ID = row.Cells[1].NumericCellValue.ToString(),
                         City = city
                     });
                 }
@@ -86,7 +79,7 @@ namespace LCChecker.Controllers
 
             AddProjects(list);
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "Admin");
         }
     }
 }

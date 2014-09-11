@@ -15,10 +15,12 @@ namespace LCChecker.Models
 
         public City City { get; set; }
 
+        [MaxLength(55)]
         public string FileName { get; set; }
 
         public DateTime CreateTime { get; set; }
 
+        [MaxLength(55)]
         public string SavePath { get; set; }
     }
 }

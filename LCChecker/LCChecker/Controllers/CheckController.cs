@@ -42,31 +42,31 @@ namespace LCChecker.Controllers
         //}
 
 
-        /*管理员*/
-        public ActionResult Admin()
-        {
-            return View(db.DETECT);
-        }
+        ///*管理员*/
+        //public ActionResult Admin()
+        //{
+        //    return View(db.DETECT);
+        //}
 
-        /*区域用户登录*/
-        public ActionResult Region(string regionName)
-        {
-            Detect record = db.DETECT.Where(x => x.region == regionName).FirstOrDefault();
-            if (record == null)
-            {
-                return RedirectToAction("Index");
-            }
-            ViewBag.submits = record.submit;
-            ViewBag.name = regionName;
-            if (record.flag)
-            {
-                return View("success");
-            }
-            else {
-                ViewBag.records = db.SUBRECORD.Where(x => x.regionId==record.Id).ToList();
-                return View();
-            }
-        }
+        ///*区域用户登录*/
+        //public ActionResult Region(string regionName)
+        //{
+        //    Detect record = db.DETECT.Where(x => x.region == regionName).FirstOrDefault();
+        //    if (record == null)
+        //    {
+        //        return RedirectToAction("Index");
+        //    }
+        //    ViewBag.submits = record.submit;
+        //    ViewBag.name = regionName;
+        //    if (record.flag)
+        //    {
+        //        return View("success");
+        //    }
+        //    else {
+        //        ViewBag.records = db.SUBRECORD.Where(x => x.regionId==record.Id).ToList();
+        //        return View();
+        //    }
+        //}
 
         /*用户上传文件*/
         [HttpPost]

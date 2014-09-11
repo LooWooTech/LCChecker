@@ -3,6 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LCChecker", "LCChecker\LCChecker.csproj", "{FEF714AB-89EC-41CE-97C0-2DAA51D02E3E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dbscripts", "dbscripts", "{788BD1B0-0356-4795-937A-5E3545AAA4F0}"
+	ProjectSection(SolutionItems) = preProject
+		dbscripts\lcchecker.sql = dbscripts\lcchecker.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

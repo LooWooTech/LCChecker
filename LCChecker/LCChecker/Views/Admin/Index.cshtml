@@ -1,0 +1,36 @@
+﻿@using LCChecker.Models
+@{
+    ViewBag.Title = "市区项目概况";
+    Dictionary<City, Summary> data = ViewBag.Summary;
+}
+<legend>导入错误项目</legend>
+<form class="form form-inline" method="post" enctype="multipart/form-data" action="/admin/uploadprojects">
+    <div class="input-group">
+        <span class="input-group-addon">选择项目文件</span>
+        <input type="file" name="file1" class="form-control" />
+        <div class="input-group-btn">
+            <button type="submit" class="btn btn-primary">上传</button>
+        </div>
+    </div>
+</form>
+<legend>项目统计</legend>
+<table class="table table-bordered">
+    <tr>
+        <th>市</th>
+        <th>项目总数</th>
+        <th>通过总数</th>
+        <th>失败总数</th>
+        <th>未上传数</th>
+    </tr>
+    @foreach (var kv in data)
+    {
+        var summary = kv.Value;
+        <tr>
+            <td>@(summary.City)</td>
+            <td>@(summary.TotalCount)</td>
+            <td>@(summary.SuccessCount)</td>
+            <td>@(summary.ErrorCount)</td>
+            <td>@(summary.UnCheckCount)</td>
+        </tr>
+    }
+</table>

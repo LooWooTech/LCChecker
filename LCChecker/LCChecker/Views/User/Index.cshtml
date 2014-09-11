@@ -1,3 +1,85 @@
-﻿@{
+﻿@using LCChecker.Models
+@{
     ViewBag.Title = "项目列表";
+    List<Project> list = ViewBag.Projects;
+    Summary summary = ViewBag.Summary;
 }
+<div>
+    <table class="table table-bordered">
+        <tr>
+            <th style="width:120px;">项目总数：</th>
+            <td>@(summary.TotalCount)</td>
+            <th style="width:120px;">检验通过总数：</th>
+            <td>@(summary.SuccessCount)</td>
+            <th style="width:120px;">未通过总数：</th>
+            <td>@(summary.ErrorCount)</td>
+            <th style="width:120px;">未上传总数：</th>
+            <td>@(summary.UnCheckCount)</td>
+        </tr>
+    </table>
+</div>
+<div style="clear: both; overflow: hidden; margin-bottom: 10px;">
+    <form class="form form-inline" style="float:right;">
+        <div class="input-group">
+            <span class="input-group-addon">过滤项目</span>
+            <div class="input-group-btn">
+                <select name="result" class="form-control">
+                    <option value="" @(Request.QueryString["result"] == "" ? "selected=selected" : "")>未上传</option>
+                    <option value="true" @(Request.QueryString["result"] == "true" ? "selected=selected" : "")>已通过</option>
+                    <option value="false" @(Request.QueryString["result"] == "false" ? "selected=selected" : "")>未通过</option>
+                </select>
+            </div>
+            <div class="input-group-btn">
+                <button type="submit" class="btn btn-primary">过滤</button>
+@*                <a href="/user/downloadProjects" class="btn btn-success">下载项目</a>*@
+            </div>
+        </div>
+    </form>
+    <form class="form form-inline" method="post" enctype="multipart/form-data" action="/user/uploadprojects" style="float:left;">
+        <div class="input-group">
+            <div class="input-group-btn">
+                <input type="file" name="file1" class="form-control" />
+            </div>
+            <div class="input-group-btn">
+                <button type="submit" class="btn btn-primary">上传项目</button>
+            </div>
+        </div>
+    </form>
+</div>
+<table class="table table-bordered">
+    <tr>
+        <th style="width: 150px">项目编号</th>
+        <th>项目名称</th>
+        <th style="width: 100px">检验结果</th>
+        <th>备注</th>
+    </tr>
+    @foreach (var project in list)
+    { 
+        <tr>
+            <td>@(project.ID)</td>
+            <td>@(project.Name)</td>
+            <td>@if (project.Result.HasValue)
+                {
+                    if (project.Result.Value)
+                    { 
+                <span class="label label-success">通过</span>
+                    }
+                    else
+                    {
+                <span class="label label-warning">失败</span>
+                    }
+                }
+                else
+                {
+                <span class="label label-default">未上传</span>
+                }
+            </td>
+            <td>@(project.Note)</td>
+        </tr>
+    }
+    <tr>
+        <td colspan="4">
+            @Html.Partial("_pagination", ViewBag.Page as object)
+        </td>
+    </tr>
+</table>
