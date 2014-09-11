@@ -34,5 +34,12 @@ namespace LCChecker.Controllers
             return RedirectToAction("Index", user.flag ? "Admin" : "User");
         }
 
+
+        public ActionResult Logout()
+        {
+            CurrentUser = null;
+            return RedirectToAction("Index");
+        }
+
     }
 }

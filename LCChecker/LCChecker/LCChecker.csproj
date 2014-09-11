@@ -150,6 +150,8 @@
     <Compile Include="UserAuthorizeAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="bin\LCChecker.dll" />
+    <Content Include="bin\LCChecker.pdb" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -196,9 +198,14 @@
     <Content Include="Views\Check\Check.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Scripts\jquery-2.1.1.min.map" />
+    <Content Include="Views\Base\Check.cshtml" />
+    <Content Include="Views\Base\First.cshtml" />
+    <Content Include="Views\Base\Success.cshtml" />
+    <Content Include="Views\Admin\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="obj\Debug\" />
     <Folder Include="Uploads\丽水市\" />
     <Folder Include="Uploads\台州市\" />
     <Folder Include="Uploads\嘉兴市\" />
