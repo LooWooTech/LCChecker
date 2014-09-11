@@ -70,8 +70,9 @@ namespace LCChecker.Controllers
                 {
                     list.Add(new Project
                     {
+                        City = city,
                         ID = row.Cells[1].NumericCellValue.ToString(),
-                        City = city
+                        Name = row.Cells[2].StringCellValue,
                     });
                 }
 
