@@ -50,6 +50,12 @@
       <HintPath>..\packages\NPOI.2.0.6\lib\net40\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="MySql.Data">
+      <HintPath>..\packages\MySql.Data.6.9.3\lib\net40\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data.Entity.EF6">
+      <HintPath>..\packages\MySql.Data.Entity.6.9.3\lib\net40\MySql.Data.Entity.EF6.dll</HintPath>
+    </Reference>
     <Reference Include="NPOI">
       <HintPath>..\packages\NPOI.2.0.6\lib\net40\NPOI.dll</HintPath>
     </Reference>
@@ -131,11 +137,15 @@
     <Compile Include="Models\City.cs" />
     <Compile Include="Models\Detect.cs" />
     <Compile Include="Models\DetectEngine.cs" />
-    <Compile Include="Models\LCCheckerInitializer.cs" />
+    <Compile Include="Models\LCCheckerInitializer.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Models\LCDbContext.cs" />
+    <Compile Include="Models\Page.cs" />
     <Compile Include="Models\Project.cs" />
     <Compile Include="Models\RuleInfo.cs" />
     <Compile Include="Models\SubRecord.cs" />
+    <Compile Include="Models\UploadFile.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rules\AndRule.cs" />
@@ -147,6 +157,7 @@
     <Compile Include="Rules\NoLessThanRowRule.cs" />
     <Compile Include="Rules\SumRowRule.cs" />
     <Compile Include="Rules\UniqueValueRowRule.cs" />
+    <Compile Include="UploadHelper.cs" />
     <Compile Include="UserAuthorizeAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -202,6 +213,7 @@
     <Content Include="Views\Base\First.cshtml" />
     <Content Include="Views\Base\Success.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
+    <Content Include="Views\User\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -10,18 +10,18 @@ namespace LCChecker.Models
     {
         protected override void Seed(LCDbContext context)
         {
-            context.USER.Add(new User { logName = "admin", name = "管理员", password = "admin", flag = true });
-            context.USER.Add(new User { logName = "quzhou", name = "衢州市", password = "0570", flag = false });
-            context.USER.Add(new User { logName = "hangzhou", name = "杭州市", password = "0571", flag = false });
-            context.USER.Add(new User { logName = "huzhou", name = "湖州市", password = "0572", flag = false });
-            context.USER.Add(new User { logName = "jiaxin", name = "嘉兴市", password = "0573", flag = false });
-            context.USER.Add(new User { logName = "ningbo", name = "宁波市", password = "0574", flag = false });
-            context.USER.Add(new User { logName = "shaoxing", name = "绍兴市", password = "0575", flag = false });
-            context.USER.Add(new User { logName = "taizhou", name = "台州市", password = "0576", flag = false });
-            context.USER.Add(new User { logName = "wenzhou", name = "温州市", password = "0577", flag = false });
-            context.USER.Add(new User { logName = "lishui", name = "丽水市", password = "0578", flag = false });
-            context.USER.Add(new User { logName = "jinhua", name = "金华市", password = "0579", flag = false });
-            context.USER.Add(new User { logName = "zhoushan", name = "舟山市", password = "0580", flag = false });
+            context.USER.Add(new User { Username = "admin", City = City.浙江省, Password = "admin", Flag = true });
+            context.USER.Add(new User { Username = "quzhou", City = City.衢州市, Password = "0570", Flag = false });
+            context.USER.Add(new User { Username = "hangzhou", City = City.杭州市, Password = "0571", Flag = false });
+            context.USER.Add(new User { Username = "huzhou", City = City.湖州市, Password = "0572", Flag = false });
+            context.USER.Add(new User { Username = "jiaxin", City = City.嘉兴市, Password = "0573", Flag = false });
+            context.USER.Add(new User { Username = "ningbo", City = City.宁波市, Password = "0574", Flag = false });
+            context.USER.Add(new User { Username = "shaoxing", City = City.绍兴市, Password = "0575", Flag = false });
+            context.USER.Add(new User { Username = "taizhou", City = City.台州市, Password = "0576", Flag = false });
+            context.USER.Add(new User { Username = "wenzhou", City = City.温州市, Password = "0577", Flag = false });
+            context.USER.Add(new User { Username = "lishui", City = City.丽水市, Password = "0578", Flag = false });
+            context.USER.Add(new User { Username = "jinhua", City = City.金华市, Password = "0579", Flag = false });
+            context.USER.Add(new User { Username = "zhoushan", City = City.舟山市, Password = "0580", Flag = false });
 
 
             context.DETECT.Add(new Detect { region = "杭州市", sum = 0, submit = 0, Correct = 0, totalScale = 0, AddArea = 0, available = 0, flag = false });

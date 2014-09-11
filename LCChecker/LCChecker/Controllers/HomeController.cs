@@ -17,13 +17,13 @@ namespace LCChecker.Controllers
         [HttpPost]
         public ActionResult Login(string username, string password)
         {
-            var user = db.USER.FirstOrDefault(e => e.name.ToLower() == username.ToLower());
+            var user = db.USER.FirstOrDefault(e => e.Username.ToLower() == username.ToLower());
             if (user == null)
             {
                 throw new ArgumentException("用户不存在");
             }
 
-            if (user.password != password)
+            if (user.Password != password)
             {
                 throw new ArgumentException("密码不正确");
             }
@@ -31,7 +31,7 @@ namespace LCChecker.Controllers
             CurrentUser = user;
 
 
-            return RedirectToAction("Index", user.flag ? "Admin" : "User");
+            return RedirectToAction("Index", user.Flag ? "Admin" : "User");
         }
 
 

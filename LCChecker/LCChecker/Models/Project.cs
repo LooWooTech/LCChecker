@@ -9,18 +9,16 @@ namespace LCChecker.Models
 {
     public class Project
     {
-        [Key]
-        [DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
-
         /// <summary>
         /// 项目编号
         /// </summary>
-        [Required]
-        public string NO { get; set; }
+        [Key]
+        public string ID { get; set; }
 
         [Column("CityID", TypeName = "INT")]
         public City City { get; set; }
+
+        public string Name { get; set; }
 
         /// <summary>
         /// 检查结果

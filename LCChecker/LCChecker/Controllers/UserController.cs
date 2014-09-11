@@ -12,9 +12,20 @@ namespace LCChecker.Controllers
     [UserAuthorize]
     public class UserController : ControllerBase
     {
-        private List<Project> GetProjects()
+        private List<Project> GetProjects(bool? result = null, Page page = null)
         {
             var query = db.Projects.Where(e => e.City == CurrentUser.City);
+
+            if (result.HasValue)
+            {
+                query = query.Where(e => e.Result == result.Value);
+            }
+
+            if (page != null)
+            {
+                page.RecordCount = query.Count();
+                query = query.Skip(page.PageSize * (page.PageIndex - 1)).Take(page.PageSize);
+            }
 
             return query.ToList();
         }
@@ -22,87 +33,64 @@ namespace LCChecker.Controllers
 
         public ActionResult Index(bool? result, int page = 1)
         {
-
-            ViewBag.Projects = GetProjects();
-
+            var paging = new Page(page);
+            ViewBag.Projects = GetProjects(result, paging);
+            ViewBag.Page = paging;
             return View();
         }
 
-        /*用户上传文件*/
-        [HttpPost]
-        public ActionResult FileUpload(FormCollection form)
+        /// <summary>
+        /// 下载未完成和错误的Project模板
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult DownloadProjects()
         {
-            if (Request.Files.Count == 0)
+            var list = db.Projects.Where(e => e.Result != null).ToList();
+            return View();
+        }
+
+        /// <summary>
+        /// 上传一部分项目，验证并更新到Project
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult UploadProjects(FormCollection form)
+        {
+            var file = UploadHelper.GetPostedFile(HttpContext);
+
+            var filePath = UploadHelper.UploadExcel(file);
+
+            var uploadFile = new UploadFile
             {
-                throw new ArgumentException("请选择文件上传");
+                City = CurrentUser.City,
+                CreateTime = DateTime.Now,
+                FileName = file.FileName,
+                SavePath = filePath
+            };
+
+            db.Files.Add(uploadFile);
+
+            db.SaveChanges();
+
+            //上传成功后跳转到check页面进行检查，参数是File的ID
+            return RedirectToAction("Check", new { id = uploadFile.ID });
+        }
+
+        public ActionResult Check(int id)
+        {
+            var file = db.Files.FirstOrDefault(e => e.ID == id);
+            if (file == null)
+            {
+                throw new ArgumentException("参数错误");
             }
 
-            HttpPostedFileBase file = Request.Files[0];
-            string ext = Path.GetExtension(file.FileName);
-            if (ext != ".xls" || ext != "xlsx")
-            {
-                throw new ArgumentException("你上传的文件格式不对，目前支持.xls以及.xlsx格式的EXCEL表格");
-            }
-            if (file.ContentLength == 0 || file.ContentLength > 20971520)
-            {
-                throw new ArgumentException("你上传的文件数据太大或者没有");
-            }
-            string filePath = null;
-            Detect record = db.DETECT.FirstOrDefault(x => x.region == CurrentUser.name);
-            if (record == null)
-            {
-                record = new Detect() { submit = 1, region = CurrentUser.name };
-                db.DETECT.Add(record);
-                db.SaveChanges();
-            }
-            else {
-                record.submit++;
-                db.Entry(record).State = EntityState.Modified;
-                db.SaveChanges();
-            }
-            if (ext == ".xls")
-            {
-                filePath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + CurrentUser.name + "/" + record.submit), "NO" + record.submit + ".xls");
-            }
-            else
-            {
-                filePath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + CurrentUser.name + "/" + record.submit), "NO" + record.submit + ".xlsx");
-            }
-            string Catalogue = HttpContext.Server.MapPath("../Uploads/" + CurrentUser.name + "/" + record.submit);
-            if (!Directory.Exists(Catalogue))
-            {
-                try
-                {
-                    Directory.CreateDirectory(Catalogue);
-                }
-                catch 
-                {
-                    throw new ArgumentException("创建目录失败");
-                }
-            }
-            try
-            {
-                FileStream fs = new FileStream(filePath, FileMode.Create);
-                fs.Close();
-            }
-            catch (Exception er)
-            {
-                throw new ArgumentException(er.Message);
-            }
-            file.SaveAs(filePath);
-            SubRecord submitem = new SubRecord();
-            submitem.Format = ext;
-            submitem.regionId = record.Id;
-            submitem.name = file.FileName;
-            submitem.submits = record.submit;
-            if (ModelState.IsValid)
-            {
-                db.SUBRECORD.Add(submitem);
-                db.SaveChanges();
-            }
-            return RedirectToAction("");
+            var filePath = file.SavePath;
+            //读取文件进行检查
 
-            //return View();
+            //检查完毕，更新Projects
+
+            return RedirectToAction("Index?result=false");
         }
     }
 }

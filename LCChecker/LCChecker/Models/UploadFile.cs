@@ -7,20 +7,18 @@ using System.Web;
 
 namespace LCChecker.Models
 {
-    public class User
+    public class UploadFile
     {
         [Key]
         [DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
-        [Column("Username")]
-        public string Username { get; set; }
-
-        public string Password { get; set; }
-
-        public bool Flag { get; set; }
-
-        [Column("CityID", TypeName = "INT")]
         public City City { get; set; }
+
+        public string FileName { get; set; }
+
+        public DateTime CreateTime { get; set; }
+
+        public string SavePath { get; set; }
     }
 }

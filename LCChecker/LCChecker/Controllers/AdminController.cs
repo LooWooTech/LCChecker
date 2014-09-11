@@ -1,4 +1,5 @@
 ﻿using LCChecker.Models;
+using NPOI.HSSF.UserModel;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,12 +12,24 @@ namespace LCChecker.Controllers
     [UserAuthorize]
     public class AdminController : ControllerBase
     {
+        private void AddProjects(List<Project> list)
+        {
+            foreach (var item in list)
+            {
+                if (!db.Projects.Any(e => e.ID == item.ID))
+                {
+                    db.Projects.Add(item);
+                }
+                db.SaveChanges();
+            }
+        }
+
         public ActionResult Index()
         {
-            
-           
             return View();
         }
+
+
 
         /// <summary>
         /// 上传总表数据
@@ -40,38 +53,40 @@ namespace LCChecker.Controllers
             {
                 throw new ArgumentException("你上传的文件数据太大或者没有");
             }
-            string Catalogue = HttpContext.Server.MapPath("../Uploads/" + CurrentUser.name);
-            if (!Directory.Exists(Catalogue))
+
+            var list = new List<Project>();
+
+            var excel = new HSSFWorkbook(file.InputStream);
+            var sheet = excel.GetSheetAt(0);
+            for (var i = 1; i < sheet.LastRowNum; i++)
             {
-                try
+                var row = sheet.GetRow(i);
+                if (string.IsNullOrEmpty(row.Cells[0].StringCellValue))
                 {
-                    Directory.CreateDirectory(Catalogue);
+                    continue;
                 }
-                catch 
+                var cityNames = row.Cells[0].StringCellValue.Split(',');
+                if (cityNames.Length < 2)
                 {
-                    throw new ArgumentException("创建目录失败");
+                    continue;
                 }
+
+                City city = 0;
+                
+                if (Enum.TryParse<City>(cityNames[1], out city))
+                {
+                    list.Add(new Project
+                    {
+                        ID = row.Cells[1].StringCellValue,
+                        City = city
+                    });
+                }
+
             }
-            string filePath = null; 
-            if (ext == ".xls")
-            {
-                filePath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + CurrentUser.name ), "Summary.xls");
-            }
-            else
-            {
-                filePath = Path.Combine(HttpContext.Server.MapPath("../Uploads/" + CurrentUser.name ), "Summary.xlsx");
-            }
-            try
-            {
-                FileStream fs = new FileStream(filePath, FileMode.Create);
-                fs.Close();
-            }
-            catch (Exception er)
-            {
-                throw new ArgumentException(er.Message);
-            }
-            file.SaveAs(filePath);
-            return View();
+
+            AddProjects(list);
+
+            return RedirectToAction("Index");
         }
     }
 }

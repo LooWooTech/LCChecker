@@ -24,22 +24,22 @@ namespace LCChecker.Controllers
             return View();
         }
 
-        [HttpPost]
-        public ActionResult Index(User user)
-        {
-            User logOne = db.USER.Where(x => x.logName == user.logName && x.password == user.password).FirstOrDefault();
-            if (logOne == null)
-            {
-                return View();
-            }
-            Session["id"] = logOne.id;
-            Session["name"] = logOne.name;
-            if (logOne.flag)
-            {
-                return RedirectToAction("Admin");
-            }
-            return RedirectToAction("Region", new { regionName=logOne.name});
-        }
+        //[HttpPost]
+        //public ActionResult Index(User user)
+        //{
+        //    User logOne = db.USER.Where(x => x.logName == user.logName && x.Password == user.Password).FirstOrDefault();
+        //    if (logOne == null)
+        //    {
+        //        return View();
+        //    }
+        //    Session["id"] = logOne.ID;
+        //    Session["name"] = logOne.Username;
+        //    if (logOne.Flag)
+        //    {
+        //        return RedirectToAction("Admin");
+        //    }
+        //    return RedirectToAction("Region", new { regionName=logOne.Username});
+        //}
 
 
         /*管理员*/

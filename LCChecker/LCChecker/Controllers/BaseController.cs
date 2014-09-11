@@ -177,12 +177,12 @@ namespace LCChecker.Controllers
             {
                 return Redirect("/Check/Index");
             }
-            if (log.flag)
+            if (log.Flag)
             {
                 return Redirect("/Check/Admin");
             }
             else {
-                return RedirectToAction("Region", "Check", new { regionName = log.name });
+                return RedirectToAction("Region", "Check", new { regionName = log.Username });
             }
 
         }

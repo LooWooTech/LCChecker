@@ -1,4 +1,5 @@
 ﻿using LCChecker.Models;
+using System;
 using System.Data.Entity;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -12,6 +13,8 @@ namespace LCChecker
     {
         protected void Application_Start()
         {
+
+
             //Database.SetInitializer(new LCCheckerInitializer());
             AreaRegistration.RegisterAllAreas();
 
