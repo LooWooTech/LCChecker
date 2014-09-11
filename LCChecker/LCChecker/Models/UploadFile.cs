@@ -13,6 +13,7 @@ namespace LCChecker.Models
         [DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
+        [Column("CityID")]
         public City City { get; set; }
 
         [MaxLength(55)]
@@ -22,5 +23,7 @@ namespace LCChecker.Models
 
         [MaxLength(55)]
         public string SavePath { get; set; }
+
+
     }
 }

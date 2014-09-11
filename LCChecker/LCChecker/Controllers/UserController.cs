@@ -20,7 +20,9 @@ namespace LCChecker.Controllers
             {
                 query = query.Where(e => e.Result == result.Value);
             }
-
+            else {
+                query = query.Where(e => e.Result == null);
+            }
             if (page != null)
             {
                 page.RecordCount = query.Count();
@@ -88,7 +90,6 @@ namespace LCChecker.Controllers
             db.Files.Add(uploadFile);
 
             db.SaveChanges();
-
             //上传成功后跳转到check页面进行检查，参数是File的ID
             return RedirectToAction("Check", new { id = uploadFile.ID });
         }
@@ -101,7 +102,7 @@ namespace LCChecker.Controllers
                 throw new ArgumentException("参数错误");
             }
 
-            var filePath = file.SavePath;
+            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,file.SavePath);
             //读取文件进行检查
             Dictionary<string, List<string>> Error = new Dictionary<string, List<string>>();
             Dictionary<string, int> ship = new Dictionary<string, int>();
@@ -115,21 +116,27 @@ namespace LCChecker.Controllers
             var projects = db.Projects.Where(x => x.City == CurrentUser.City).ToList();
             foreach (var item in projects)
             {
-                if (item.Result==true)
-                    continue;
-                if (Error.ContainsKey(item.ID))
+                if (ship.ContainsKey(item.ID))
                 {
-                    item.Note = "";
-                    foreach (var Message in Error[item.ID])
+                    if (Error.ContainsKey(item.ID))
                     {
-                        item.ID += Message + "；";
+                        item.Note = "";
+                        item.Result = false;
+                        foreach (var Message in Error[item.ID])
+                        {
+                            item.Note += Message + "；";
+                        }           
+                    }
+                    else {
+                        item.Result = true;
+                        item.Note = "";
                     }
                     db.Entry(item).State = EntityState.Modified;
                     db.SaveChanges();
                 }
             }
 
-            return RedirectToAction("Index?result=false");
+            return RedirectToAction("Index", new { result=false});
         }
     }
 }

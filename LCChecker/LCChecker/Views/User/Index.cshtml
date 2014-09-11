@@ -31,7 +31,7 @@
             </div>
             <div class="input-group-btn">
                 <button type="submit" class="btn btn-primary">过滤</button>
-@*                <a href="/user/downloadProjects" class="btn btn-success">下载项目</a>*@
+                @*                <a href="/user/downloadProjects" class="btn btn-success">下载项目</a>*@
             </div>
         </div>
     </form>
@@ -54,28 +54,29 @@
         <th>备注</th>
     </tr>
     @foreach (var project in list)
-    { 
+    {
         <tr>
             <td>@(project.ID)</td>
             <td>@(project.Name)</td>
-            <td>@if (project.Result.HasValue)
+            <td>
+                @if (project.Result.HasValue)
                 {
                     if (project.Result.Value)
-                    { 
-                <span class="label label-success">通过</span>
+                    {
+                        <span class="label label-success">通过</span>
                     }
                     else
                     {
-                <span class="label label-warning">失败</span>
+                        <span class="label label-warning">失败</span>
                     }
                 }
                 else
                 {
-                <span class="label label-default">未上传</span>
+                    <span class="label label-default">未上传</span>
                 }
-            </td>
-            <td>@(project.Note)</td>
-        </tr>
+        </td>
+        <td>@(project.Note)</td>
+    </tr>
     }
     <tr>
         <td colspan="4">

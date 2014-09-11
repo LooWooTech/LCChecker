@@ -18,10 +18,12 @@ namespace LCChecker.Rules
         public UniqueValueRowRule(string summary)
         {
             IWorkbook workbook = null;
+            //string SummaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, summary);
             try
             {
                 FileStream fs = new FileStream(summary, FileMode.Open, FileAccess.Read);
                 workbook = WorkbookFactory.Create(fs);
+                fs.Close();
             }
             catch
             {

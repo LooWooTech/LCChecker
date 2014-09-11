@@ -9,7 +9,7 @@ namespace LCChecker
 {
     public class UploadHelper
     {
-        private static string UploadDirectory = "/Uploads/";
+        private static string UploadDirectory = "Uploads/";
 
         private static string GetAbsoluteUploadDirectory(string fileName)
         {
@@ -24,14 +24,22 @@ namespace LCChecker
             }
 
             HttpPostedFileBase file = null;
-            foreach (HttpPostedFileBase file1 in context.Request.Files)
+            for (var i = 0; i < context.Request.Files.Count; i++)
             {
-                if (file1.ContentLength > 0)
+                file = context.Request.Files[i];
+                if (file.ContentLength > 0)
                 {
-                    file = file1;
                     break;
                 }
             }
+                //foreach (HttpPostedFileBase file1 in context.Request.Files)
+                //{
+                //    if (file1.ContentLength > 0)
+                //    {
+                //        file = file1;
+                //        break;
+                //    }
+                //}
             return file;
         }
 
@@ -40,7 +48,7 @@ namespace LCChecker
         {
 
             var ext = Path.GetExtension(file.FileName);
-            if (ext != ".xls" && ext != "xlsx")
+            if (ext != ".xls" && ext != ".xlsx")
             {
                 throw new ArgumentException("你上传的文件格式不对，目前支持.xls以及.xlsx格式的EXCEL表格");
             }
