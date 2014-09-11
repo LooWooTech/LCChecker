@@ -27,7 +27,6 @@ namespace LCChecker.Models
 
             list.Add(new NoLessThanRowRule() { Column1Index = 5, Column2Index = 6 });
             list.Add(new SumRowRule() { SumColumnIndex = 6, ColumnIndices = new[] { 18, 23 } });
-            //list.Add(new SumRowRule() { SumColumnIndex = 6, ColumnIndices = new[] { 13, 18, 23 } });
             list.Add(new SumRowRule() { SumColumnIndex = 13, ColumnIndices = new[] { 14, 15 } });
             list.Add(new SumRowRule() { SumColumnIndex = 18, ColumnIndices = new[] { 19, 20 } });
             list.Add(new SumRowRule() { SumColumnIndex = 20, ColumnIndices = new[] { 21, 22 } });
@@ -40,18 +39,18 @@ namespace LCChecker.Models
 
             list.Add(new CellRangeRowRule() { ColumnIndex = 7, Values = new[] { "是", "否" } });
 
-            //list.Add(new ConditionalRowRule()
-            //{
-            //    Condition = new CellEmptyRowRule() { ColumnIndex = 17, isEmpty = false, isNumeric = false },
-            //    Rule = new CellEmptyRowRule() { ColumnIndex = 18, isEmpty = true, isNumeric = true }
-            //});
+            list.Add(new ConditionalRowRule()
+            {
+                Condition = new CellEmptyRowRule() { ColumnIndex = 17, isEmpty = false, isNumeric = false },
+                Rule = new CellEmptyRowRule() { ColumnIndex = 18, isEmpty = true, isNumeric = true }
+            });
 
 
-            //list.Add(new ConditionalRowRule()
-            //{
-            //    Condition = new CellEmptyRowRule() { ColumnIndex = 17, isEmpty = true, isNumeric = false },
-            //    Rule = new CellEmptyRowRule() { ColumnIndex = 18, isEmpty = false, isNumeric = true }
-            //});
+            list.Add(new ConditionalRowRule()
+            {
+                Condition = new CellEmptyRowRule() { ColumnIndex = 17, isEmpty = true, isNumeric = false },
+                Rule = new CellEmptyRowRule() { ColumnIndex = 18, isEmpty = false, isNumeric = true }
+            });
 
 
             list.Add(new UniqueValueRowRule(region) { ColumnIndex = 3, Keyword = "综合整治" });
@@ -230,10 +229,29 @@ namespace LCChecker.Models
                 }
             });
 
+            //项目类型为2007年前土地整理、土地复垦等项目  第19栏、第28栏、第29栏至少有一栏填写
+            list.Add(new ConditionalRowRule()
+            {
+                Condition = new ProjectType() { Time = 2007, Variety = new[] { "整理", "复垦" } },
+                Rule = new MultipleCellRangeRowRule()
+                {
+                    ColumnIndices = new[] { 18, 27, 28 },
+                    isAny = true,
+                    isEmpty = false,
+                    isNumeric = false
+                }
+            });
+            //项目为2007以后验收土地整理项目  第9栏只能填写 1 ，2 类型
+            list.Add(new ConditionalRowRule()
+            {
+                Condition = new Arrange() { Time = 2007, Variety = "整理" },
+                Rule = new CellRangeRowRule()
+                {
+                    ColumnIndex = 8,
+                    Values = new[] { "1、调剂出项目对方指标使用有误", "2、本县自行补充(含尚未调剂出)项目有误" }
+                }
+            });
 
-
-
-           // list.Add(new CellEmptyRowRule() { ColumnIndex = 36, isEmpty = false, isNumeric = false });
 
             list.Add(new Format() { ColumnIndex = 35, form = "0.0" });
 
@@ -254,7 +272,7 @@ namespace LCChecker.Models
          * ErrorMessage 检查表格中的错误
          *  relatship 表格中每行中的编号对应的行号关系
          */
-        public bool CheckExcel(string Path,ref string mistakes,ref Dictionary<string,List<string>> ErrorMessage,ref Dictionary<string,int> relatship)
+        public bool CheckExcel(string Path, ref string mistakes, ref Dictionary<string, List<string>> ErrorMessage, ref Dictionary<string, int> relatship)
         {
             IWorkbook workbook;
             try
@@ -269,7 +287,7 @@ namespace LCChecker.Models
                 return false;
             }
             ISheet sheet = workbook.GetSheetAt(0);
-            int startRow=0,startCell=0;
+            int startRow = 0, startCell = 0;
             if (!FindHeader(sheet, ref startRow, ref startCell))
             {
                 mistakes = "未找到表格：" + Path + "的表头";
@@ -287,7 +305,7 @@ namespace LCChecker.Models
                 relatship.Add(value, y);
                 foreach (var item in rules)
                 {
-                    if (!item.Rule.Check(row,startCell))
+                    if (!item.Rule.Check(row, startCell))
                     {
                         RowError.Add(item.Rule.Name);
                     }
@@ -297,7 +315,7 @@ namespace LCChecker.Models
                     ErrorMessage.Add(value, RowError);
                 }
             }
-                return true;
+            return true;
         }
 
 
@@ -308,7 +326,7 @@ namespace LCChecker.Models
          * 错误信息：ErrorInformation
          * 生成表格  过程中错误的信息 mistakes
          */
-        public bool OutputError(string FilePath,string resultPath, Dictionary<string, List<string>> ErrorInformation,ref string mistakes)
+        public bool OutputError(string FilePath, string resultPath, Dictionary<string, List<string>> ErrorInformation, ref string mistakes)
         {
             IWorkbook workbook;
             try
@@ -323,13 +341,13 @@ namespace LCChecker.Models
                 return false;
             }
             ISheet sheet = workbook.GetSheetAt(0);
-            int startRow = 0,startCell=0;
+            int startRow = 0, startCell = 0;
             if (!FindHeader(sheet, ref startRow, ref startCell))
             {
                 mistakes = "未找到表头";
                 return false;
             }
-            int i = startRow+1;
+            int i = startRow + 1;
             IRow row = sheet.GetRow(i);
             int MaxRow = sheet.LastRowNum;
             while (row != null)
@@ -339,8 +357,9 @@ namespace LCChecker.Models
                 {
                     row = sheet.GetRow(++i);
                 }
-                else {
-                    sheet.ShiftRows(i+1, MaxRow, -1);
+                else
+                {
+                    sheet.ShiftRows(i + 1, MaxRow, -1);
                     row = sheet.GetRow(i);
                 }
             }
@@ -359,7 +378,7 @@ namespace LCChecker.Models
             return true;
         }
 
-        
+
         /*检查
          * summaryPath 该区域的总表
          * subPath 本次检查所提交的表格
@@ -368,54 +387,56 @@ namespace LCChecker.Models
          * subErrorExcel 检查提交表格之后，还存在的错误表格
          * fault本次检查之后，可能发生的错误
          */
-        public bool Check(string summaryPath, string subPath,string statusPath,string summaryErrorExcel,string subErrorExcel,out string fault)
+        public bool Check(string summaryPath, string subPath, string statusPath, string summaryErrorExcel, string subErrorExcel, out string fault)
         {
             Dictionary<string, int> summaryShip = new Dictionary<string, int>();
-            string Mistakes=null;
+            string Mistakes = null;
             /*检查总表*/
-            if (!CheckExcel(summaryPath, ref Mistakes,ref summaryError,ref summaryShip))
-            {
-                fault = Mistakes;
-                return false;
-            }   
-            /*检查提交表格*/
-            Dictionary<string, int> subShip = new Dictionary<string, int>();
-            if (!CheckExcel(subPath, ref Mistakes,ref subError, ref subShip))
+            if (!CheckExcel(summaryPath, ref Mistakes, ref summaryError, ref summaryShip))
             {
                 fault = Mistakes;
                 return false;
             }
-            if (!OutputError(subPath,subErrorExcel, subError,ref Mistakes))
+            /*检查提交表格*/
+            Dictionary<string, int> subShip = new Dictionary<string, int>();
+            if (!CheckExcel(subPath, ref Mistakes, ref subError, ref subShip))
+            {
+                fault = Mistakes;
+                return false;
+            }
+            if (!OutputError(subPath, subErrorExcel, subError, ref Mistakes))
             {
                 fault = Mistakes;
                 return false;
             }
             IWorkbook summWorkbook;
-            try {
+            try
+            {
                 FileStream fs = new FileStream(summaryPath, FileMode.Open, FileAccess.Read);
                 summWorkbook = WorkbookFactory.Create(fs);
                 fs.Close();
             }
-            catch(Exception er)
+            catch (Exception er)
             {
                 Mistakes = er.Message;
                 fault = Mistakes;
                 return false;
             }
             IWorkbook subWorkbook;
-            try{
-                FileStream fs=new FileStream(subPath,FileMode.Open,FileAccess.Read);
-                subWorkbook=WorkbookFactory.Create(fs);
+            try
+            {
+                FileStream fs = new FileStream(subPath, FileMode.Open, FileAccess.Read);
+                subWorkbook = WorkbookFactory.Create(fs);
                 fs.Close();
             }
-            catch(Exception er)
+            catch (Exception er)
             {
-                Mistakes=er.Message;
+                Mistakes = er.Message;
                 fault = Mistakes;
                 return false;
             }
-            ISheet summsheet=summWorkbook.GetSheetAt(0);
-            ISheet subsheet=subWorkbook.GetSheetAt(0);
+            ISheet summsheet = summWorkbook.GetSheetAt(0);
+            ISheet subsheet = subWorkbook.GetSheetAt(0);
             int sumStartRow = 0, sumStartCell = 0;
             if (!FindHeader(summsheet, ref sumStartRow, ref sumStartCell))
             {
@@ -445,7 +466,7 @@ namespace LCChecker.Models
 
                     IRow summRow = summsheet.GetRow(summRowNumber);
                     IRow subRow = subsheet.GetRow(subRowNumber);
-                    
+
                     int subMaxCellNum = subRow.LastCellNum;
                     for (int x1 = subStartCell, x2 = sumStartCell; x1 <= subMaxCellNum; x1++, x2++)
                     {
@@ -454,7 +475,7 @@ namespace LCChecker.Models
                             continue;
                         ICell sumCell = summRow.GetCell(x2);
                         if (sumCell == null)
-                            sumCell = summRow.CreateCell(x2,subCell.CellType);
+                            sumCell = summRow.CreateCell(x2, subCell.CellType);
                         switch (subCell.CellType)
                         {
                             case CellType.Boolean:
@@ -471,7 +492,7 @@ namespace LCChecker.Models
                     }
                     summaryError.Remove(item);
                 }
-               
+
             }
             /*更新总表*/
             try
@@ -499,7 +520,7 @@ namespace LCChecker.Models
                 return false;
             }
             /*保存总表中存在错误的行*/
-            if (!OutputError(summaryPath, summaryErrorExcel, summaryError,ref Mistakes))
+            if (!OutputError(summaryPath, summaryErrorExcel, summaryError, ref Mistakes))
             {
                 Mistakes = "保存总表错误失败；";
                 fault = Mistakes;
