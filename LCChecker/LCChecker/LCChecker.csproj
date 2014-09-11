@@ -148,14 +148,15 @@
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rules\AndRule.cs" />
+    <Compile Include="Rules\Arrange.cs" />
     <Compile Include="Rules\CellEmptyRowRule.cs" />
     <Compile Include="Rules\CellRangeRowRule.cs" />
     <Compile Include="Rules\ConditionalRowRule.cs" />
     <Compile Include="Rules\Format.cs" />
     <Compile Include="Rules\MultipleCellRangeRowRule.cs" />
     <Compile Include="Rules\NoLessThanRowRule.cs" />
+    <Compile Include="Rules\ProjectType.cs" />
     <Compile Include="Rules\SumRowRule.cs" />
-    <Compile Include="Rules\Type.cs" />
     <Compile Include="Rules\UniqueValueRowRule.cs" />
     <Compile Include="UploadHelper.cs" />
     <Compile Include="UserAuthorizeAttribute.cs" />
