@@ -1,5 +1,7 @@
 ﻿using LCChecker.Models;
 using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -49,9 +51,18 @@ namespace LCChecker.Controllers
 
             var list = new List<Project>();
 
-            var excel = new HSSFWorkbook(file.InputStream);
+            IWorkbook excel=null;
+            var ext = Path.GetExtension(file.FileName);
+            if (ext == ".xls")
+            {
+                excel = new HSSFWorkbook(file.InputStream);
+            }
+            else {
+                excel = new XSSFWorkbook(file.InputStream);
+            }
+            //var excel = new HSSFWorkbook(file.InputStream);
             var sheet = excel.GetSheetAt(0);
-            for (var i = 1; i < sheet.LastRowNum; i++)
+            for (var i = 1; i <= sheet.LastRowNum; i++)
             {
                 var row = sheet.GetRow(i);
                 if (string.IsNullOrEmpty(row.Cells[0].StringCellValue))
