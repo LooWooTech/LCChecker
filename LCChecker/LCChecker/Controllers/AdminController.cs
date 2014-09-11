@@ -72,7 +72,7 @@ namespace LCChecker.Controllers
                 }
 
                 City city = 0;
-                
+
                 if (Enum.TryParse<City>(cityNames[1], out city))
                 {
                     list.Add(new Project

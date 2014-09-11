@@ -87,8 +87,31 @@ namespace LCChecker.Controllers
 
             var filePath = file.SavePath;
             //读取文件进行检查
-
+            Dictionary<string, List<string>> Error = new Dictionary<string, List<string>>();
+            Dictionary<string, int> ship = new Dictionary<string, int>();
+            DetectEngine Engine = new DetectEngine(filePath);
+            string fault="";
+            if (!Engine.CheckExcel(filePath, ref fault, ref Error, ref ship))
+            {
+                throw new ArgumentException("检索失败");
+            }
             //检查完毕，更新Projects
+            var projects = db.Projects.Where(x => x.City == CurrentUser.City).ToList();
+            foreach (var item in projects)
+            {
+                if (item.Result==true)
+                    continue;
+                if (Error.ContainsKey(item.ID))
+                {
+                    item.Note = "";
+                    foreach (var Message in Error[item.ID])
+                    {
+                        item.ID += Message + "；";
+                    }
+                    db.Entry(item).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+            }
 
             return RedirectToAction("Index?result=false");
         }

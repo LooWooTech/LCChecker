@@ -16,6 +16,10 @@ namespace LCChecker.Models
 
         public Dictionary<string, List<string>> subError = new Dictionary<string, List<string>>();
 
+        public Dictionary<string, List<string>> Error = new Dictionary<string, List<string>>();
+
+
+
 
         public DetectEngine(string region)
         {
@@ -291,14 +295,6 @@ namespace LCChecker.Models
                 if (RowError.Count() != 0)
                 {
                     ErrorMessage.Add(value, RowError);
-                    //if (flag)
-                    //{
-                    //    summaryError.Add(value, RowError);
-                    //}
-                    //else {
-                    //    subError.Add(value, RowError);
-                    //}
-                    //ExcelError.Add(value, RowError);
                 }
             }
                 return true;
@@ -545,5 +541,8 @@ namespace LCChecker.Models
             }
             return false;
         }
+
+
+
     }
 }
