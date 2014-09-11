@@ -156,6 +156,7 @@
     <Compile Include="Rules\MultipleCellRangeRowRule.cs" />
     <Compile Include="Rules\NoLessThanRowRule.cs" />
     <Compile Include="Rules\ProjectType.cs" />
+    <Compile Include="Rules\Special.cs" />
     <Compile Include="Rules\SumRowRule.cs" />
     <Compile Include="Rules\UniqueValueRowRule.cs" />
     <Compile Include="UploadHelper.cs" />
