@@ -21,7 +21,8 @@ namespace LCChecker.Controllers
             {
                 query = query.Where(e => e.Result == result.Value);
             }
-            else {
+            else
+            {
                 query = query.Where(e => e.Result == null);
             }
             if (page != null)
@@ -45,7 +46,7 @@ namespace LCChecker.Controllers
 
             };
             //全部结束，进入第二阶段
-            if (summary.TotalCount == summary.SuccessCount)
+            if (summary.TotalCount > 0 && summary.TotalCount == summary.SuccessCount)
             {
 
                 return View("Index2");
@@ -73,11 +74,12 @@ namespace LCChecker.Controllers
             {
                 list = db.Projects.Where(e => e.Result != null).ToList();
             }
-            string CheckSelfExcel = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates/", "ModelSelf.xlsx");
+
+            string checkSelfExcel = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates/", "ModelSelf.xlsx");
             IWorkbook workbook;
             try
             {
-                FileStream fs = new FileStream(CheckSelfExcel, FileMode.Open, FileAccess.Read);
+                FileStream fs = new FileStream(checkSelfExcel, FileMode.Open, FileAccess.Read);
                 workbook = WorkbookFactory.Create(fs);
                 fs.Close();
             }
@@ -85,6 +87,7 @@ namespace LCChecker.Controllers
             {
                 throw new ArgumentException("打开自查表模板失败");
             }
+
             ISheet sheet = workbook.GetSheetAt(0);
             int y = 1;
             foreach (var item in list)
@@ -100,7 +103,7 @@ namespace LCChecker.Controllers
                 ICell cell2 = row.GetCell(1);
                 if (cell2 == null)
                     cell2 = row.CreateCell(1);
-                cell2.SetCellValue(City.浙江省.ToString() + "," + item.City.ToString());
+                cell2.SetCellValue(City.浙江省.ToString() + "," + item.City.ToString() + "," + item.County);
 
                 ICell cell3 = row.GetCell(2);
                 if (cell3 == null)
@@ -154,18 +157,18 @@ namespace LCChecker.Controllers
                 throw new ArgumentException("参数错误");
             }
 
-            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,file.SavePath);
+            var filePath = UploadHelper.GetAbsolutePath(file.SavePath);
             //读取文件进行检查
             Dictionary<string, List<string>> Error = new Dictionary<string, List<string>>();
             Dictionary<string, int> ship = new Dictionary<string, int>();
             DetectEngine Engine = new DetectEngine(filePath);
-            string fault="";
+            string fault = "";
             if (!Engine.CheckExcel(filePath, ref fault, ref Error, ref ship))
             {
                 throw new ArgumentException("检索失败");
             }
             //检查完毕，更新Projects
-            var projects = db.Projects.Where(x => x.City == CurrentUser.City).ToList();
+            var projects = db.Projects.Where(x => x.City == CurrentUser.City);
             foreach (var item in projects)
             {
                 if (ship.ContainsKey(item.ID))
@@ -177,18 +180,18 @@ namespace LCChecker.Controllers
                         foreach (var Message in Error[item.ID])
                         {
                             item.Note += Message + "；";
-                        }           
+                        }
                     }
-                    else {
+                    else
+                    {
                         item.Result = true;
                         item.Note = "";
                     }
-                    db.Entry(item).State = EntityState.Modified;
                     db.SaveChanges();
                 }
             }
 
-            return RedirectToAction("Index", new { result=false});
+            return RedirectToAction("Index", new { result = false });
         }
     }
 }

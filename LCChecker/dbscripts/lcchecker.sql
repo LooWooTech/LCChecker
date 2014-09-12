@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50703
 File Encoding         : 65001
 
-Date: 2014-09-11 13:48:49
+Date: 2014-09-12 14:31:29
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -25,6 +25,7 @@ CREATE TABLE `projects` (
   `Name` varchar(127) DEFAULT NULL,
   `Result` tinyint(1) DEFAULT NULL,
   `Note` varchar(255) DEFAULT NULL,
+  `County` varchar(55) DEFAULT NULL,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `PK_PROJECT_ID` (`ID`),
   KEY `IX_PROJECT_CITY` (`CityID`)
@@ -59,4 +60,4 @@ CREATE TABLE `users` (
   UNIQUE KEY `PK_USER_ID` (`ID`) USING BTREE,
   KEY `IX_USER_CITY` (`CityID`),
   KEY `IX_USERNAME` (`Username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;

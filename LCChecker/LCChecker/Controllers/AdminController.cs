@@ -70,10 +70,12 @@ namespace LCChecker.Controllers
                     continue;
                 }
                 var cityNames = row.Cells[0].StringCellValue.Split(',');
-                if (cityNames.Length < 2)
+                if (cityNames.Length < 3)
                 {
                     continue;
                 }
+
+                var county = cityNames[2];
 
                 City city = 0;
 
@@ -84,6 +86,7 @@ namespace LCChecker.Controllers
                         City = city,
                         ID = row.Cells[1].NumericCellValue.ToString(),
                         Name = row.Cells[2].StringCellValue,
+                        County = county
                     });
                 }
 

@@ -28,6 +28,11 @@ namespace LCChecker.Models
         public bool? Result { get; set; }
 
         /// <summary>
+        /// 所在县
+        /// </summary>
+        public string County { get; set; }
+
+        /// <summary>
         /// 备注
         /// </summary>
         [MaxLength(255)]

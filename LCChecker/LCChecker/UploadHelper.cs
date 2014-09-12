@@ -16,6 +16,11 @@ namespace LCChecker
             return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, UploadDirectory, fileName);
         }
 
+        public static string GetAbsolutePath(string filePath)
+        {
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filePath);
+        }
+
         public static HttpPostedFileBase GetPostedFile(HttpContextBase context)
         {
             if (context.Request.Files.Count == 0)
