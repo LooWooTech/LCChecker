@@ -255,6 +255,8 @@ namespace LCChecker.Models
 
             list.Add(new Format() { ColumnIndex = 35, form = "0.0" });
 
+            list.Add(new Special() { ColumnIndex = 36 });
+
 
 
 

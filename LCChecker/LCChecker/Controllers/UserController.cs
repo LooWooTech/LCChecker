@@ -1,4 +1,5 @@
 ﻿using LCChecker.Models;
+using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -61,10 +62,61 @@ namespace LCChecker.Controllers
         /// 下载未完成和错误的Project模板
         /// </summary>
         /// <returns></returns>
-        public ActionResult DownloadProjects()
+        public ActionResult DownloadProjects(bool? result)
         {
-            var list = db.Projects.Where(e => e.Result != null).ToList();
-            return View();
+            List<Project> list;
+            if (result.HasValue)
+            {
+                list = db.Projects.Where(e => e.Result != result.Value).ToList();
+            }
+            else
+            {
+                list = db.Projects.Where(e => e.Result != null).ToList();
+            }
+            string CheckSelfExcel = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates/", "ModelSelf.xlsx");
+            IWorkbook workbook;
+            try
+            {
+                FileStream fs = new FileStream(CheckSelfExcel, FileMode.Open, FileAccess.Read);
+                workbook = WorkbookFactory.Create(fs);
+                fs.Close();
+            }
+            catch
+            {
+                throw new ArgumentException("打开自查表模板失败");
+            }
+            ISheet sheet = workbook.GetSheetAt(0);
+            int y = 1;
+            foreach (var item in list)
+            {
+                IRow row = sheet.GetRow(y);
+                if (row == null)
+                    row = sheet.CreateRow(y);
+                ICell cell = row.GetCell(0);
+                if (cell == null)
+                    cell = row.CreateCell(0);
+                cell.SetCellValue(y);
+
+                ICell cell2 = row.GetCell(1);
+                if (cell2 == null)
+                    cell2 = row.CreateCell(1);
+                cell2.SetCellValue(City.浙江省.ToString() + "," + item.City.ToString());
+
+                ICell cell3 = row.GetCell(2);
+                if (cell3 == null)
+                    cell3 = row.CreateCell(2);
+                cell3.SetCellValue(item.ID);
+                ICell cell4 = row.GetCell(3);
+                if (cell4 == null)
+                    cell4 = row.CreateCell(3);
+                cell4.SetCellValue(item.Name);
+                y++;
+            }
+            MemoryStream ms = new MemoryStream();
+            workbook.Write(ms);
+            ms.Flush();
+            byte[] fileContents = ms.ToArray();
+            return File(fileContents, "application/ms-excel", "自检表.xlsx");
         }
 
         /// <summary>
