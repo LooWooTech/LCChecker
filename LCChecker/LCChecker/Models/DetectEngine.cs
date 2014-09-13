@@ -267,6 +267,75 @@ namespace LCChecker.Models
 
         }
 
+        public static void InsertRow(ISheet sheet, int startRowIndex, int count)
+        {
+            sheet.ShiftRows(startRowIndex, sheet.LastRowNum, count, true, false);
+            var templateRow = sheet.GetRow(startRowIndex + count);
+            for (var rowIndex = startRowIndex; rowIndex < startRowIndex + count; rowIndex++)
+            {
+                var row = sheet.CreateRow(rowIndex);
+                if (templateRow.RowStyle != null)
+                {
+                    row.RowStyle = templateRow.RowStyle;
+                }
+                row.Height = templateRow.Height;
+
+                for (var cellIndex = 0; cellIndex < templateRow.Cells.Count; cellIndex++)
+                {
+                    var cellTemplate = templateRow.Cells[cellIndex];
+                    var cell = row.CreateCell(cellIndex, cellTemplate.CellType);
+                    cell.SetCellValue(cellTemplate.StringCellValue);
+                    if (cellTemplate.CellStyle != null)
+                    {
+                        cell.CellStyle = cellTemplate.CellStyle;
+                    }
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// 确保每个项目是唯一的  获得项目编号 以及项目的个数
+        /// </summary>
+        /// <param name="filePath">Excel文件</param>
+        /// <param name="mistakes">错误信息</param>
+        /// <param name="ship">项目编号  个数</param>
+        /// <returns></returns>
+        public bool GetProject(string filePath, ref string mistakes, ref Dictionary<string, int> ship, ref int LastRowNumber)
+        {
+            IWorkbook workbook = null;
+            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            {
+                workbook = WorkbookFactory.Create(fs);
+            }
+            if (workbook == null)
+            {
+                mistakes = "打开文件失败：" + filePath;
+                return false;
+            }
+            ISheet sheet = workbook.GetSheetAt(0);
+            IRow row = sheet.GetRow(1);
+            int i = 1;
+            while (row != null)
+            {
+                var value = row.GetCell(2, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+                if (value != "")
+                {
+                    if (ship.ContainsKey(value))
+                    {
+                        ship[value]++;
+                    }
+                    else
+                    {
+                        ship.Add(value, 1);
+                    }
+                }
+                row = sheet.GetRow(++i);
+            }
+            LastRowNumber = i;
+            return true;
+        }
+
 
         /*检查表格中的错误
          * Path 检查表格的路径
@@ -319,6 +388,97 @@ namespace LCChecker.Models
             }
             return true;
         }
+
+
+        /// <summary>
+        /// 保存正确项目的数据
+        /// </summary>
+        /// <param name="filePath">提交表格</param>
+        /// <param name="MasterPath">保存正确项目数据的文件路径</param>
+        /// <param name="mistakes">错误信息</param>
+        /// <param name="ErrorMessage">提交表格中存在填写错误的信息</param>
+        /// <param name="relatship">提交表格的项目编号 与在该表格中行号</param>
+        /// <returns></returns>
+        public bool SaveCurrent(string filePath, string MasterPath, ref string mistakes, Dictionary<string, List<string>> ErrorMessage, Dictionary<string, int> relatship)
+        {
+            Dictionary<string, int> ship = new Dictionary<string, int>();
+            int MasStartRow = 1;
+            if (!GetProject(MasterPath, ref mistakes, ref ship, ref MasStartRow))
+            {
+                return false;
+            }
+
+            IWorkbook MasWorkbook = null;
+            using (FileStream fs = new FileStream(MasterPath, FileMode.Open, FileAccess.Read))
+            {
+                MasWorkbook = WorkbookFactory.Create(fs);
+            }
+            if (MasWorkbook == null)
+            {
+                mistakes = "打开数据总表失败：" + MasterPath;
+                return false;
+            }
+            ISheet MasSheet = MasWorkbook.GetSheetAt(0);
+
+
+            IWorkbook workbook = null;
+            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            {
+                workbook = WorkbookFactory.Create(fs);
+            }
+            if (workbook == null)
+            {
+                mistakes = "打开文件失败：" + filePath;
+                return false;
+            }
+            ISheet sheet = workbook.GetSheetAt(0);
+            int startRow = 0, startCell = 0;
+            if (!FindHeader(sheet, ref startRow, ref startCell))
+            {
+                mistakes = "未找到表头：" + filePath;
+                return false;
+            }
+            foreach (var item in relatship.Keys)
+            {
+                if (ErrorMessage.ContainsKey(item))
+                    continue;
+                if (ship.ContainsKey(item))
+                    continue;
+                IRow MasRow = MasSheet.GetRow(MasStartRow++);
+
+                IRow row = sheet.GetRow(relatship[item]);
+
+                for (int x = startCell, y = 0; x < row.LastCellNum; x++, y++)
+                {
+                    ICell cell = row.GetCell(x);
+                    if (cell == null)
+                        continue;
+
+                    ICell MasCell = MasRow.GetCell(y);
+
+                    switch (cell.CellType)
+                    {
+                        case CellType.Boolean:
+                            MasCell.SetCellValue(cell.BooleanCellValue);
+                            break;
+                        case CellType.Numeric:
+                            MasCell.SetCellValue(cell.NumericCellValue);
+                            break;
+                        case CellType.String:
+                            MasCell.SetCellValue(cell.StringCellValue);
+                            break;
+                    }
+                }
+            }
+            using (FileStream fs = new FileStream(MasterPath, FileMode.Open, FileAccess.Write))
+            {
+                MasWorkbook.Write(fs);
+            }
+
+            return true;
+        }
+
+
 
 
         /*
