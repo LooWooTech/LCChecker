@@ -161,6 +161,7 @@
     <Compile Include="Rules\UniqueValueRowRule.cs" />
     <Compile Include="UploadHelper.cs" />
     <Compile Include="UserAuthorizeAttribute.cs" />
+    <Compile Include="XslHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
@@ -207,6 +208,15 @@
     <Content Include="Views\User\Index.cshtml" />
     <Content Include="Views\User\Index2.cshtml" />
     <Content Include="Views\Shared\_pagination.cshtml" />
+    <Content Include="Templates\ModelSelf.xlsx" />
+    <Content Include="Templates\表2.xls" />
+    <Content Include="Templates\表3.xls" />
+    <Content Include="Templates\表4.xls" />
+    <Content Include="Templates\表5.xls" />
+    <Content Include="Templates\表6.xls" />
+    <Content Include="Templates\表7.xls" />
+    <Content Include="Templates\表8.xls" />
+    <Content Include="Templates\表9.xls" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

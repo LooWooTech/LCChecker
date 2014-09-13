@@ -35,7 +35,6 @@ namespace LCChecker.Controllers
             return query.ToList();
         }
 
-
         public ActionResult Index(bool? result, int page = 1)
         {
             var summary = new Summary
@@ -76,20 +75,10 @@ namespace LCChecker.Controllers
                 list = db.Projects.Where(e => e.Result != null).ToList();
             }
 
-            string checkSelfExcel = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates/", "ModelSelf.xlsx");
-            IWorkbook workbook;
-            try
-            {
-                FileStream fs = new FileStream(checkSelfExcel, FileMode.Open, FileAccess.Read);
-                workbook = WorkbookFactory.Create(fs);
-                fs.Close();
-            }
-            catch
-            {
-                throw new ArgumentException("打开自查表模板失败");
-            }
+            var workbook = XslHelper.GetWorkbook("templates/modelSelf.xlsx");
 
-            ISheet sheet = workbook.GetSheetAt(0);
+            var sheet = workbook.GetSheetAt(0);
+
             int y = 1;
             foreach (var item in list)
             {
@@ -116,6 +105,7 @@ namespace LCChecker.Controllers
                 cell4.SetCellValue(item.Name);
                 y++;
             }
+
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
             ms.Flush();
@@ -195,196 +185,36 @@ namespace LCChecker.Controllers
             return RedirectToAction("Index", new { result = false });
         }
 
-
-        /// <summary>
-        /// 下载表格时候，使用到表格的格式
-        /// </summary>
-        public enum stylexls
-        {
-            大头,
-            小头,
-            小小头,
-            文本,
-            默认
-        }
-
-        public static ICellStyle GetCellStyle(IWorkbook workbook, stylexls str)
-        {
-            ICellStyle cellStyle = workbook.CreateCellStyle();
-
-            IFont fontBigheader = workbook.CreateFont();
-            fontBigheader.FontHeightInPoints = 22;
-            fontBigheader.FontName = "微软雅黑";
-            fontBigheader.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
-
-            IFont fontSmallheader = workbook.CreateFont();
-            fontSmallheader.FontHeightInPoints = 14;
-            fontSmallheader.FontName = "黑体";
-
-            IFont fontText = workbook.CreateFont();
-            fontText.FontHeightInPoints = 12;
-            fontText.FontName = "宋体";
-
-            IFont fontthinheader = workbook.CreateFont();
-            fontthinheader.FontName = "宋体";
-            fontthinheader.FontHeightInPoints = 11;
-            fontthinheader.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
-
-
-            IFont font1 = workbook.CreateFont();
-            font1.FontName = "宋体";
-            font1.FontHeightInPoints = 9;
-
-
-            cellStyle.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
-            cellStyle.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
-            cellStyle.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
-            cellStyle.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
-
-            //边框颜色
-            cellStyle.BottomBorderColor = HSSFColor.OliveGreen.Black.Index;
-            cellStyle.TopBorderColor = HSSFColor.OliveGreen.Black.Index;
-
-            //背景图形
-            cellStyle.FillForegroundColor = HSSFColor.White.Index;
-            cellStyle.FillBackgroundColor = HSSFColor.Black.Index;
-
-            //文本对齐  左对齐  居中  右对齐  现在是居中
-            cellStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
-
-            //垂直对齐
-            cellStyle.VerticalAlignment = VerticalAlignment.Center;
-
-            //自动换行
-            cellStyle.WrapText = true;
-
-            //缩进
-            cellStyle.Indention = 0;
-
-            switch (str)
-            {
-                case stylexls.大头:
-                    cellStyle.SetFont(fontBigheader);
-                    break;
-                case stylexls.小头:
-                    cellStyle.SetFont(fontSmallheader);
-                    break;
-                case stylexls.默认:
-                    cellStyle.SetFont(fontText);
-                    break;
-                case stylexls.小小头:
-                    cellStyle.SetFont(fontthinheader);
-                    break;
-
-                case stylexls.文本:
-                    cellStyle.SetFont(font1);
-                    break;
-            }
-
-
-            return cellStyle;
-        }
-
-
         /// <summary>
         /// 下载表2
         /// </summary>
         /// <returns></returns>
         public ActionResult DownReportExcelIndex2()
         {
-            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates/", "表2.xls");
-            IWorkbook workbook;
-            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-            {
-                workbook = WorkbookFactory.Create(fs);
-            }
-            ISheet sheet = workbook.GetSheetAt(0);
-            IRow HeadRow = sheet.GetRow(1);
-            ICell HeadCell = HeadRow.GetCell(0);
-            string Header = CurrentUser.City.ToString() + "重点复核确认无问题项目清单";
-            HeadCell.SetCellValue(Header);
+            var workbook = XslHelper.GetWorkbook("templates/表2.xlsx");
+            var sheet = workbook.GetSheetAt(0);
+            sheet.GetRow(1).Cells[0].SetCellValue(CurrentUser.City.ToString() + "重点复核确认无问题项目清单");
 
             var list = db.Projects.Where(e => e.City == CurrentUser.City).ToList();
-            int y = 6;
-            int s = 1;
+            int rowIndex = 6;
+            int rowNumber = 1;
+
+            var textCellStyle = workbook.GetCellStyle(XslHeaderStyle.文本);
+
             foreach (var item in list)
             {
-                IRow row = sheet.GetRow(y);
-                if (row == null)
-                    row = sheet.CreateRow(y);
-                y++;
+                var row = CreateRow(sheet, rowIndex, 0, 7, textCellStyle);
+                row.Cells[0].SetCellValue(rowNumber.ToString());
+                row.Cells[1].SetCellValue(item.City.ToString());
+                row.Cells[2].SetCellValue(item.County);
+                row.Cells[3].SetCellValue(item.ID);
+                row.Cells[4].SetCellValue(item.Name);
 
-
-                ICell cell = row.GetCell(0);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(0);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(s.ToString());
-                s++;
-
-                cell = row.GetCell(1);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(1);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(item.City.ToString());
-
-                cell = row.GetCell(2);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(2);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(item.County);
-
-                cell = row.GetCell(3);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(3);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(item.ID.ToString());
-
-                cell = row.GetCell(4);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(4);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(item.Name);
-
-                cell = row.GetCell(5);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(5);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
-
-                cell = row.GetCell(6);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(6);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
-
-                cell = row.GetCell(7);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(7);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
+                rowIndex++;
+                rowNumber++;
             }
-            MemoryStream ms = new MemoryStream();
-            workbook.Write(ms);
-            ms.Flush();
-            byte[] fileContents = ms.ToArray();
-            return File(fileContents, "application/ms-excel", "附表2.xls");
+
+            return GetFileResult(workbook, "附表2.xls");
         }
 
         /// <summary>
@@ -393,113 +223,29 @@ namespace LCChecker.Controllers
         /// <returns></returns>
         public ActionResult DownReportExcelIndex3()
         {
-            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates/", "表3.xls");
-            IWorkbook workbook;
-            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-            {
-                workbook = WorkbookFactory.Create(fs);
-            }
-            ISheet sheet = workbook.GetSheetAt(0);
-            IRow HeadRow = sheet.GetRow(1);
-            ICell HeadCell = HeadRow.GetCell(0);
-            string Header = CurrentUser.City.ToString() + "重点项目复核确认总表";
-            HeadCell.SetCellValue(Header);
+            var workbook = XslHelper.GetWorkbook("templates/表3.xlsx");
+            var sheet = workbook.GetSheetAt(0);
+            sheet.GetRow(1).Cells[0].SetCellValue(CurrentUser.City.ToString() + "重点项目复核确认总表");
+            var textCellStyle = workbook.GetCellStyle(XslHeaderStyle.文本);
+
 
             var list = db.Projects.Where(e => e.City == CurrentUser.City).ToList();
-            int y = 6;
-            int s = 1;
+            int rowIndex = 6;
+            int rowNumber = 1;
             foreach (var item in list)
             {
-                IRow row = sheet.GetRow(y);
-                if (row == null)
-                    row = sheet.CreateRow(y);
-                y++;
+                var row = CreateRow(sheet, rowIndex, 0, 9, textCellStyle);
+                row.Cells[0].SetCellValue(rowNumber.ToString());
+                row.Cells[1].SetCellValue(item.City.ToString());
+                row.Cells[2].SetCellValue(item.County);
+                row.Cells[3].SetCellValue(item.ID);
+                row.Cells[4].SetCellValue(item.Name);
 
-
-                ICell cell = row.GetCell(0);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(0);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(s.ToString());
-                s++;
-
-                cell = row.GetCell(1);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(1);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(item.City.ToString());
-
-                cell = row.GetCell(2);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(2);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(item.County);
-
-                cell = row.GetCell(3);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(3);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(item.ID.ToString());
-
-                cell = row.GetCell(4);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(4);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(item.Name);
-
-                cell = row.GetCell(5);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(5);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
-
-                cell = row.GetCell(6);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(6);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
-
-                cell = row.GetCell(7);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(7);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
-                cell = row.GetCell(8);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(8);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
-                cell = row.GetCell(9);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(9);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
+                rowIndex++;
+                rowNumber++;
             }
-            MemoryStream ms = new MemoryStream();
-            workbook.Write(ms);
-            ms.Flush();
-            byte[] fileContents = ms.ToArray();
-            return File(fileContents, "application/ms-excel", "附表2.xls");
+
+            return GetFileResult(workbook, "附表3.xls");
         }
 
         /// <summary>
@@ -508,91 +254,30 @@ namespace LCChecker.Controllers
         /// <returns></returns>
         public ActionResult DownReportExcelIndex4()
         {
-            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates/", "表4.xls");
-            IWorkbook workbook;
-            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-            {
-                workbook = WorkbookFactory.Create(fs);
-            }
-            ISheet sheet = workbook.GetSheetAt(0);
-            IRow HeadRow = sheet.GetRow(1);
-            ICell HeadCell = HeadRow.GetCell(0);
-            string Header = CurrentUser.City.ToString() + "重点复核确认项目申请删除项目清单";
-            HeadCell.SetCellValue(Header);
+            var workbook = XslHelper.GetWorkbook("templates/表4.xlsx");
+            var sheet = workbook.GetSheetAt(0);
+            sheet.GetRow(1).Cells[0].SetCellValue(CurrentUser.City.ToString() + "重点复核确认项目申请删除项目清单");
+
+            var textCellStyle = workbook.GetCellStyle(XslHeaderStyle.文本);
+
 
             var list = db.Projects.Where(e => e.City == CurrentUser.City).ToList();
-            int y = 6;
-            int s = 1;
+
+            var rowIndex = 6;
+            var rowNumber = 1;
             foreach (var item in list)
             {
-                IRow row = sheet.GetRow(y);
-                if (row == null)
-                    row = sheet.CreateRow(y);
-                y++;
+                var row = CreateRow(sheet, rowIndex, 0, 6, textCellStyle);
+                row.Cells[0].SetCellValue(rowNumber.ToString());
+                row.Cells[1].SetCellValue(item.City.ToString());
+                row.Cells[2].SetCellValue(item.County);
+                row.Cells[3].SetCellValue(item.ID);
 
-
-                ICell cell = row.GetCell(0);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(0);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(s.ToString());
-                s++;
-
-                cell = row.GetCell(1);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(1);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(item.City.ToString());
-
-                cell = row.GetCell(2);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(2);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(item.County);
-
-                cell = row.GetCell(3);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(3);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(item.ID.ToString());
-
-                cell = row.GetCell(4);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(4);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
-
-                cell = row.GetCell(5);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(5);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
-
-                cell = row.GetCell(6);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(6);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
+                rowIndex++;
+                rowNumber++;
             }
-            MemoryStream ms = new MemoryStream();
-            workbook.Write(ms);
-            ms.Flush();
-            byte[] fileContents = ms.ToArray();
-            return File(fileContents, "application/ms-excel", "附表4.xls");
+
+            return GetFileResult(workbook, "附表4.xls");
         }
 
         /// <summary>
@@ -601,108 +286,30 @@ namespace LCChecker.Controllers
         /// <returns></returns>
         public ActionResult DownReportExcelIndex5()
         {
-            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates/", "表5.xls");
-            IWorkbook workbook;
-            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-            {
-                workbook = WorkbookFactory.Create(fs);
-            }
-            ISheet sheet = workbook.GetSheetAt(0);
-            IRow HeadRow = sheet.GetRow(1);
-            ICell HeadCell = HeadRow.GetCell(0);
-            string Header = CurrentUser.City.ToString() + "重点复核确认项目备案信息错误项目清单";
-            HeadCell.SetCellValue(Header);
+            var workbook = XslHelper.GetWorkbook("templates/表5.xlsx");
+            var sheet = workbook.GetSheetAt(0);
+            sheet.GetRow(1).Cells[0].SetCellValue(CurrentUser.City.ToString() + "重点复核确认项目备案信息错误项目清单");
+
+            var textCellStyle = workbook.GetCellStyle(XslHeaderStyle.文本);
 
             var list = db.Projects.Where(e => e.City == CurrentUser.City).ToList();
-            int y = 5;
-            int s = 1;
+
+            var rowIndex = 5;
+            var rowNumber = 1;
             foreach (var item in list)
             {
-                IRow row = sheet.GetRow(y);
-                if (row == null)
-                    row = sheet.CreateRow(y);
-                y++;
-
-
-                ICell cell = row.GetCell(0);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(0);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(s.ToString());
-                s++;
-
-                cell = row.GetCell(1);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(1);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(item.City.ToString());
-
-                cell = row.GetCell(2);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(2);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(item.County);
-
-                cell = row.GetCell(3);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(3);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(item.ID.ToString());
-
-                cell = row.GetCell(4);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(4);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(item.Name);
-
-
-                cell = row.GetCell(5);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(5);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
-
-                cell = row.GetCell(6);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(6);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
-
-                cell = row.GetCell(7);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(7);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
-                cell = row.GetCell(8);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(8);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue("是");
-
+                var row = CreateRow(sheet, rowIndex, 0, 8, textCellStyle);
+                row.Cells[0].SetCellValue(rowNumber.ToString());
+                row.Cells[1].SetCellValue(item.City.ToString());
+                row.Cells[2].SetCellValue(item.County);
+                row.Cells[3].SetCellValue(item.ID);
+                row.Cells[4].SetCellValue(item.Name);
+                row.Cells[8].SetCellValue("是");
+                rowIndex++;
+                rowNumber++;
             }
-            MemoryStream ms = new MemoryStream();
-            workbook.Write(ms);
-            ms.Flush();
-            byte[] fileContents = ms.ToArray();
-            return File(fileContents, "application/ms-excel", "附表5.xls");
+
+            return GetFileResult(workbook, "附表5.xls");
         }
 
         /// <summary>
@@ -711,22 +318,12 @@ namespace LCChecker.Controllers
         /// <returns></returns>
         public ActionResult DownReportExcelIndex6()
         {
-            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates/", "表6.xls");
-            IWorkbook workbook;
-            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-            {
-                workbook = WorkbookFactory.Create(fs);
-            }
-            ISheet sheet = workbook.GetSheetAt(0);
-            IRow HeadRow = sheet.GetRow(1);
-            ICell HeadCell = HeadRow.GetCell(0);
-            string Header = CurrentUser.City.ToString() + "重点复核确认项目设计二调新增耕地项目清单";
-            HeadCell.SetCellValue(Header);
-            MemoryStream ms = new MemoryStream();
-            workbook.Write(ms);
-            ms.Flush();
-            byte[] fileContents = ms.ToArray();
-            return File(fileContents, "application/ms-excel", "附表6.xls");
+            var workbook = XslHelper.GetWorkbook("templates/表6.xlsx");
+            var sheet = workbook.GetSheetAt(0);
+
+            sheet.GetRow(1).Cells[0].SetCellValue(CurrentUser.City.ToString() + "重点复核确认项目设计二调新增耕地项目清单");
+
+            return GetFileResult(workbook, "附表6.xls");
         }
 
         /// <summary>
@@ -735,106 +332,30 @@ namespace LCChecker.Controllers
         /// <returns></returns>
         public ActionResult DownReportExcelIndex7()
         {
-            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates/", "表7.xls");
-            IWorkbook workbook;
-            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-            {
-                workbook = WorkbookFactory.Create(fs);
-            }
-            ISheet sheet = workbook.GetSheetAt(0);
-            IRow headRow = sheet.GetRow(1);
-            ICell headCell = headRow.GetCell(0);
-            string Header = CurrentUser.City.ToString() + "重点复核确认项目耕地质量等别修改项目清单";
+            var workbook = XslHelper.GetWorkbook("templates/表7.xlsx");
+            var sheet = workbook.GetSheetAt(0);
+            sheet.GetRow(1).Cells[0].SetCellValue(CurrentUser.City.ToString() + "重点复核确认项目耕地质量等别修改项目清单");
+
+            var textCellStyle = workbook.GetCellStyle(XslHeaderStyle.文本);
+
             var list = db.Projects.Where(e => e.City == CurrentUser.City).ToList();
-            int y = 5;
-            int s = 1;
+
+            var rowIndex = 5;
+            var rowNumber = 1;
             foreach (var item in list)
             {
-                IRow row = sheet.GetRow(y);
-                if (row == null)
-                    row = sheet.CreateRow(y);
-                y++;
-
-
-                ICell cell = row.GetCell(0);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(0);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(s.ToString());
-                s++;
-
-                cell = row.GetCell(1);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(1);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(item.City.ToString());
-
-                cell = row.GetCell(2);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(2);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(item.County);
-
-                cell = row.GetCell(3);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(3);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
-
-                cell = row.GetCell(4);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(4);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
-
-
-                cell = row.GetCell(5);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(5);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
-
-                cell = row.GetCell(6);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(6);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
-
-                cell = row.GetCell(7);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(7);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
-                cell = row.GetCell(8);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(8);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue("是");
-
+                var row = CreateRow(sheet, rowIndex, 0, 8, textCellStyle);
+                row.Cells[0].SetCellValue(rowNumber.ToString());
+                row.Cells[1].SetCellValue(item.City.ToString());
+                row.Cells[2].SetCellValue(item.County);
+                row.Cells[3].SetCellValue(item.ID);
+                row.Cells[4].SetCellValue(item.Name);
+                row.Cells[8].SetCellValue("是");
+                rowIndex++;
+                rowNumber++;
             }
-            MemoryStream ms = new MemoryStream();
-            workbook.Write(ms);
-            ms.Flush();
-            byte[] fileContents = ms.ToArray();
-            return File(fileContents, "application/ms-excel", "附表7.xls");
+
+            return GetFileResult(workbook, "附表7.xls");
         }
 
         /// <summary>
@@ -843,105 +364,30 @@ namespace LCChecker.Controllers
         /// <returns></returns>
         public ActionResult DownReportExcelIndex8()
         {
-            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates/", "表8.xls");
-            IWorkbook workbook;
-            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-            {
-                workbook = WorkbookFactory.Create(fs);
-            }
-            ISheet sheet = workbook.GetSheetAt(0);
-            IRow headRow = sheet.GetRow(1);
-            ICell headCell = headRow.GetCell(0);
-            string Header = CurrentUser.City.ToString() + "重点复核确认项目占补平衡指标核减项目清单";
+            var workbook = XslHelper.GetWorkbook("templates/表8.xlsx");
+            var sheet = workbook.GetSheetAt(0);
+            sheet.GetRow(1).Cells[0].SetCellValue(CurrentUser.City.ToString() + "重点复核确认项目占补平衡指标核减项目清单");
+
+            var textCellStyle = workbook.GetCellStyle(XslHeaderStyle.文本);
+
             var list = db.Projects.Where(e => e.City == CurrentUser.City).ToList();
-            int y = 5;
-            int s = 1;
+
+            var rowIndex = 5;
+            var rowNumber = 1;
             foreach (var item in list)
             {
-                IRow row = sheet.GetRow(y);
-                if (row == null)
-                    row = sheet.CreateRow(y);
-                y++;
+                var row = CreateRow(sheet, rowIndex, 0, 8, textCellStyle);
+                row.Cells[0].SetCellValue(rowNumber.ToString());
+                row.Cells[1].SetCellValue(item.City.ToString());
+                row.Cells[2].SetCellValue(item.County);
+                row.Cells[3].SetCellValue(item.ID);
+                row.Cells[4].SetCellValue(item.Name);
 
-
-                ICell cell = row.GetCell(0);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(0);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(s.ToString());
-                s++;
-
-                cell = row.GetCell(1);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(1);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(item.City.ToString());
-
-                cell = row.GetCell(2);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(2);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(item.County);
-
-                cell = row.GetCell(3);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(3);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
-
-                cell = row.GetCell(4);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(4);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
-
-
-                cell = row.GetCell(5);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(5);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
-
-                cell = row.GetCell(6);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(6);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
-
-                cell = row.GetCell(7);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(7);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
-                cell = row.GetCell(8);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(8);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
+                rowIndex++;
+                rowNumber++;
             }
-            MemoryStream ms = new MemoryStream();
-            workbook.Write(ms);
-            ms.Flush();
-            byte[] fileContents = ms.ToArray();
-            return File(fileContents, "application/ms-excel", "附表8.xls");
+
+            return GetFileResult(workbook, "附表8.xls");
         }
 
         /// <summary>
@@ -950,182 +396,72 @@ namespace LCChecker.Controllers
         /// <returns></returns>
         public ActionResult DownReportExcelIndex9()
         {
-            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates/", "表9.xls");
-            IWorkbook workbook;
-            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-            {
-                workbook = WorkbookFactory.Create(fs);
-            }
-            ISheet sheet = workbook.GetSheetAt(0);
-            IRow headRow = sheet.GetRow(1);
-            ICell headCell = headRow.GetCell(0);
+            var workbook = XslHelper.GetWorkbook("templates/表9.xlsx");
+            var sheet = workbook.GetSheetAt(0);
+            sheet.GetRow(1).Cells[0].SetCellValue(CurrentUser.City.ToString() + "重点复核确认项目新增耕地二级地类与耕地质量等别确认表");
 
+            var textCellStyle = workbook.GetCellStyle(XslHeaderStyle.文本);
 
             var list = db.Projects.Where(e => e.City == CurrentUser.City).ToList();
-            int y = 6;
-            int s = 1;
+
+            var rowIndex = 6;
+            var rowNumber = 1;
+            var dkNames = new[] { "水田", "水浇地", "旱地" };
             foreach (var item in list)
             {
-                IRow row1 = sheet.GetRow(y);
-                if (row1 == null)
-                    row1 = sheet.CreateRow(y);
-                y++;
-                ICell cell = row1.GetCell(0);
-                if (cell == null)
+                
+                foreach (var name in dkNames)
                 {
-                    cell = row1.CreateCell(0);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(s.ToString());
-                s++;
-
-                cell = row1.GetCell(1);
-                if (cell == null)
-                {
-                    cell = row1.CreateCell(1);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(item.City.ToString());
-
-                cell = row1.GetCell(2);
-                if (cell == null)
-                {
-                    cell = row1.CreateCell(2);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue(item.County);
-
-                cell = row1.GetCell(3);
-                if (cell == null)
-                {
-                    cell = row1.CreateCell(3);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
-                cell = row1.GetCell(4);
-                if (cell == null)
-                {
-                    cell = row1.CreateCell(4);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
-                cell = row1.GetCell(5);
-                if (cell == null)
-                {
-                    cell = row1.CreateCell(5);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-
-                cell = row1.GetCell(6);
-                if (cell == null)
-                {
-                    cell = row1.CreateCell(6);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue("水田");
-
-                for (int i = 7; i < 22; i++)
-                {
-                    cell = row1.GetCell(i);
-                    if (cell == null)
+                    var row = CreateRow(sheet, rowIndex, 0, 22, textCellStyle);
+                    row.Cells[6].SetCellValue(dkNames[rowIndex - 6]);
+                    for (int i = 7; i < 22; i++)
                     {
-                        cell = row1.CreateCell(i);
-                        cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
+                        row.Cells[i].SetCellValue("（亩）");
                     }
-                    cell.SetCellValue("    (亩)");
+                    row.Cells[22].SetCellValue("是");
+                    rowIndex++;
                 }
 
-                cell = row1.GetCell(22);
-                if (cell == null)
-                {
-                    cell = row1.CreateCell(22);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue("是");
-
-
-
-
-
-                IRow row2 = sheet.GetRow(y);
-                if (row2 == null)
-                    row2 = sheet.CreateRow(y);
-                y++;
-
-                cell = row2.GetCell(6);
-                if (cell == null)
-                {
-                    cell = row2.CreateCell(6);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue("水浇地");
-
-                for (int i = 7; i < 22; i++)
-                {
-                    cell = row2.GetCell(i);
-                    if (cell == null)
-                    {
-                        cell = row2.CreateCell(i);
-                        cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                    }
-                    cell.SetCellValue("    (亩)");
-                }
-
-                cell = row2.GetCell(22);
-                if (cell == null)
-                {
-                    cell = row2.CreateCell(22);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue("是");
-
-
-                IRow row3 = sheet.GetRow(y);
-                if (row3 == null)
-                    row3 = sheet.CreateRow(y);
-                y++;
-
-                cell = row3.GetCell(6);
-                if (cell == null)
-                {
-                    cell = row3.CreateCell(6);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue("旱地");
-
-                for (int i = 7; i < 22; i++)
-                {
-                    cell = row3.GetCell(i);
-                    if (cell == null)
-                    {
-                        cell = row3.CreateCell(i);
-                        cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                    }
-                    cell.SetCellValue("    (亩)");
-                }
-
-                cell = row3.GetCell(22);
-                if (cell == null)
-                {
-                    cell = row3.CreateCell(22);
-                    cell.CellStyle = GetCellStyle(workbook, stylexls.文本);
-                }
-                cell.SetCellValue("是");
-
-                /*
-                 * 合并前6列的单元格
-                 */
                 for (int j = 0; j < 6; j++)
                 {
-                    sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress((y - 3), (y - 1), j, j));
+                    sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress((rowIndex - 3), (rowIndex - 1), j, j));
                 }
 
+                var groupRow = sheet.GetRow(rowIndex - 3);
+                groupRow.Cells[0].SetCellValue(rowNumber.ToString());
+                groupRow.Cells[1].SetCellValue(item.City.ToString());
+                groupRow.Cells[2].SetCellValue(item.County);
+                groupRow.Cells[3].SetCellValue(item.ID);
+                groupRow.Cells[4].SetCellValue(item.Name);
+                
+                rowNumber++;
             }
-            MemoryStream ms = new MemoryStream();
-            workbook.Write(ms);
-            ms.Flush();
-            byte[] fileContents = ms.ToArray();
-            return File(fileContents, "application/ms-excel", "附表9.xls");
+
+            return GetFileResult(workbook, "附表9.xls");
+        }
+
+        private IRow CreateRow(ISheet sheet, int rowIndex, int startColumnNumber, int lastColumnNumber, ICellStyle style)
+        {
+            var row = sheet.GetRow(rowIndex) ?? sheet.CreateRow(rowIndex);
+            for (var i = startColumnNumber; i <= lastColumnNumber; i++)
+            {
+                var cell = row.GetCell(i);
+                if (cell == null)
+                {
+                    cell = row.CreateCell(i);
+                    cell.CellStyle = style;
+                }
+            }
+            return row;
+        }
+
+        private ActionResult GetFileResult(IWorkbook workbook, string fileName)
+        {
+            using (var ms = new MemoryStream())
+            {
+                workbook.Write(ms);
+                return File(ms.ToArray(), "application/ms-excel", fileName);
+            }
         }
     }
 }
