@@ -158,8 +158,13 @@ namespace LCChecker.Controllers
             {
                 throw new ArgumentException("检索失败");
             }
+            string Masterfile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/", CurrentUser.City.ToString() + ".xls");
+            if (!Engine.SaveCurrent(filePath, Masterfile, ref fault, Error, ship))
+            {
+                throw new ArgumentException("保存正确项目失败");
+            }
             //检查完毕，更新Projects
-            var projects = db.Projects.Where(x => x.City == CurrentUser.City);
+            var projects = db.Projects.Where(x => x.City == CurrentUser.City).ToList();
             foreach (var item in projects)
             {
                 if (ship.ContainsKey(item.ID))
