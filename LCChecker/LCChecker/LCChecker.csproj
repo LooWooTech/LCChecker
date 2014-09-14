@@ -132,8 +132,8 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="IRowRule.cs" />
+    <Compile Include="Models\CheckIndex1.cs" />
     <Compile Include="Models\City.cs" />
-    <Compile Include="Models\Detect.cs" />
     <Compile Include="Models\DetectEngine.cs" />
     <Compile Include="Models\LCCheckerInitializer.cs">
       <SubType>Code</SubType>
@@ -142,7 +142,6 @@
     <Compile Include="Models\Page.cs" />
     <Compile Include="Models\Project.cs" />
     <Compile Include="Models\RuleInfo.cs" />
-    <Compile Include="Models\SubRecord.cs" />
     <Compile Include="Models\Summary.cs" />
     <Compile Include="Models\UploadFile.cs" />
     <Compile Include="Models\User.cs" />
@@ -217,6 +216,7 @@
     <Content Include="Templates\表7.xls" />
     <Content Include="Templates\表8.xls" />
     <Content Include="Templates\表9.xls" />
+    <Content Include="Views\User\CheckIndex.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
