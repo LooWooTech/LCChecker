@@ -1,0 +1,21 @@
+﻿@model Dictionary<string,List<string>>
+@{
+    ViewBag.Title = "CheckIndex";
+}
+
+
+
+
+<table class="table">
+    <tr>
+        <th>项目编号</th>
+        <th>错误信息</th>
+    </tr>
+    @foreach (var item in Model.Keys)
+    { 
+        <tr>
+            <td>@item</td>
+            <td>@Model[item]</td>
+        </tr>
+    }
+</table>
