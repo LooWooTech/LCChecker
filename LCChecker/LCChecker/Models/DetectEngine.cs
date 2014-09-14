@@ -330,6 +330,9 @@ namespace LCChecker.Models
                         ship.Add(value, 1);
                     }
                 }
+                else {
+                    break;
+                }
                 row = sheet.GetRow(++i);
             }
             LastRowNumber = i;
