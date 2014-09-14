@@ -13,7 +13,7 @@ namespace LCChecker
 
         private static string GetAbsoluteUploadDirectory(string fileName)
         {
-            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, UploadDirectory, fileName);
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory,UploadDirectory,fileName);
         }
 
         public static string GetAbsolutePath(string filePath)
