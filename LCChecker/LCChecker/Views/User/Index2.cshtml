@@ -1,25 +1,32 @@
-﻿@{
-    ViewBag.Title = "Index2";
+﻿@using LCChecker.Models;
+@{
+    ViewBag.Title = "项目清单下载与验证";
 }
 
-<h2>Index2</h2>
-<a href="/User/DownReportExcelIndex2" class="btn btn-primary">表2</a>
-<a href="/User/DownReportExcelIndex3" class="btn btn-primary">表3</a>
-<a href="/User/DownReportExcelIndex4" class="btn btn-primary">表4</a>
-<a href="/User/DownReportExcelIndex5" class="btn btn-primary">表5</a>
-<a href="/User/DownReportExcelIndex6" class="btn btn-primary">表6</a>
-<a href="/User/DownReportExcelIndex7" class="btn btn-primary">表7</a>
-<a href="/User/DownReportExcelIndex8" class="btn btn-primary">表8</a>
-<a href="/User/DownReportExcelIndex9" class="btn btn-primary">表9</a>
-
-
-<form class="form form-inline" method="post" enctype="multipart/form-data" action="/user/uploadprojects" style="float:left;">
-    <div class="input-group">
-        <div class="input-group-btn">
-            <input type="file" name="file1" class="form-control" />
-        </div>
-        <div class="input-group-btn">
-            <button type="submit" class="btn btn-primary">上传项目</button>
-        </div>
-    </div>
-</form>
+<table class="table">
+    <tr>
+        <th>表单名称</th>
+        <th>下载地址</th>
+        <th style="width: 200px;">上传验证</th>
+    </tr>
+    @foreach (var title in Enum.GetNames(typeof(CheckFormType)))
+    {
+        var typeValue = (int)Enum.Parse(typeof(CheckFormType), title);
+        <tr>
+            <td>@(title)</td>
+            <td><a href="/user/downReportExcelIndex@(typeValue)" class="btn btn-sm btn-primary">下载表单</a></td>
+            <td>
+                @if (typeValue == (int)CheckFormType.重点复核确认项目设计二调新增耕地项目清单)
+                { 
+                }
+                else
+                {
+                    <form method="post" action="/user/uploadReport?id=@(typeValue)" class="form-inline">
+                        <input type="file" name="file@(typeValue)" class="form-control input-sm" style="width: 100px;" />
+                        <button type="submit" class="btn btn-sm btn-default">上传验证</button>
+                    </form>
+                }
+            </td>
+        </tr>
+    }
+</table>

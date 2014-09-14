@@ -132,7 +132,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="IRowRule.cs" />
-    <Compile Include="Models\CheckIndex1.cs" />
+    <Compile Include="Models\CheckFormType.cs" />
     <Compile Include="Models\City.cs" />
     <Compile Include="Models\DetectEngine.cs" />
     <Compile Include="Models\LCCheckerInitializer.cs">
@@ -183,11 +183,24 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Content\bootstrap.css.map" />
+    <Content Include="App_Data\丽水市.xls" />
+    <Content Include="App_Data\台州市.xls" />
+    <Content Include="App_Data\嘉兴市.xls" />
+    <Content Include="App_Data\宁波市.xls" />
+    <Content Include="App_Data\杭州市.xls" />
+    <Content Include="App_Data\温州市.xls" />
+    <Content Include="App_Data\湖州市.xls" />
+    <Content Include="App_Data\绍兴市.xls" />
+    <Content Include="App_Data\舟山市.xls" />
+    <Content Include="App_Data\衢州市.xls" />
+    <Content Include="App_Data\金华市.xls" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\jquery-2.1.1.js" />
     <Content Include="Scripts\jquery-2.1.1.min.js" />
     <Content Include="Scripts\_references.js" />
+    <Content Include="Templates\6.xls" />
+    <Content Include="Templates\9.xls" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -208,18 +221,15 @@
     <Content Include="Views\User\Index2.cshtml" />
     <Content Include="Views\Shared\_pagination.cshtml" />
     <Content Include="Templates\ModelSelf.xlsx" />
-    <Content Include="Templates\表2.xls" />
-    <Content Include="Templates\表3.xls" />
-    <Content Include="Templates\表4.xls" />
-    <Content Include="Templates\表5.xls" />
-    <Content Include="Templates\表6.xls" />
-    <Content Include="Templates\表7.xls" />
-    <Content Include="Templates\表8.xls" />
-    <Content Include="Templates\表9.xls" />
     <Content Include="Views\User\CheckIndex.cshtml" />
+    <Content Include="Templates\2.xls" />
+    <Content Include="Templates\3.xls" />
+    <Content Include="Templates\4.xls" />
+    <Content Include="Templates\5.xls" />
+    <Content Include="Templates\7.xls" />
+    <Content Include="Templates\8.xls" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
     <Folder Include="Uploads\丽水市\" />
     <Folder Include="Uploads\台州市\" />
     <Folder Include="Uploads\嘉兴市\" />

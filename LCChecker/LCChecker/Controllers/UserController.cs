@@ -61,60 +61,6 @@ namespace LCChecker.Controllers
         }
 
         /// <summary>
-        /// 下载未完成和错误的Project模板
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult DownloadProjects(bool? result)
-        {
-            List<Project> list;
-            if (result.HasValue)
-            {
-                list = db.Projects.Where(e => e.Result != result.Value).ToList();
-            }
-            else
-            {
-                list = db.Projects.Where(e => e.Result != null).ToList();
-            }
-
-            var workbook = XslHelper.GetWorkbook("templates/modelSelf.xlsx");
-
-            var sheet = workbook.GetSheetAt(0);
-
-            int y = 1;
-            foreach (var item in list)
-            {
-                IRow row = sheet.GetRow(y);
-                if (row == null)
-                    row = sheet.CreateRow(y);
-                ICell cell = row.GetCell(0);
-                if (cell == null)
-                    cell = row.CreateCell(0);
-                cell.SetCellValue(y);
-
-                ICell cell2 = row.GetCell(1);
-                if (cell2 == null)
-                    cell2 = row.CreateCell(1);
-                cell2.SetCellValue(City.浙江省.ToString() + "," + item.City.ToString() + "," + item.County);
-
-                ICell cell3 = row.GetCell(2);
-                if (cell3 == null)
-                    cell3 = row.CreateCell(2);
-                cell3.SetCellValue(item.ID);
-                ICell cell4 = row.GetCell(3);
-                if (cell4 == null)
-                    cell4 = row.CreateCell(3);
-                cell4.SetCellValue(item.Name);
-                y++;
-            }
-
-            MemoryStream ms = new MemoryStream();
-            workbook.Write(ms);
-            ms.Flush();
-            byte[] fileContents = ms.ToArray();
-            return File(fileContents, "application/ms-excel", "自检表.xlsx");
-        }
-
-        /// <summary>
         /// 上传一部分项目，验证并更新到Project
         /// </summary>
         /// <param name="form"></param>
@@ -174,14 +120,13 @@ namespace LCChecker.Controllers
             {
                 throw new ArgumentException("检索失败");
             }
-           string Masterfile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/", CurrentUser.City.ToString() + ".xls");
+            string Masterfile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/", CurrentUser.City.ToString() + ".xls");
             //string Masterfile = @"D:\Work\浙江省土地整治项目核查平台\0914\trunk\LCChecker\LCChecker\App_Data\湖州市.xls";
             if (!Engine.SaveCurrent(filePath, Masterfile, ref fault, Error, ship))
             {
                 throw new ArgumentException("保存正确项目失败");
             }
 
-            
             //检查完毕，更新Projects
             var projects = db.Projects.Where(x => x.City == CurrentUser.City).ToList();
             foreach (var item in projects)
@@ -209,8 +154,6 @@ namespace LCChecker.Controllers
             return RedirectToAction("Index", new { result = false });
         }
 
-
-
         public ActionResult CheckIndex(int id)
         {
             var file = db.Files.FirstOrDefault(e => e.ID == id);
@@ -227,6 +170,47 @@ namespace LCChecker.Controllers
         }
 
         /// <summary>
+        /// 下载未完成和错误的Project模板
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult DownloadProjects(bool? result)
+        {
+            List<Project> list;
+            if (result.HasValue)
+            {
+                list = db.Projects.Where(e => e.Result != result.Value).ToList();
+            }
+            else
+            {
+                list = db.Projects.Where(e => e.Result != null).ToList();
+            }
+
+            var workbook = XslHelper.GetWorkbook("templates/modelSelf.xlsx");
+
+            var sheet = workbook.GetSheetAt(0);
+            var rowIndex = 1;
+
+            sheet.InsertRow(rowIndex, list.Count - 1);
+
+            foreach (var item in list)
+            {
+                var row = sheet.GetRow(rowIndex);
+                row.Cells[0].SetCellValue(rowIndex);
+                row.Cells[1].SetCellValue(City.浙江省.ToString() + "," + item.City.ToString() + "," + item.County);
+                row.Cells[2].SetCellValue(item.ID);
+                row.Cells[3].SetCellValue(item.Name);
+
+                rowIndex++;
+            }
+
+            MemoryStream ms = new MemoryStream();
+            workbook.Write(ms);
+            ms.Flush();
+            byte[] fileContents = ms.ToArray();
+            return File(fileContents, "application/ms-excel", "自检表.xlsx");
+        }
+        
+        /// <summary>
         /// 下载表2
         /// </summary>
         /// <returns></returns>
@@ -240,14 +224,12 @@ namespace LCChecker.Controllers
             int count = list.Count();
             int rowIndex = 6;
             int rowNumber = 1;
-            InsertRow(ref sheet, rowIndex, count-1);
 
-
-            var textCellStyle = workbook.GetCellStyle(XslHeaderStyle.文本);
+            sheet.InsertRow(rowIndex, count - 1);
 
             foreach (var item in list)
             {
-                var row = CreateRow(sheet, rowIndex, 0, 7, textCellStyle);
+                var row = sheet.GetRow(rowIndex);
                 row.Cells[0].SetCellValue(rowNumber.ToString());
                 row.Cells[1].SetCellValue(item.City.ToString());
                 row.Cells[2].SetCellValue(item.County);
@@ -270,17 +252,16 @@ namespace LCChecker.Controllers
             var workbook = XslHelper.GetWorkbook("Templates/3.xls");
             var sheet = workbook.GetSheetAt(0);
             sheet.GetRow(1).Cells[0].SetCellValue(CurrentUser.City.ToString() + "重点项目复核确认总表");
-            var textCellStyle = workbook.GetCellStyle(XslHeaderStyle.文本);
-
 
             var list = db.Projects.Where(e => e.City == CurrentUser.City).ToList();
             int count = list.Count();
             int rowIndex = 6;
             int rowNumber = 1;
-            InsertRow(ref sheet, rowIndex, count - 1);
+            sheet.InsertRow(rowIndex, count - 1);
+
             foreach (var item in list)
             {
-                var row = CreateRow(sheet, rowIndex, 0, 9, textCellStyle);
+                var row = sheet.GetRow(rowIndex);
                 row.Cells[0].SetCellValue(rowNumber.ToString());
                 row.Cells[1].SetCellValue(item.City.ToString());
                 row.Cells[2].SetCellValue(item.County);
@@ -304,17 +285,15 @@ namespace LCChecker.Controllers
             var sheet = workbook.GetSheetAt(0);
             sheet.GetRow(1).Cells[0].SetCellValue(CurrentUser.City.ToString() + "重点复核确认项目申请删除项目清单");
 
-            var textCellStyle = workbook.GetCellStyle(XslHeaderStyle.文本);
-
-
             var list = db.Projects.Where(e => e.City == CurrentUser.City).ToList();
             int count = list.Count();
             var rowIndex = 6;
             var rowNumber = 1;
-            InsertRow(ref sheet, rowIndex, count - 1);
+            sheet.InsertRow(rowIndex, count - 1);
+
             foreach (var item in list)
             {
-                var row = CreateRow(sheet, rowIndex, 0, 6, textCellStyle);
+                var row = sheet.GetRow(rowIndex);
                 row.Cells[0].SetCellValue(rowNumber.ToString());
                 row.Cells[1].SetCellValue(item.City.ToString());
                 row.Cells[2].SetCellValue(item.County);
@@ -337,16 +316,15 @@ namespace LCChecker.Controllers
             var sheet = workbook.GetSheetAt(0);
             sheet.GetRow(1).Cells[0].SetCellValue(CurrentUser.City.ToString() + "重点复核确认项目备案信息错误项目清单");
 
-            var textCellStyle = workbook.GetCellStyle(XslHeaderStyle.文本);
-
             var list = db.Projects.Where(e => e.City == CurrentUser.City).ToList();
             var count = list.Count();
             var rowIndex = 5;
             var rowNumber = 1;
-            InsertRow(ref sheet, rowIndex, count - 1);
+            sheet.InsertRow(rowIndex, count - 1);
+
             foreach (var item in list)
             {
-                var row = CreateRow(sheet, rowIndex, 0, 8, textCellStyle);
+                var row = sheet.GetRow(rowIndex);
                 row.Cells[0].SetCellValue(rowNumber.ToString());
                 row.Cells[1].SetCellValue(item.City.ToString());
                 row.Cells[2].SetCellValue(item.County);
@@ -366,7 +344,8 @@ namespace LCChecker.Controllers
         /// <returns></returns>
         public ActionResult DownReportExcelIndex6()
         {
-            var workbook = XslHelper.GetWorkbook("Templates/表6.xls");
+            var workbook = XslHelper.GetWorkbook("Templates/6.xls");
+
             var sheet = workbook.GetSheetAt(0);
 
             sheet.GetRow(1).Cells[0].SetCellValue(CurrentUser.City.ToString() + "重点复核确认项目设计二调新增耕地项目清单");
@@ -384,16 +363,15 @@ namespace LCChecker.Controllers
             var sheet = workbook.GetSheetAt(0);
             sheet.GetRow(1).Cells[0].SetCellValue(CurrentUser.City.ToString() + "重点复核确认项目耕地质量等别修改项目清单");
 
-            var textCellStyle = workbook.GetCellStyle(XslHeaderStyle.文本);
-
             var list = db.Projects.Where(e => e.City == CurrentUser.City).ToList();
             var count = list.Count();
             var rowIndex = 5;
             var rowNumber = 1;
-            InsertRow(ref sheet, rowIndex, count - 1);
+            sheet.InsertRow(rowIndex, count - 1);
+
             foreach (var item in list)
             {
-                var row = CreateRow(sheet, rowIndex, 0, 8, textCellStyle);
+                var row = sheet.GetRow(rowIndex);
                 row.Cells[0].SetCellValue(rowNumber.ToString());
                 row.Cells[1].SetCellValue(item.City.ToString());
                 row.Cells[2].SetCellValue(item.County);
@@ -417,16 +395,15 @@ namespace LCChecker.Controllers
             var sheet = workbook.GetSheetAt(0);
             sheet.GetRow(1).Cells[0].SetCellValue(CurrentUser.City.ToString() + "重点复核确认项目占补平衡指标核减项目清单");
 
-            var textCellStyle = workbook.GetCellStyle(XslHeaderStyle.文本);
-
             var list = db.Projects.Where(e => e.City == CurrentUser.City).ToList();
             var count = list.Count();
             var rowIndex = 5;
             var rowNumber = 1;
-            InsertRow(ref sheet, rowIndex, count - 1);
+            sheet.InsertRow(rowIndex, count - 1);
+
             foreach (var item in list)
             {
-                var row = CreateRow(sheet, rowIndex, 0, 8, textCellStyle);
+                var row = sheet.GetRow(rowIndex);
                 row.Cells[0].SetCellValue(rowNumber.ToString());
                 row.Cells[1].SetCellValue(item.City.ToString());
                 row.Cells[2].SetCellValue(item.County);
@@ -446,32 +423,18 @@ namespace LCChecker.Controllers
         /// <returns></returns>
         public ActionResult DownReportExcelIndex9()
         {
-            var workbook = XslHelper.GetWorkbook("Templates/表9.xls");
+            var workbook = XslHelper.GetWorkbook("Templates/9.xls");
             var sheet = workbook.GetSheetAt(0);
             sheet.GetRow(1).Cells[0].SetCellValue(CurrentUser.City.ToString() + "重点复核确认项目新增耕地二级地类与耕地质量等别确认表");
 
-            var textCellStyle = workbook.GetCellStyle(XslHeaderStyle.文本);
-
             var list = db.Projects.Where(e => e.City == CurrentUser.City).ToList();
-
             var rowIndex = 6;
             var rowNumber = 1;
             var dkNames = new[] { "水田", "水浇地", "旱地" };
+            sheet.InsertRow(rowIndex, list.Count * dkNames.Length);
+
             foreach (var item in list)
             {
-                
-                foreach (var name in dkNames)
-                {
-                    var row = CreateRow(sheet, rowIndex, 0, 22, textCellStyle);
-                    row.Cells[6].SetCellValue(dkNames[rowIndex - 5]);
-                    for (int i = 7; i < 22; i++)
-                    {
-                        row.Cells[i].SetCellValue("（亩）");
-                    }
-                    row.Cells[22].SetCellValue("是");
-                    rowIndex++;
-                }
-
                 for (int j = 0; j < 6; j++)
                 {
                     sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress((rowIndex - 3), (rowIndex - 1), j, j));
@@ -483,27 +446,23 @@ namespace LCChecker.Controllers
                 groupRow.Cells[2].SetCellValue(item.County);
                 groupRow.Cells[3].SetCellValue(item.ID);
                 groupRow.Cells[4].SetCellValue(item.Name);
-                
+
+                foreach (var name in dkNames)
+                {
+                    var row = sheet.GetRow(rowIndex);
+                    row.Cells[6].SetCellValue(dkNames[rowIndex - 5]);
+                    for (int i = 7; i < 22; i++)
+                    {
+                        row.Cells[i].SetCellValue("（亩）");
+                    }
+                    row.Cells[22].SetCellValue("是");
+                    rowIndex++;
+                }
+
                 rowNumber++;
             }
 
             return GetFileResult(workbook, "附表9.xls");
-        }
-
-        private IRow CreateRow(ISheet sheet, int rowIndex, int startColumnNumber, int lastColumnNumber, ICellStyle style)
-        {
-            var row = sheet.GetRow(rowIndex) ?? sheet.CreateRow(rowIndex);
-            for (var i = startColumnNumber; i <= lastColumnNumber; i++)
-            {
-                var cell = row.GetCell(i);
-                if (cell == null)
-                {
-                    cell = row.CreateCell(i);
-                    cell.CellStyle = style;
-                }
-                cell.CellStyle = style;
-            }
-            return row;
         }
 
         private ActionResult GetFileResult(IWorkbook workbook, string fileName)
@@ -514,31 +473,6 @@ namespace LCChecker.Controllers
                 return File(ms.ToArray(), "application/ms-excel", fileName);
             }
         }
-
-        public static void InsertRow( ref ISheet sheet, int startRowIndex, int count)
-        {
-            sheet.ShiftRows(startRowIndex+1, sheet.LastRowNum, count, true, false);
-            var templateRow = sheet.GetRow(startRowIndex);
-            for (var rowIndex = startRowIndex + 1; rowIndex < startRowIndex + count + 1; rowIndex++)
-            {
-                var row = sheet.CreateRow(rowIndex);
-                if (templateRow.RowStyle != null)
-                {
-                    row.RowStyle = templateRow.RowStyle;
-                }
-                row.Height = templateRow.Height;
-                for (var cellIndex = 0; cellIndex < templateRow.Cells.Count; cellIndex++)
-                {
-                    var cellTemplate = templateRow.Cells[cellIndex];
-                    var cell = row.CreateCell(cellIndex, cellTemplate.CellType);
-                    if (cellTemplate.CellStyle != null)
-                    {
-                        cell.CellStyle = cellTemplate.CellStyle;
-                    }
-                }
-            }
-        }
-
 
     }
 }
