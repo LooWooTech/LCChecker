@@ -1,9 +1,7 @@
 ﻿@using LCChecker.Models;
 @{
-    ViewBag.Title = "项目清单下载与验证";
-}
-@section nav{
-    <li class="active"><a href="/user/">项目清单</a></li>
+    Layout = "_Layout.cshtml";
+    ViewBag.Title = "报部表管理";
 }
 <table class="table">
     <tr>
@@ -11,21 +9,21 @@
         <th>下载地址</th>
         <th style="width: 200px;">上传验证</th>
     </tr>
-    @foreach (var title in Enum.GetNames(typeof(CheckFormType)))
+    @foreach (var title in Enum.GetNames(typeof(ReportType)))
     {
-        var typeValue = (int)Enum.Parse(typeof(CheckFormType), title);
+        var typeValue = (int)Enum.Parse(typeof(ReportType), title);
         <tr>
             <td>@(title)</td>
             <td><a href="/user/downReportExcelIndex@(typeValue)" class="btn btn-sm btn-primary">下载表单</a></td>
             <td>
-                @if (typeValue == (int)CheckFormType.重点复核确认项目设计二调新增耕地项目清单)
+                @if (typeValue == (int)ReportType.重点复核确认项目设计二调新增耕地项目清单)
                 { 
                 }
                 else
                 {
                     <form method="post" action="/user/CheckIndex?id=@(typeValue)" class="form-inline">
                         <input type="file" name="file@(typeValue)" class="form-control input-sm" style="width: 100px;" />
-                        <button type="submit" class="btn btn-sm btn-default">上传验证</button>
+                        <button type="submit" class="btn btn-sm btn-success">上传验证</button>
                     </form>
                 }
             </td>

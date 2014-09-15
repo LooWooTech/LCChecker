@@ -38,6 +38,11 @@ namespace LCChecker.Controllers
             return View();
         }
 
+        public ActionResult UploadProject()
+        {
+            return View();
+        }
+
         public ActionResult Users()
         {
             ViewBag.List = db.Users.ToList();

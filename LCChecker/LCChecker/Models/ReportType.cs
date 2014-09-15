@@ -5,7 +5,7 @@ using System.Web;
 
 namespace LCChecker.Models
 {
-    public enum CheckFormType
+    public enum ReportType
     {
         重点复核确认无问题项目清单 = 2,
         重点项目复核确认总表 = 3,

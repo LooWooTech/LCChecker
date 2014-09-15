@@ -15,7 +15,7 @@ namespace LCChecker.Controllers
     [UserAuthorize]
     public class UserController : ControllerBase
     {
-        public ActionResult Index(ResultFilter result = ResultFilter.All, int page = 1)
+        public ActionResult Index()
         {
             var summary = new Summary
             {
@@ -25,17 +25,20 @@ namespace LCChecker.Controllers
                 ErrorCount = db.Projects.Count(e => e.City == CurrentUser.City && e.Result == false),
 
             };
-            //全部结束，进入第二阶段
-            if (summary.TotalCount > 0 && summary.TotalCount == summary.SuccessCount)
-            {
+            ViewBag.Summary = summary;
+            return View();
+        }
 
-                return View("Index2");
-            }
-
+        public ActionResult Projects(ResultFilter result = ResultFilter.All, int page = 1)
+        {
             var paging = new Page(page);
             ViewBag.Projects = ProjectHelper.GetProjects(CurrentUser.City, result, paging);
             ViewBag.Page = paging;
-            ViewBag.Summary = summary;
+            return View();
+        }
+
+        public ActionResult Reports()
+        {
             return View();
         }
 

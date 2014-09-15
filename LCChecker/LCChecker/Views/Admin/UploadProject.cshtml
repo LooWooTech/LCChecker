@@ -1,0 +1,41 @@
+﻿
+@using LCChecker.Models
+@{
+    Layout = "_Layout.cshtml";
+    ViewBag.Title = "自检表上传概况";
+    Dictionary<City, Summary> data = ViewBag.Summary;
+}
+
+
+<legend><i class="glyphicon glyphicon-check"></i>&nbsp;自荐表统计</legend>
+<table class="table table-bordered">
+    <tr>
+        <th>市</th>
+        <th>项目总数</th>
+        <th>通过总数</th>
+        <th>失败总数</th>
+        <th>未上传数</th>
+    </tr>
+    @foreach (var kv in data)
+    {
+        var summary = kv.Value;
+        <tr>
+            <td><a href="/admin/projects?city=@((int)summary.City)">@(summary.City)</a></td>
+            <td>@(summary.TotalCount)</td>
+            <td>@(summary.SuccessCount)</td>
+            <td>@(summary.ErrorCount)</td>
+            <td>@(summary.UnCheckCount)</td>
+        </tr>
+    }
+</table>
+
+<legend><i class="glyphicon glyphicon-upload"></i>&nbsp;导入项目</legend>
+<form class="form form-inline" method="post" enctype="multipart/form-data" action="/admin/uploadprojects">
+    <div class="input-group">
+        <span class="input-group-addon">选择项目文件</span>
+        <input type="file" name="file1" class="form-control" />
+        <div class="input-group-btn">
+            <button type="submit" class="btn btn-primary">上传</button>
+        </div>
+    </div>
+</form>
