@@ -12,7 +12,17 @@ namespace LCChecker.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-
+            if (CurrentUser != null)
+            {
+                if (CurrentUser.Flag)
+                {
+                    return RedirectToAction("Index", "Admin");
+                }
+                else
+                {
+                    return RedirectToAction("Index", "User");
+                }
+            }
 
             return View();
         }

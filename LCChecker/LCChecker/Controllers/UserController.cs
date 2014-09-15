@@ -118,7 +118,7 @@ namespace LCChecker.Controllers
             string fault = "";
             if (!Engine.CheckExcel(filePath, ref fault, ref Error, ref ship))
             {
-                throw new ArgumentException("检索失败");
+                throw new ArgumentException("检索失败：" + fault);
             }
             string Masterfile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/", CurrentUser.City.ToString() + ".xls");
             //string Masterfile = @"D:\Work\浙江省土地整治项目核查平台\0914\trunk\LCChecker\LCChecker\App_Data\湖州市.xls";

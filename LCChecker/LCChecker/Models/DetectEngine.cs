@@ -364,7 +364,7 @@ namespace LCChecker.Models
             int startRow = 0, startCell = 0;
             if (!FindHeader(sheet, ref startRow, ref startCell))
             {
-                mistakes = "未找到表格：" + Path + "的表头";
+                mistakes = "未找到表格的表头";
                 return false;
             }
             startRow++;

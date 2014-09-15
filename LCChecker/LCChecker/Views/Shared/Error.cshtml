@@ -14,6 +14,9 @@
     <div>
         @(ex.Message)
     </div>
+    <div style="display:none">
+        @(ex.StackTrace)
+    </div>
     <script>
         $(function () {
             $("#main-panel").removeClass("panel-default").addClass("panel-danger");
