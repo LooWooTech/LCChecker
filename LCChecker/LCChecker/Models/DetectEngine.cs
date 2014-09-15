@@ -248,6 +248,18 @@ namespace LCChecker.Models
 
             list.Add(new Special() { ColumnIndex = 36 });
 
+            list.Add(new SumRowRule()
+                {
+                    ColumnIndices = new[] {37, 38},
+                    SumColumnIndex = 27
+                });
+
+            list.Add(new SumRowRule()
+                {
+                    ColumnIndices = new[] {39, 40},
+                    SumColumnIndex = 31
+                });
+
             foreach (var item in list)
             {
                 rules.Add(new RuleInfo() { Rule = item });
@@ -372,15 +384,15 @@ namespace LCChecker.Models
                     workbook = WorkbookFactory.Create(fs);
                 }
             }
-            catch 
+            catch
             {
-                errMsg = "打开Excel表格失败：" + filePath;
+                errMsg = "打开Excel表格失败：";// +filePath;
                 return null;
             }
 
             if (workbook == null)
             {
-                errMsg = "打开Excel表格失败：" + filePath;
+                errMsg = "打开Excel表格失败：";// +filePath;
                 return null;
             }
 
@@ -396,8 +408,8 @@ namespace LCChecker.Models
 
             if (FindHeader(sheet, ref startRow, ref startCol) == false)
             {
-                errMsg = "未找到表头:" + filePath;
-                return sheet;
+                errMsg = "未找到表头，请确保表头中包含1栏至42栏存在。";// +filePath;
+                return null;
             }
             return sheet;
         }
@@ -693,7 +705,7 @@ namespace LCChecker.Models
                         var value = row.GetCell(j, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
                         if (value == "1栏")
                         {
-                            for (int k = 0; k < 43; k++)
+                            for (int k = 0; k < 42; k++)
                             {
                                 value = row.GetCell(k + j, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
                                 if (value != string.Format("{0}栏", k + 1))

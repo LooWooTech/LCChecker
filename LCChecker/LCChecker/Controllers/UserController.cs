@@ -104,11 +104,11 @@ namespace LCChecker.Controllers
 
             };
             //全部结束，进入第二阶段
-            if (summary.TotalCount > 0 && summary.TotalCount == summary.SuccessCount)
+            /*if (summary.TotalCount > 0 && summary.TotalCount == summary.SuccessCount)
             {
 
                 return RedirectToAction("CheckIndex", new { id = uploadFile.ID });
-            }
+            }*/
             //上传成功后跳转到check页面进行检查，参数是File的ID
             return RedirectToAction("Check", new { id = uploadFile.ID, TypeId = id });
         }
@@ -149,9 +149,12 @@ namespace LCChecker.Controllers
                     {
                         item.Note = "";
                         item.Result = false;
-                        foreach (var Message in errors[item.ID])
+                        var errs = errors[item.ID];
+                        var i = 1;
+                        foreach (var msg in errs)
                         {
-                            item.Note += Message + "\r\n";
+                            item.Note += string.Format("({0}){1}；", i, msg); ;
+                            i++;
                         }
                     }
                     else
@@ -179,25 +182,25 @@ namespace LCChecker.Controllers
 
             string masterPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", CurrentUser.City.ToString() + ".xls");
             string fault = "";
-            CheckReport2 Engine = new CheckReport2(masterPath);
-            if (!Engine.Check(filePath, ref fault))
-            {
-                throw new ArgumentException("检索附表失败");
-            }
+            //CheckReport2 Engine = new CheckReport2(masterPath);
+            //if (!Engine.Check(filePath, ref fault))
+            //{
+            //    throw new ArgumentException("检索附表失败");
+            //}
 
-            if (Engine.Error.Count() != 0)
-            {
+            //if (Engine.Error.Count() != 0)
+            //{
 
-            }
+            //}
 
-            var message = db.Reports.Where(x => x.City == CurrentUser.City && x.Type == typeId).FirstOrDefault();
-            if (message == null)
-            {
-                throw new ArgumentException("未找到上传信息");
-            }
-            message.Result = true;
-            db.Entry(message).State = EntityState.Modified;
-            db.SaveChanges();
+            //var message = db.Reports.Where(x => x.City == CurrentUser.City && x.Type == typeId).FirstOrDefault();
+            //if (message == null)
+            //{
+            //    throw new ArgumentException("未找到上传信息");
+            //}
+            //message.Result = true;
+            //db.Entry(message).State = EntityState.Modified;
+            //db.SaveChanges();
 
 
 
