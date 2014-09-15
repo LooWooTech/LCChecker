@@ -133,6 +133,14 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="IRowRule.cs" />
+    <Compile Include="Models\CheckEngine.cs" />
+    <Compile Include="Models\CheckReport2.cs" />
+    <Compile Include="Models\CheckReport3.cs" />
+    <Compile Include="Models\CheckReport4.cs" />
+    <Compile Include="Models\CheckReport5.cs" />
+    <Compile Include="Models\CheckReport7.cs" />
+    <Compile Include="Models\Index2.cs" />
+    <Compile Include="Models\Report.cs" />
     <Compile Include="Models\ReportType.cs" />
     <Compile Include="Models\City.cs" />
     <Compile Include="Models\DetectEngine.cs" />
@@ -154,11 +162,13 @@
     <Compile Include="Rules\CellEmptyRowRule.cs" />
     <Compile Include="Rules\CellRangeRowRule.cs" />
     <Compile Include="Rules\ConditionalRowRule.cs" />
+    <Compile Include="Rules\DoubleEqual.cs" />
     <Compile Include="Rules\Format.cs" />
     <Compile Include="Rules\MultipleCellRangeRowRule.cs" />
     <Compile Include="Rules\NoLessThanRowRule.cs" />
     <Compile Include="Rules\ProjectType.cs" />
     <Compile Include="Rules\Special.cs" />
+    <Compile Include="Rules\StringEqual.cs" />
     <Compile Include="Rules\SumRowRule.cs" />
     <Compile Include="Rules\UniqueValueRowRule.cs" />
     <Compile Include="UploadHelper.cs" />
@@ -220,7 +230,6 @@
     <Content Include="Scripts\jquery-2.1.1.min.map" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\User\Projects.cshtml" />
-    <Content Include="Views\User\Reports.cshtml" />
     <Content Include="Views\Shared\_pagination.cshtml" />
     <Content Include="Templates\ModelSelf.xlsx" />
     <Content Include="Views\User\CheckIndex.cshtml" />
@@ -236,7 +245,11 @@
     <Content Include="Views\Admin\AddUser.cshtml" />
     <Content Include="Views\User\Index.cshtml" />
     <Content Include="Views\User\_Layout.cshtml" />
-    <Content Include="Views\Admin\UploadProject.cshtml" />
+    <Content Include="Views\Admin\ProjectSummary.cshtml" />
+    <Content Include="Views\User\Reports.cshtml">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Views\Admin\ReportSummary.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Uploads\丽水市\" />

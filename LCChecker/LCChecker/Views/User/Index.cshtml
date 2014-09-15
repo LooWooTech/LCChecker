@@ -2,19 +2,20 @@
 @{
     Layout = "_Layout.cshtml";
     ViewBag.Title = "首页";
-    Summary summary = ViewBag.Summary;
+    Summary projectSummary = ViewBag.ProjectSummary;
+    Summary reportSummary = ViewBag.ReportSummary;
 }
 <blockquote>
-    <p><i class="glyphicon glyphicon-check"></i>&nbsp;<a href="/user/projects/">自荐表管理</a></p>
+    <p><i class="glyphicon glyphicon-check"></i>&nbsp;<a href="/user/projects/">自检表管理</a></p>
     <small>
         项目总数：
-        @(summary.TotalCount)
+        @(projectSummary.TotalCount)
         检验通过总数：
-        @(summary.SuccessCount)
+        @(projectSummary.SuccessCount)
         未通过总数：
-        @(summary.ErrorCount)
+        @(projectSummary.ErrorCount)
         未上传总数：
-        @(summary.UnCheckCount)
+        @(projectSummary.UnCheckCount)
     </small>
 </blockquote>
 
@@ -22,13 +23,13 @@
     <p><i class="glyphicon glyphicon-paperclip"></i>&nbsp;<a href="/user/reports/">报部表管理</a></p>
     <small>
         项目总数：
-        @(summary.TotalCount)
+        @(reportSummary.TotalCount)
         检验通过总数：
-        @(summary.SuccessCount)
+        @(reportSummary.SuccessCount)
         未通过总数：
-        @(summary.ErrorCount)
+        @(reportSummary.ErrorCount)
         未上传总数：
-        @(summary.UnCheckCount)
+        @(reportSummary.UnCheckCount)
     </small>
 </blockquote>
 

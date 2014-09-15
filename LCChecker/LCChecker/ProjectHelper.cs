@@ -8,6 +8,21 @@ namespace LCChecker
 {
     public class ProjectHelper
     {
+        public static void AddProjects(List<Project> list)
+        {
+            using (var db = new LCDbContext())
+            {
+                foreach (var item in list)
+                {
+                    if (!db.Projects.Any(e => e.ID == item.ID))
+                    {
+                        db.Projects.Add(item);
+                    }
+                    db.SaveChanges();
+                }
+            }
+        }
+
         public static List<Project> GetProjects(City city = City.浙江省, ResultFilter result = ResultFilter.All, Page page = null)
         {
             using (var db = new LCDbContext())

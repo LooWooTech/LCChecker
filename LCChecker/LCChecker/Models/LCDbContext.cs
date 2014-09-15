@@ -15,5 +15,7 @@ namespace LCChecker.Models
         public DbSet<Project> Projects { get; set; }
 
         public DbSet<UploadFile> Files { get; set; }
+
+        public DbSet<Report> Reports { get; set; }
     }
 }

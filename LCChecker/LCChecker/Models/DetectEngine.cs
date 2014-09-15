@@ -348,18 +348,17 @@ namespace LCChecker.Models
          */
         public bool CheckExcel(string Path, ref string mistakes, ref Dictionary<string, List<string>> ErrorMessage, ref Dictionary<string, int> relatship)
         {
-            IWorkbook workbook;
-            try
+            IWorkbook workbook = null;
+            using (FileStream fs = new FileStream(Path, FileMode.Open, FileAccess.Read))
             {
-                FileStream fs = new FileStream(Path, FileMode.Open, FileAccess.Read);
                 workbook = WorkbookFactory.Create(fs);
-                fs.Close();
             }
-            catch (Exception er)
+            if (workbook == null)
             {
-                mistakes = er.Message;
+                mistakes = "打开文件失败";
                 return false;
             }
+            
             ISheet sheet = workbook.GetSheetAt(0);
             int startRow = 0, startCell = 0;
             if (!FindHeader(sheet, ref startRow, ref startCell))
@@ -376,6 +375,8 @@ namespace LCChecker.Models
                     continue;
                 List<string> RowError = new List<string>();
                 var value = row.GetCell(startCell + 2, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+                if (value == "")
+                    break;
                 relatship.Add(value, y);
                 foreach (var item in rules)
                 {
@@ -705,7 +706,7 @@ namespace LCChecker.Models
                 IRow row = sheet.GetRow(i);
                 if (row != null)
                 {
-                    for (int j = 0; j < 5; j++)
+                    for (int j = 0; j < 6; j++)
                     {
                         var value = row.GetCell(j, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
                         if (value == "1栏")

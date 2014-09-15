@@ -4,23 +4,28 @@
     ViewBag.Title = "市区项目概况";
     Dictionary<City, Summary> data = ViewBag.Summary;
 }
-<blockquote>
-    <p><i class="glyphicon glyphicon-check"></i>&nbsp;<a href="/admin/uploadproject/">自荐表统计</a></p>
-    <small></small>
-</blockquote>
+<div class="col-lg-6">
+    <blockquote>
+        <p><i class="glyphicon glyphicon-check"></i>&nbsp;<a href="/admin/projectsummary/">自检表统计</a></p>
+        <small>查看所有城市的自检表上传概况</small>
+    </blockquote>
+</div>
+<div class="col-lg-6">
+    <blockquote>
+        <p><i class="glyphicon glyphicon-list"></i>&nbsp;<a href="/admin/projects/">自检表列表</a></p>
+        <small>详细过滤城市的自荐表项目上传详情</small>
+    </blockquote>
+</div>
+<div class="col-lg-6">
+    <blockquote>
+        <p><i class="glyphicon glyphicon-paperclip"></i>&nbsp;<a href="/admin/reportsummary/">报部表统计</a></p>
+        <small>查看所有城市的报部表上传概况</small>
+    </blockquote>
+</div>
+<div class="col-lg-6">
+    <blockquote>
+        <p><i class="glyphicon glyphicon-user"></i>&nbsp;<a href="/admin/users/">用户管理</a></p>
+        <small>查看、添加、删除用户</small>
+    </blockquote>
 
-<blockquote>
-    <p><i class="glyphicon glyphicon-list"></i>&nbsp;<a href="/admin/projects/">自荐表列表</a></p>
-    <small></small>
-</blockquote>
-
-<blockquote>
-    <p><i class="glyphicon glyphicon-paperclip"></i>&nbsp;<a href="/admin/reports/">报部表统计</a></p>
-    <small></small>
-</blockquote>
-
-<blockquote>
-    <p><i class="glyphicon glyphicon-user"></i>&nbsp;<a href="/admin/users/">用户管理</a></p>
-    <small></small>
-</blockquote>
-
+</div>

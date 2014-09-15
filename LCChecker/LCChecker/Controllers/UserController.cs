@@ -17,7 +17,8 @@ namespace LCChecker.Controllers
     {
         public ActionResult Index()
         {
-            var summary = new Summary
+
+            ViewBag.ProjectSummary = new Summary
             {
                 City = CurrentUser.City,
                 TotalCount = db.Projects.Count(e => e.City == CurrentUser.City),
@@ -25,7 +26,13 @@ namespace LCChecker.Controllers
                 ErrorCount = db.Projects.Count(e => e.City == CurrentUser.City && e.Result == false),
 
             };
-            ViewBag.Summary = summary;
+            ViewBag.ReportSummary = new Summary
+            {
+                City = CurrentUser.City,
+                TotalCount = db.Reports.Count(e => e.City == CurrentUser.City),
+                SuccessCount = db.Reports.Count(e => e.City == CurrentUser.City && e.Result == true),
+                ErrorCount = db.Reports.Count(e => e.City == CurrentUser.City && e.Result == false),
+            };
             return View();
         }
 
@@ -37,9 +44,31 @@ namespace LCChecker.Controllers
             return View();
         }
 
+
         public ActionResult Reports()
         {
+            if (!db.Reports.Any(e => e.City == CurrentUser.City))
+            {
+                InitReports();
+            }
+            ViewBag.List = db.Reports.Where(e => e.City == CurrentUser.City).ToList();
             return View();
+        }
+
+        private void InitReports()
+        {
+            int i = 0;
+            foreach (var item in Enum.GetNames(typeof(ReportType)))
+            {
+                db.Reports.Add(new Report
+                {
+                    ID = (int)CurrentUser.City + "_" + i.ToString(),
+                    City = CurrentUser.City,
+                    Type = (ReportType)Enum.Parse(typeof(ReportType), item)
+                });
+                db.SaveChanges();
+                i++;
+            }
         }
 
         /// <summary>
@@ -48,7 +77,7 @@ namespace LCChecker.Controllers
         /// <param name="form"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult UploadProjects(FormCollection form)
+        public ActionResult UploadProjects(int id = 0)
         {
             var file = UploadHelper.GetPostedFile(HttpContext);
 
@@ -81,7 +110,7 @@ namespace LCChecker.Controllers
                 return RedirectToAction("CheckIndex", new { id = uploadFile.ID });
             }
             //上传成功后跳转到check页面进行检查，参数是File的ID
-            return RedirectToAction("Check", new { id = uploadFile.ID });
+            return RedirectToAction("Check", new { id = uploadFile.ID, TypeId = id });
         }
 
         public ActionResult Check(int id)
@@ -123,7 +152,7 @@ namespace LCChecker.Controllers
                             item.Result = false;
                             foreach (var Message in Error[item.ID])
                             {
-                                item.Note += Message + "；";
+                                item.Note += Message + "\r\n";
                             }
                         }
                         else
@@ -148,7 +177,7 @@ namespace LCChecker.Controllers
             return RedirectToAction("Index", new { result = false });
         }
 
-        public ActionResult CheckIndex(int id)
+        public ActionResult CheckIndex(int id, ReportType typeId)
         {
             var file = db.Files.FirstOrDefault(e => e.ID == id);
             if (file == null)
@@ -157,6 +186,30 @@ namespace LCChecker.Controllers
             }
 
             var filePath = UploadHelper.GetAbsolutePath(file.SavePath);
+
+            string masterPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", CurrentUser.City.ToString() + ".xls");
+            string fault = "";
+            CheckReport2 Engine = new CheckReport2(masterPath);
+            if (!Engine.Check(filePath, ref fault))
+            {
+                throw new ArgumentException("检索附表失败");
+            }
+
+            if (Engine.Error.Count() != 0)
+            {
+
+            }
+
+            var message = db.Reports.Where(x => x.City == CurrentUser.City && x.Type == typeId).FirstOrDefault();
+            if (message == null)
+            {
+                throw new ArgumentException("未找到上传信息");
+            }
+            message.Result = true;
+            db.Entry(message).State = EntityState.Modified;
+            db.SaveChanges();
+
+
 
             Dictionary<string, List<string>> Error = new Dictionary<string, List<string>>();
             ViewBag.Error = Error;

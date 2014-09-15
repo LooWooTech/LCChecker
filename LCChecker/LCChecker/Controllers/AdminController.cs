@@ -14,16 +14,13 @@ namespace LCChecker.Controllers
     [UserAuthorize]
     public class AdminController : ControllerBase
     {
-        private void AddProjects(List<Project> list)
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            foreach (var item in list)
+            if (!CurrentUser.Flag)
             {
-                if (!db.Projects.Any(e => e.ID == item.ID))
-                {
-                    db.Projects.Add(item);
-                }
-                db.SaveChanges();
+                throw new HttpException(401, "你没有权限查看此页面");
             }
+            base.OnActionExecuting(filterContext);
         }
 
         public ActionResult Index()
@@ -35,11 +32,6 @@ namespace LCChecker.Controllers
                 SuccessCount = g.Count(e => e.Result == true),
                 City = g.Key
             });
-            return View();
-        }
-
-        public ActionResult UploadProject()
-        {
             return View();
         }
 
@@ -117,6 +109,31 @@ namespace LCChecker.Controllers
             return View();
         }
 
+        public ActionResult ReportSummary()
+        {
+            ViewBag.Summary = db.Reports.GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
+            {
+                TotalCount = g.Count(),
+                ErrorCount = g.Count(e => e.Result == false),
+                SuccessCount = g.Count(e => e.Result == true),
+                City = g.Key
+            });
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult ProjectSummary()
+        {
+            ViewBag.Summary = db.Projects.GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
+            {
+                TotalCount = g.Count(),
+                ErrorCount = g.Count(e => e.Result == false),
+                SuccessCount = g.Count(e => e.Result == true),
+                City = g.Key
+            });
+            return View();
+        }
+        
         /// <summary>
         /// 上传总表数据
         /// </summary>
@@ -170,7 +187,7 @@ namespace LCChecker.Controllers
 
             }
 
-            AddProjects(list);
+            ProjectHelper.AddProjects(list);
 
             return RedirectToAction("Index", "Admin");
         }

@@ -1,0 +1,27 @@
+﻿
+@using LCChecker.Models
+@{
+    Layout = "_Layout.cshtml";
+    ViewBag.Title = "报部表上传概况";
+    Dictionary<City, Summary> data = ViewBag.Summary;
+}
+<table class="table table-bordered">
+    <tr>
+        <th>市</th>
+        <th>项目总数</th>
+        <th>通过总数</th>
+        <th>失败总数</th>
+        <th>未上传数</th>
+    </tr>
+    @foreach (var kv in data)
+    {
+        var summary = kv.Value;
+        <tr>
+            <td><a href="/admin/projects?city=@((int)summary.City)">@(summary.City)</a></td>
+            <td>@(summary.TotalCount)</td>
+            <td>@(summary.SuccessCount)</td>
+            <td>@(summary.ErrorCount)</td>
+            <td>@(summary.UnCheckCount)</td>
+        </tr>
+    }
+</table>

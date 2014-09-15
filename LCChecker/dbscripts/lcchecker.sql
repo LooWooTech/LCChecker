@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50703
 File Encoding         : 65001
 
-Date: 2014-09-12 14:31:29
+Date: 2014-09-15 22:41:36
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -32,6 +32,18 @@ CREATE TABLE `projects` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
+-- Table structure for reports
+-- ----------------------------
+DROP TABLE IF EXISTS `reports`;
+CREATE TABLE `reports` (
+  `ID` varchar(55) NOT NULL,
+  `CityID` int(11) NOT NULL,
+  `Type` int(11) NOT NULL,
+  `Result` bit(1) DEFAULT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
 -- Table structure for uploadfiles
 -- ----------------------------
 DROP TABLE IF EXISTS `uploadfiles`;
@@ -44,7 +56,7 @@ CREATE TABLE `uploadfiles` (
   PRIMARY KEY (`ID`),
   UNIQUE KEY `PK_FILE_ID` (`ID`) USING BTREE,
   KEY `IX_FILE_CITY` (`CityID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for users
@@ -60,4 +72,4 @@ CREATE TABLE `users` (
   UNIQUE KEY `PK_USER_ID` (`ID`) USING BTREE,
   KEY `IX_USER_CITY` (`CityID`),
   KEY `IX_USERNAME` (`Username`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
