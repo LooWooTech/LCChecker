@@ -13,22 +13,20 @@ namespace LCChecker.Rules
         public int ColumnIndex { get; set; }
         public IRowRule Rule { get; set; }
         public string Keyword { get; set; }
-       // public string summary { get; set; }
+
         private Dictionary<string, int> nameDict = new Dictionary<string, int>();
         public UniqueValueRowRule(string summary)
         {
             IWorkbook workbook = null;
-            //string SummaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, summary);
-            try
+            using (FileStream fs = new FileStream(summary, FileMode.Open, FileAccess.Read))
             {
-                FileStream fs = new FileStream(summary, FileMode.Open, FileAccess.Read);
                 workbook = WorkbookFactory.Create(fs);
-                fs.Close();
             }
-            catch
+            if (workbook == null)
             {
- 
+                return;
             }
+       
             ISheet sheet = workbook.GetSheetAt(0);
             int startRow = 0, startCell = 0;
             FindHeader(sheet, ref startRow, ref startCell);
@@ -37,6 +35,8 @@ namespace LCChecker.Rules
             for (int y = startRow; y <= LastNumber; y++)
             {
                 IRow row = sheet.GetRow(y);
+                if (row == null)
+                    break;
                 var value = row.GetCell(startCell + 3, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
                 if (nameDict.ContainsKey(value))
                 {
@@ -76,11 +76,6 @@ namespace LCChecker.Rules
             }
             return false;
         }
-
-
-
-
-
 
         public string Name {
             get { return "项目名称包含“综合整治”需复核重复备案需删除"; }

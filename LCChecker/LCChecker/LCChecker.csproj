@@ -30,6 +30,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -133,13 +134,21 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="IRowRule.cs" />
+    <Compile Include="Models\CheckEngine.cs" />
     <Compile Include="Models\CheckFormType.cs" />
+    <Compile Include="Models\CheckReport2.cs" />
+    <Compile Include="Models\CheckReport3.cs" />
+    <Compile Include="Models\CheckReport4.cs" />
+    <Compile Include="Models\CheckReport5.cs" />
+    <Compile Include="Models\CheckReport7.cs" />
     <Compile Include="Models\City.cs" />
     <Compile Include="Models\DetectEngine.cs" />
+    <Compile Include="Models\Index2.cs" />
     <Compile Include="Models\LCCheckerInitializer.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Models\LCDbContext.cs" />
+    <Compile Include="Models\Nine.cs" />
     <Compile Include="Models\Page.cs" />
     <Compile Include="Models\Project.cs" />
     <Compile Include="Models\ResultFilter.cs" />
@@ -154,11 +163,13 @@
     <Compile Include="Rules\CellEmptyRowRule.cs" />
     <Compile Include="Rules\CellRangeRowRule.cs" />
     <Compile Include="Rules\ConditionalRowRule.cs" />
+    <Compile Include="Rules\DoubleEqual.cs" />
     <Compile Include="Rules\Format.cs" />
     <Compile Include="Rules\MultipleCellRangeRowRule.cs" />
     <Compile Include="Rules\NoLessThanRowRule.cs" />
     <Compile Include="Rules\ProjectType.cs" />
     <Compile Include="Rules\Special.cs" />
+    <Compile Include="Rules\StringEqual.cs" />
     <Compile Include="Rules\SumRowRule.cs" />
     <Compile Include="Rules\UniqueValueRowRule.cs" />
     <Compile Include="UploadHelper.cs" />
@@ -230,7 +241,6 @@
     <Content Include="Templates\5.xls" />
     <Content Include="Templates\7.xls" />
     <Content Include="Templates\8.xls" />
-    <Content Include="Views\Admin\Projects.cshtml" />
     <Content Include="Views\Admin\Users.cshtml" />
     <Content Include="Views\Admin\_Layout.cshtml" />
     <Content Include="Views\Admin\AddUser.cshtml" />

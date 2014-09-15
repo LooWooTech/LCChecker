@@ -1,6 +1,7 @@
 ﻿@using LCChecker.Models;
 @{
     ViewBag.Title = "项目清单下载与验证";
+    List<Nine> NineReport=ViewBag.NineReport;
 }
 @section nav{
     <li class="active"><a href="/user/">项目清单</a></li>
@@ -11,7 +12,7 @@
         <th>下载地址</th>
         <th style="width: 200px;">上传验证</th>
     </tr>
-    @foreach (var title in Enum.GetNames(typeof(CheckFormType)))
+    @*@foreach (var title in Enum.GetNames(typeof(CheckFormType)))
     {
         var typeValue = (int)Enum.Parse(typeof(CheckFormType), title);
         <tr>
@@ -29,6 +30,44 @@
                     </form>
                 }
             </td>
+        </tr>
+    }*@
+
+
+
+
+
+    @foreach (var item in NineReport)
+    {
+        var typeValue = (int) item.CheckFormType;
+        <tr>
+            <td>@item.CheckFormType</td>
+            <td>
+                <a href="/User/downReportExcelIndex@(typeValue)" class="=btn btn-sm btn-primary">下载表单</a>
+            </td>
+            <td>
+                @if (item.Result == true)
+{
+
+}
+else
+{
+    {
+        if (typeValue == (int)CheckFormType.重点复核确认项目设计二调新增耕地项目清单)
+        {
+        }
+        else
+        {
+            <form method="post" action="/user/UploadProjects?id=@(typeValue)" class="form-inline" enctype="multipart/form-data">
+                <input type="file" name="file" class="form-control input-sm" style="width: 100px;" />
+                <button type="submit" class="btn btn-sm btn-default">上传验证</button>
+            </form>
+        }
+
+    }
+}
+            </td>
+            
         </tr>
     }
 </table>

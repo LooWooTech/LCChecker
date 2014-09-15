@@ -5,6 +5,8 @@ using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Validation;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -28,6 +30,13 @@ namespace LCChecker.Controllers
             //全部结束，进入第二阶段
             if (summary.TotalCount > 0 && summary.TotalCount == summary.SuccessCount)
             {
+                var one = db.Nines.FirstOrDefault(e => e.City == CurrentUser.City);
+                if (one == null)
+                {
+                    AddNineReport();
+                }
+                var NineReport = db.Nines.Where(e => e.City == CurrentUser.City).ToList();
+                ViewBag.NineReport = NineReport; 
 
                 return View("Index2");
             }
@@ -39,13 +48,60 @@ namespace LCChecker.Controllers
             return View();
         }
 
+        private void AddNineReport()
+        {
+            int i = 0;
+            var typeValue = (int)CurrentUser.City;
+            foreach (var item in Enum.GetNames(typeof(CheckFormType)))
+            {
+                string Id = typeValue.ToString() + i.ToString();
+                Nine one = new Nine();
+                one.ID = Id;
+                one.City = CurrentUser.City;
+                one.CheckFormType = (CheckFormType) Enum.Parse(typeof (CheckFormType), item);
+                db.Nines.Add(one);
+                db.SaveChanges();
+                i++;
+            }
+        }
+
+        //public ActionResult Index(bool? result, int page = 1)
+        //{
+        //    var summary = new Summary
+        //    {
+        //        City = CurrentUser.City,
+        //        TotalCount = db.Projects.Count(e => e.City == CurrentUser.City),
+        //        SuccessCount = db.Projects.Count(e => e.City == CurrentUser.City && e.Result == true),
+        //        ErrorCount = db.Projects.Count(e => e.City == CurrentUser.City && e.Result == false),
+
+        //    };
+        //    //全部结束，进入第二阶段
+        //    if (summary.TotalCount > 0 && summary.TotalCount == summary.SuccessCount)
+        //    {
+        //        var one = db.Nines.FirstOrDefault(e => e.City == CurrentUser.City);
+        //        if (one == null)
+        //        {
+        //            AddNineReport();
+        //        }
+        //        var NineReport = db.Nines.Where(e => e.City == CurrentUser.City).ToList();
+        //        ViewBag.NineReport = NineReport; 
+        //        return View("Index2");
+        //    }
+
+        //    var paging = new Page(page);
+        //    ViewBag.Projects = ProjectHelper.GetProjects(CurrentUser.City, result, paging);
+        //    ViewBag.Page = paging;
+        //    ViewBag.Summary = summary;
+        //    return View();
+        //}
+
         /// <summary>
         /// 上传一部分项目，验证并更新到Project
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult UploadProjects(FormCollection form)
+        public ActionResult UploadProjects(int id=0)
         {
             var file = UploadHelper.GetPostedFile(HttpContext);
 
@@ -75,7 +131,7 @@ namespace LCChecker.Controllers
             if (summary.TotalCount > 0 && summary.TotalCount == summary.SuccessCount)
             {
 
-                return RedirectToAction("CheckIndex", new { id = uploadFile.ID });
+                return RedirectToAction("CheckIndex", new { id = uploadFile.ID ,TypeId=id});
             }
             //上传成功后跳转到check页面进行检查，参数是File的ID
             return RedirectToAction("Check", new { id = uploadFile.ID });
@@ -105,7 +161,6 @@ namespace LCChecker.Controllers
             {
                 throw new ArgumentException("保存正确项目失败");
             }
-
             try
             {
                 //检查完毕，更新Projects
@@ -120,7 +175,7 @@ namespace LCChecker.Controllers
                             item.Result = false;
                             foreach (var Message in Error[item.ID])
                             {
-                                item.Note += Message + "；";
+                                item.Note += Message + "<br />";
                             }
                         }
                         else
@@ -130,6 +185,7 @@ namespace LCChecker.Controllers
                         }
                     }
                 }
+                db.SaveChanges();
             }
             catch (System.Data.Entity.Validation.DbEntityValidationException dbEx)
             {
@@ -137,7 +193,7 @@ namespace LCChecker.Controllers
                 {
                     foreach (var validationError in validationErrors.ValidationErrors)
                     {
-                        System.Diagnostics.Trace.TraceInformation("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
+                        Trace.TraceInformation("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
                     }
                 }
             }
@@ -145,15 +201,39 @@ namespace LCChecker.Controllers
             return RedirectToAction("Index", new { result = false });
         }
 
-        public ActionResult CheckIndex(int id)
+
+        public ActionResult CheckIndex(int id,int TypeId)
         {
             var file = db.Files.FirstOrDefault(e => e.ID == id);
             if (file == null)
             {
                 throw new ArgumentException("参数错误");
             }
-
             var filePath = UploadHelper.GetAbsolutePath(file.SavePath);
+            string MasterPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", CurrentUser.City.ToString() + ".xls");
+            string fault = "";
+            CheckReport2 Engine = new CheckReport2(MasterPath);
+            if (!Engine.Check(filePath,ref fault))
+            {
+                throw new ArgumentException("检索附表失败");
+            }
+
+            if (Engine.Error.Count() != 0)
+            { 
+                
+            }
+            var NineReportType = (CheckFormType)Enum.Parse(typeof(CheckFormType), TypeId.ToString());
+            var Message = db.Nines.Where(x => x.City == CurrentUser.City && x.CheckFormType == NineReportType).FirstOrDefault();
+            if (Message == null)
+            {
+                throw new ArgumentException("未找到上传信息");
+            }
+            Message.Result = true;
+            db.Entry(Message).State = EntityState.Modified;
+            db.SaveChanges();
+
+
+            
 
             Dictionary<string, List<string>> Error = new Dictionary<string, List<string>>();
             ViewBag.Error = Error;

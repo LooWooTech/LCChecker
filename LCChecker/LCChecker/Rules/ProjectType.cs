@@ -29,6 +29,7 @@ namespace LCChecker.Rules
         {
             bool flag=false;
             var value = row.GetCell(xoffset + 2, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+            
             string vtime = value.Substring(6, 4);
             int a = int.Parse(vtime);
             if (a > Time)
