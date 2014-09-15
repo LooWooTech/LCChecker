@@ -39,7 +39,7 @@ namespace LCChecker.Controllers
         public ActionResult Projects(ResultFilter result = ResultFilter.All, int page = 1)
         {
             var paging = new Page(page);
-            ViewBag.Projects = ProjectHelper.GetProjects(CurrentUser.City, result, paging);
+            ViewBag.List = ProjectHelper.GetProjects(CurrentUser.City, result, paging);
             ViewBag.Page = paging;
             return View();
         }
@@ -123,58 +123,48 @@ namespace LCChecker.Controllers
 
             var filePath = UploadHelper.GetAbsolutePath(file.SavePath);
             //读取文件进行检查
-            Dictionary<string, List<string>> Error = new Dictionary<string, List<string>>();
-            Dictionary<string, int> ship = new Dictionary<string, int>();
-            DetectEngine Engine = new DetectEngine(filePath);
-            string fault = "";
-            if (!Engine.CheckExcel(filePath, ref fault, ref Error, ref ship))
+            var errors = new Dictionary<string, List<string>>();
+            var ships = new Dictionary<string, int>();
+            var detectEngine = new DetectEngine(filePath);
+            var fault = "";
+            if (!detectEngine.CheckExcel(filePath, ref fault, ref errors, ref ships))
             {
                 throw new ArgumentException("检索失败：" + fault);
             }
-            string Masterfile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/", CurrentUser.City.ToString() + ".xls");
+
+            var masterfile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/", CurrentUser.City.ToString() + ".xls");
             //string Masterfile = @"D:\Work\浙江省土地整治项目核查平台\0914\trunk\LCChecker\LCChecker\App_Data\湖州市.xls";
-            if (!Engine.SaveCurrent(filePath, Masterfile, ref fault, Error, ship))
+            if (!detectEngine.SaveCurrent(filePath, masterfile, ref fault, errors, ships))
             {
                 throw new ArgumentException("保存正确项目失败");
             }
 
-            try
+            //检查完毕，更新Projects
+            var projects = db.Projects.Where(e => e.City == CurrentUser.City);
+            foreach (var item in projects)
             {
-                //检查完毕，更新Projects
-                var projects = db.Projects.Where(x => x.City == CurrentUser.City);
-                foreach (var item in projects)
+                if (ships.ContainsKey(item.ID))
                 {
-                    if (ship.ContainsKey(item.ID))
+                    if (errors.ContainsKey(item.ID))
                     {
-                        if (Error.ContainsKey(item.ID))
+                        item.Note = "";
+                        item.Result = false;
+                        foreach (var Message in errors[item.ID])
                         {
-                            item.Note = "";
-                            item.Result = false;
-                            foreach (var Message in Error[item.ID])
-                            {
-                                item.Note += Message + "\r\n";
-                            }
+                            item.Note += Message + "\r\n";
                         }
-                        else
-                        {
-                            item.Result = true;
-                            item.Note = "";
-                        }
+                    }
+                    else
+                    {
+                        item.Result = true;
+                        item.Note = "";
                     }
                 }
             }
-            catch (System.Data.Entity.Validation.DbEntityValidationException dbEx)
-            {
-                foreach (var validationErrors in dbEx.EntityValidationErrors)
-                {
-                    foreach (var validationError in validationErrors.ValidationErrors)
-                    {
-                        System.Diagnostics.Trace.TraceInformation("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
-                    }
-                }
-            }
+
             db.SaveChanges();
-            return RedirectToAction("Index", new { result = false });
+
+            return RedirectToAction("projects");
         }
 
         public ActionResult CheckIndex(int id, ReportType typeId)

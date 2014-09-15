@@ -13,10 +13,11 @@ namespace LCChecker.Models
             PageIndex = 1;
         }
 
-        public Page(int page)
+        public Page(int page = 1, int pageSize = 40)
             : this()
         {
             PageIndex = page < 1 ? 1 : page;
+            PageSize = pageSize < 1 ? 40 : pageSize;
         }
 
         public int RecordCount { get; set; }

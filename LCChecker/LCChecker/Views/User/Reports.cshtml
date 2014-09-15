@@ -1,40 +1,56 @@
-﻿@using LCChecker.Models;
+﻿@using LCChecker;
+@using LCChecker.Models;
 @{
     Layout = "_Layout.cshtml";
     ViewBag.Title = "报部表管理";
     List<Report> list = ViewBag.List;
 }
+<h4>【注意】在自检表中项目全部检验通过后，再进行报部表的检查</h4>
 <table class="table">
     <tr>
         <th>表单名称</th>
+        <th>检查结果</th>
         <th>下载地址</th>
         <th style="width: 200px;">上传验证</th>
     </tr>
 
-    @foreach (var item in list)
-    {
-        var typeValue = (int)item.Type;
+    @{
+        foreach (var item in list)
+        {
+            var typeValue = (int)item.Type;
         <tr>
-            <td>@item.Type</td>
+            <td>@(item.Type + "：" + item.Type.GetDescription())</td>
+            <td>
+                @if (item.Result.HasValue)
+                {
+                    if (item.Result.Value)
+                    {
+                    <span class="label label-success">通过</span>
+                    }
+                    else
+                    {
+                    <span class="label label-warning">失败</span>
+                    }
+                }
+                else
+                {
+                    <span class="label label-default">未检查</span>
+                }
+            </td>
             <td>
                 <a href="/User/downReportExcelIndex@(typeValue)" class="=btn btn-sm btn-primary">下载表单</a>
             </td>
             <td>
                 @if (item.Result != true)
                 {
-                    if (typeValue == (int)ReportType.重点复核确认项目设计二调新增耕地项目清单)
-                    {
-                    }
-                    else
-                    {
                     <form method="post" action="/user/UploadProjects?id=@(typeValue)" class="form-inline" enctype="multipart/form-data">
                         <input type="file" name="file" class="form-control input-sm" style="width: 100px;" />
-                        <button type="submit" class="btn btn-sm btn-success">上传验证</button>
+                        <button type="submit" class="btn btn-sm btn-success">上传</button>
                     </form>
-                    }
                 }
             </td>
 
         </tr>
+        }
     }
 </table>

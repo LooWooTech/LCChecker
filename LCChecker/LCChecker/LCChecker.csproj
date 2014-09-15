@@ -123,12 +123,13 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="AuthUtility.cs" />
+    <Compile Include="Helpers\AuthUtility.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\APIController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ControllerBase.cs" />
     <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="Helpers\EnumHelper.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -155,7 +156,7 @@
     <Compile Include="Models\Summary.cs" />
     <Compile Include="Models\UploadFile.cs" />
     <Compile Include="Models\User.cs" />
-    <Compile Include="ProjectHelper.cs" />
+    <Compile Include="Helpers\ProjectHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rules\AndRule.cs" />
     <Compile Include="Rules\Arrange.cs" />
@@ -171,9 +172,9 @@
     <Compile Include="Rules\StringEqual.cs" />
     <Compile Include="Rules\SumRowRule.cs" />
     <Compile Include="Rules\UniqueValueRowRule.cs" />
-    <Compile Include="UploadHelper.cs" />
-    <Compile Include="UserAuthorizeAttribute.cs" />
-    <Compile Include="XslHelper.cs" />
+    <Compile Include="Helpers\UploadHelper.cs" />
+    <Compile Include="Helpers\UserAuthorizeAttribute.cs" />
+    <Compile Include="Helpers\XslHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
