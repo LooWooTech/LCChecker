@@ -19,7 +19,7 @@ namespace LCChecker.Models
         [Column("CityID", TypeName = "INT")]
         public City City { get; set; }
 
-        [MaxLength(127)]
+        [MaxLength(255)]
         public string Name { get; set; }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace LCChecker.Models
         /// <summary>
         /// 备注
         /// </summary>
-        [MaxLength(255)]
+        [MaxLength(1024)]
         public string Note { get; set; }
     }
 

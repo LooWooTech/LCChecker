@@ -128,7 +128,7 @@ namespace LCChecker.Controllers
             }
 
             //检查完毕，更新Projects
-            var projects = db.Projects.Where(x => x.City == CurrentUser.City).ToList();
+            var projects = db.Projects.Where(x => x.City == CurrentUser.City);
             foreach (var item in projects)
             {
                 if (ship.ContainsKey(item.ID))
@@ -147,10 +147,9 @@ namespace LCChecker.Controllers
                         item.Result = true;
                         item.Note = "";
                     }
-                    db.SaveChanges();
                 }
             }
-
+            db.SaveChanges();
             return RedirectToAction("Index", new { result = false });
         }
 
