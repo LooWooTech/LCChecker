@@ -1,25 +1,29 @@
 ﻿@using LCChecker.Models
+
 @{
     ViewBag.Title = "项目列表";
     List<Project> list = ViewBag.Projects;
     Summary summary = ViewBag.Summary;
 }
+@section nav{
+    <li class="active"><a href="/user/">项目列表</a></li>
+}
 <div>
     <table class="table table-bordered">
         <tr>
-            <th style="width:120px;">项目总数：</th>
+            <th style="width: 120px;">项目总数：</th>
             <td>@(summary.TotalCount)</td>
-            <th style="width:120px;">检验通过总数：</th>
+            <th style="width: 120px;">检验通过总数：</th>
             <td>@(summary.SuccessCount)</td>
-            <th style="width:120px;">未通过总数：</th>
+            <th style="width: 120px;">未通过总数：</th>
             <td>@(summary.ErrorCount)</td>
-            <th style="width:120px;">未上传总数：</th>
+            <th style="width: 120px;">未上传总数：</th>
             <td>@(summary.UnCheckCount)</td>
         </tr>
     </table>
 </div>
 <div style="clear: both; overflow: hidden; margin-bottom: 10px;">
-    <form class="form form-inline" style="float:right;">
+    <form class="form form-inline" style="float: right;">
         <div class="input-group">
             <span class="input-group-addon">过滤项目</span>
             <div class="input-group-btn">
@@ -35,7 +39,7 @@
             </div>
         </div>
     </form>
-    <form class="form form-inline" method="post" enctype="multipart/form-data" action="/user/uploadprojects" style="float:left;">
+    <form class="form form-inline" method="post" enctype="multipart/form-data" action="/user/uploadprojects" style="float: left;">
         <div class="input-group">
             <div class="input-group-btn">
                 <input type="file" name="file1" class="form-control" />
@@ -63,20 +67,20 @@
                 {
                     if (project.Result.Value)
                     {
-                        <span class="label label-success">通过</span>
+                    <span class="label label-success">通过</span>
                     }
                     else
                     {
-                        <span class="label label-warning">失败</span>
+                    <span class="label label-warning">失败</span>
                     }
                 }
                 else
                 {
                     <span class="label label-default">未上传</span>
                 }
-        </td>
-        <td>@(project.Note)</td>
-    </tr>
+            </td>
+            <td>@(project.Note)</td>
+        </tr>
     }
     <tr>
         <td colspan="4">

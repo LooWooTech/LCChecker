@@ -3,7 +3,11 @@
     ViewBag.Title = "市区项目概况";
     Dictionary<City, Summary> data = ViewBag.Summary;
 }
-<legend>导入错误项目</legend>
+@section nav{
+    <li><a href="/admin/">项目统计</a></li>
+    <li><a href="/admin/projects">项目列表</a></li>
+}
+<legend>导入项目</legend>
 <form class="form form-inline" method="post" enctype="multipart/form-data" action="/admin/uploadprojects">
     <div class="input-group">
         <span class="input-group-addon">选择项目文件</span>
@@ -26,7 +30,7 @@
     {
         var summary = kv.Value;
         <tr>
-            <td>@(summary.City)</td>
+            <td><a href="/admin/projects?city=@((int)summary.City)">@(summary.City)</a></td>
             <td>@(summary.TotalCount)</td>
             <td>@(summary.SuccessCount)</td>
             <td>@(summary.ErrorCount)</td>

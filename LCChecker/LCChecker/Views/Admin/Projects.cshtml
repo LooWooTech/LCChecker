@@ -1,0 +1,50 @@
+﻿@{
+    
+    ViewBag.Title = "项目列表";
+
+    List<LCChecker.Models.Project> list = ViewBag.List;
+    
+}
+@section nav{
+    <li><a href="/admin/">项目统计</a></li>
+    <li><a href="/admin/projects">项目列表</a></li>
+}
+
+<table class="table table-bordered">
+    <tr>
+        <th style="width: 150px">项目编号</th>
+        <th>项目名称</th>
+        <th style="width: 100px">检验结果</th>
+        <th>备注</th>
+    </tr>
+    @foreach (var project in list)
+    {
+        <tr>
+            <td>@(project.ID)</td>
+            <td>@(project.Name)</td>
+            <td>
+                @if (project.Result.HasValue)
+                {
+                    if (project.Result.Value)
+                    {
+                    <span class="label label-success">通过</span>
+                    }
+                    else
+                    {
+                    <span class="label label-warning">失败</span>
+                    }
+                }
+                else
+                {
+                    <span class="label label-default">未上传</span>
+                }
+            </td>
+            <td>@(project.Note)</td>
+        </tr>
+    }
+    <tr>
+        <td colspan="4">
+            @Html.Partial("_pagination", ViewBag.Page as object)
+        </td>
+    </tr>
+</table>

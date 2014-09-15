@@ -32,5 +32,24 @@ namespace LCChecker.Controllers
             ViewBag.CurrentUser = CurrentUser;
             base.OnActionExecuting(filterContext);
         }
+
+        private Exception GetException(Exception ex)
+        {
+            var innerEx = ex.InnerException;
+            if (innerEx != null)
+            {
+                return GetException(innerEx);
+            }
+            return ex;
+        }
+
+        protected override void OnException(ExceptionContext filterContext)
+        {
+            if (filterContext.ExceptionHandled) return;
+            filterContext.ExceptionHandled = true;
+            filterContext.HttpContext.Response.StatusCode = 500;
+            ViewBag.Exception = GetException(filterContext.Exception);// filterContext.Exception;
+            filterContext.Result = View("Error");
+        }
     }
 }

@@ -229,6 +229,7 @@
     <Content Include="Templates\5.xls" />
     <Content Include="Templates\7.xls" />
     <Content Include="Templates\8.xls" />
+    <Content Include="Views\Admin\Projects.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Uploads\丽水市\" />

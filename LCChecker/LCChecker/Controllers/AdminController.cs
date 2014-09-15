@@ -38,7 +38,19 @@ namespace LCChecker.Controllers
             return View();
         }
 
-
+        public ActionResult Projects(City? city, int page = 1)
+        {
+            var paging = new Page(page);
+            var query = db.Projects.AsQueryable();
+            if (city.HasValue)
+            {
+                query = query.Where(e => e.City == city.Value);
+            }
+            paging.RecordCount = query.Count();
+            ViewBag.List = query.OrderBy(e => e.ID).Skip(paging.PageSize * (paging.PageIndex - 1)).Take(paging.PageSize).ToList();
+            ViewBag.Page = paging;
+            return View();
+        }
 
         /// <summary>
         /// 上传总表数据
@@ -51,13 +63,14 @@ namespace LCChecker.Controllers
 
             var list = new List<Project>();
 
-            IWorkbook excel=null;
+            IWorkbook excel = null;
             var ext = Path.GetExtension(file.FileName);
             if (ext == ".xls")
             {
                 excel = new HSSFWorkbook(file.InputStream);
             }
-            else {
+            else
+            {
                 excel = new XSSFWorkbook(file.InputStream);
             }
             //var excel = new HSSFWorkbook(file.InputStream);
