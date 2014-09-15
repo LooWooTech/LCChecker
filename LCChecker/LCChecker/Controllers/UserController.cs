@@ -15,28 +15,7 @@ namespace LCChecker.Controllers
     [UserAuthorize]
     public class UserController : ControllerBase
     {
-        private List<Project> GetProjects(bool? result = null, Page page = null)
-        {
-            var query = db.Projects.Where(e => e.City == CurrentUser.City);
-
-            if (result.HasValue)
-            {
-                query = query.Where(e => e.Result == result.Value);
-            }
-            else
-            {
-                //query = query.Where(e => e.Result == null);
-            }
-            if (page != null)
-            {
-                page.RecordCount = query.Count();
-                query = query.OrderBy(e => e.ID).Skip(page.PageSize * (page.PageIndex - 1)).Take(page.PageSize);
-            }
-
-            return query.ToList();
-        }
-
-        public ActionResult Index(bool? result, int page = 1)
+        public ActionResult Index(ResultFilter result = ResultFilter.All, int page = 1)
         {
             var summary = new Summary
             {
@@ -54,7 +33,7 @@ namespace LCChecker.Controllers
             }
 
             var paging = new Page(page);
-            ViewBag.Projects = GetProjects(result, paging);
+            ViewBag.Projects = ProjectHelper.GetProjects(CurrentUser.City, result, paging);
             ViewBag.Page = paging;
             ViewBag.Summary = summary;
             return View();

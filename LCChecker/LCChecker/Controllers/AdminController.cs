@@ -98,21 +98,16 @@ namespace LCChecker.Controllers
                 db.SaveChanges();
                 return JsonSuccess();
             }
-            catch(Exception ex) {
+            catch (Exception ex)
+            {
                 return JsonError(ex.Message);
             }
         }
 
-        public ActionResult Projects(City? city, int page = 1)
+        public ActionResult Projects(City city = City.浙江省, ResultFilter result = ResultFilter.All, int page = 1)
         {
             var paging = new Page(page);
-            var query = db.Projects.AsQueryable();
-            if (city.HasValue)
-            {
-                query = query.Where(e => e.City == city.Value);
-            }
-            paging.RecordCount = query.Count();
-            ViewBag.List = query.OrderBy(e => e.ID).Skip(paging.PageSize * (paging.PageIndex - 1)).Take(paging.PageSize).ToList();
+            ViewBag.List = ProjectHelper.GetProjects(city, result, paging);
             ViewBag.Page = paging;
             return View();
         }

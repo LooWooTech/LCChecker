@@ -28,9 +28,10 @@
             <span class="input-group-addon">过滤项目</span>
             <div class="input-group-btn">
                 <select name="result" class="form-control">
-                    <option value="" @(Request.QueryString["result"] == "" ? "selected=selected" : "")>未上传</option>
-                    <option value="true" @(Request.QueryString["result"] == "true" ? "selected=selected" : "")>已通过</option>
-                    <option value="false" @(Request.QueryString["result"] == "false" ? "selected=selected" : "")>未通过</option>
+                    <option value="0">全部</option>
+                    <option value="3" @(Request.QueryString["result"] == "3" ? "selected=selected" : "")>未上传</option>
+                    <option value="1" @(Request.QueryString["result"] == "1" ? "selected=selected" : "")>已通过</option>
+                    <option value="2" @(Request.QueryString["result"] == "2" ? "selected=selected" : "")>未通过</option>
                 </select>
             </div>
             <div class="input-group-btn">
@@ -54,6 +55,7 @@
     <tr>
         <th style="width: 150px">项目编号</th>
         <th>项目名称</th>
+        <th>所在县</th>
         <th style="width: 100px">检验结果</th>
         <th style="width: 300px;">备注</th>
     </tr>
@@ -62,6 +64,7 @@
         <tr>
             <td>@(project.ID)</td>
             <td>@(project.Name)</td>
+            <td>@(project.County)</td>
             <td>
                 @if (project.Result.HasValue)
                 {
@@ -82,9 +85,9 @@
             <td>
                 @if (!string.IsNullOrEmpty(project.Note))
                 {
-                    <a href="#@(project.ID)" class="btn-details" data="@(project.ID)">@(project.Note.Substring(0, 22))..</a>
                     if (project.Note.Length > 25)
                     { 
+                    <a href="#@(project.ID)" class="btn-details" data="@(project.ID)">@(project.Note.Substring(0, 22))..</a>
                     <div id="tips-@(project.ID)" class="tips">
                         @Html.Raw(project.Note.Replace("；", "<br />"))
                     </div>
@@ -98,7 +101,7 @@
         </tr>
     }
     <tr>
-        <td colspan="4">
+        <td colspan="10">
             @Html.Partial("_pagination", ViewBag.Page as object)
         </td>
     </tr>
@@ -108,7 +111,7 @@
         $("body").click(function (e) {
             var target = $(e.target);
             var className = target.attr("class");
-            if (className && className.indexOf("btn") > -1) return false;
+            if (className  == "btn-details") return false;
             $(".tips").hide();
         });
         $(".btn-details").click(function (e) {

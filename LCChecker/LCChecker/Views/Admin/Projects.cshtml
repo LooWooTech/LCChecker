@@ -1,13 +1,41 @@
-﻿@{
+﻿@using LCChecker.Models
+@{
+    
     Layout = "_Layout.cshtml";
     ViewBag.Title = "项目列表";
 
     List<LCChecker.Models.Project> list = ViewBag.List;
     
 }
-
+<div style="clear: both; overflow: hidden; margin-bottom: 10px;">
+    <form class="form form-inline" style="float: left;">
+        <div class="input-group">
+            <span class="input-group-addon">过滤项目</span>
+            <select name="city" class="form-control">
+                @foreach (var name in Enum.GetNames(typeof(City)))
+                {
+                    var value = (int)Enum.Parse(typeof(City), name);
+                    <option value="@(value)" @(Request.QueryString["city"] == value.ToString() ? "selected=selected" : null)>@name</option>
+                }
+            </select>
+            <div class="input-group-btn">
+                <select name="result" class="form-control">
+                    <option value="0">全部</option>
+                    <option value="3" @(Request.QueryString["result"] == "3" ? "selected=selected" : "")>未上传</option>
+                    <option value="1" @(Request.QueryString["result"] == "1" ? "selected=selected" : "")>已通过</option>
+                    <option value="2" @(Request.QueryString["result"] == "2" ? "selected=selected" : "")>未通过</option>
+                </select>
+            </div>
+            <div class="input-group-btn">
+                <button type="submit" class="btn btn-primary">过滤</button>
+                @*                <a href="/user/downloadProjects" class="btn btn-success">下载项目</a>*@
+            </div>
+        </div>
+    </form>
+</div>
 <table class="table table-bordered">
     <tr>
+        <th>所在地</th>
         <th style="width: 150px">项目编号</th>
         <th>项目名称</th>
         <th style="width: 100px">检验结果</th>
@@ -16,6 +44,7 @@
     @foreach (var project in list)
     {
         <tr>
+            <td>@(project.City.ToString()) - @(project.County)</td>
             <td>@(project.ID)</td>
             <td>@(project.Name)</td>
             <td>
@@ -54,7 +83,7 @@
         </tr>
     }
     <tr>
-        <td colspan="4">
+        <td colspan="9">
             @Html.Partial("_pagination", ViewBag.Page as object)
         </td>
     </tr>
@@ -64,7 +93,7 @@
         $("body").click(function (e) {
             var target = $(e.target);
             var className = target.attr("class");
-            if (className && className.indexOf("btn") > -1) return false;
+            if (className && className.indexOf("btn-details") > -1) return false;
             $(".tips").hide();
         });
         $(".btn-details").click(function (e) {
