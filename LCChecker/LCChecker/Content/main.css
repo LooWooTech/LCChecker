@@ -40,3 +40,11 @@ legend {
   filter: alpha(opacity=0);
   opacity: 0;
 }
+.tips {
+  display: none;
+  background-color: #f5f3be;
+  border: solid 1px #ccc;
+  text-align: left;
+  position: absolute;
+  padding: 10px;
+}

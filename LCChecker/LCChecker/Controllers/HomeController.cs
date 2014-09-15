@@ -30,7 +30,7 @@ namespace LCChecker.Controllers
         [HttpPost]
         public ActionResult Login(string username, string password)
         {
-            var user = db.USER.FirstOrDefault(e => e.Username.ToLower() == username.ToLower());
+            var user = db.Users.FirstOrDefault(e => e.Username.ToLower() == username.ToLower());
             if (user == null)
             {
                 throw new ArgumentException("用户不存在");

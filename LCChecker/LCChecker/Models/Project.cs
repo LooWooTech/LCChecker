@@ -7,6 +7,7 @@ using System.Web;
 
 namespace LCChecker.Models
 {
+    [Table("projects")]
     public class Project
     {
         /// <summary>
@@ -35,7 +36,7 @@ namespace LCChecker.Models
         /// <summary>
         /// 备注
         /// </summary>
-        [MaxLength(1024)]
+        [MaxLength(1023)]
         public string Note { get; set; }
     }
 

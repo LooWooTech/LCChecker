@@ -25,7 +25,7 @@ namespace LCChecker.Controllers
             }
             else
             {
-                query = query.Where(e => e.Result == null);
+                //query = query.Where(e => e.Result == null);
             }
             if (page != null)
             {
@@ -127,25 +127,38 @@ namespace LCChecker.Controllers
                 throw new ArgumentException("保存正确项目失败");
             }
 
-            //检查完毕，更新Projects
-            var projects = db.Projects.Where(x => x.City == CurrentUser.City);
-            foreach (var item in projects)
+            try
             {
-                if (ship.ContainsKey(item.ID))
+                //检查完毕，更新Projects
+                var projects = db.Projects.Where(x => x.City == CurrentUser.City);
+                foreach (var item in projects)
                 {
-                    if (Error.ContainsKey(item.ID))
+                    if (ship.ContainsKey(item.ID))
                     {
-                        item.Note = "";
-                        item.Result = false;
-                        foreach (var Message in Error[item.ID])
+                        if (Error.ContainsKey(item.ID))
                         {
-                            item.Note += Message + "；";
+                            item.Note = "";
+                            item.Result = false;
+                            foreach (var Message in Error[item.ID])
+                            {
+                                item.Note += Message + "；";
+                            }
+                        }
+                        else
+                        {
+                            item.Result = true;
+                            item.Note = "";
                         }
                     }
-                    else
+                }
+            }
+            catch (System.Data.Entity.Validation.DbEntityValidationException dbEx)
+            {
+                foreach (var validationErrors in dbEx.EntityValidationErrors)
+                {
+                    foreach (var validationError in validationErrors.ValidationErrors)
                     {
-                        item.Result = true;
-                        item.Note = "";
+                        System.Diagnostics.Trace.TraceInformation("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
                     }
                 }
             }
@@ -208,7 +221,7 @@ namespace LCChecker.Controllers
             byte[] fileContents = ms.ToArray();
             return File(fileContents, "application/ms-excel", "自检表.xlsx");
         }
-        
+
         /// <summary>
         /// 下载表2
         /// </summary>

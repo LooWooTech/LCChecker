@@ -7,6 +7,7 @@ using System.Web;
 
 namespace LCChecker.Models
 {
+    [Table("uploadfiles")]
     public class UploadFile
     {
         [Key]

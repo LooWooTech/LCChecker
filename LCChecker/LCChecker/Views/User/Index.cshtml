@@ -55,7 +55,7 @@
         <th style="width: 150px">项目编号</th>
         <th>项目名称</th>
         <th style="width: 100px">检验结果</th>
-        <th>备注</th>
+        <th style="width: 300px;">备注</th>
     </tr>
     @foreach (var project in list)
     {
@@ -79,7 +79,22 @@
                     <span class="label label-default">未上传</span>
                 }
             </td>
-            <td>@(project.Note)</td>
+            <td>
+                @if (!string.IsNullOrEmpty(project.Note))
+                {
+                    <a href="#@(project.ID)" class="btn-details" data="@(project.ID)">@(project.Note.Substring(0, 22))..</a>
+                    if (project.Note.Length > 25)
+                    { 
+                    <div id="tips-@(project.ID)" class="tips">
+                        @Html.Raw(project.Note.Replace("；", "<br />"))
+                    </div>
+                    }
+                    else
+                    {
+                    <span>@project.Note</span>
+                    }
+                }
+            </td>
         </tr>
     }
     <tr>
@@ -88,3 +103,18 @@
         </td>
     </tr>
 </table>
+<script>
+    $(function () {
+        $("body").click(function (e) {
+            var target = $(e.target);
+            var className = target.attr("class");
+            if (className && className.indexOf("btn") > -1) return false;
+            $(".tips").hide();
+        });
+        $(".btn-details").click(function (e) {
+            var id = $(this).attr("data");
+            $(".tips").hide();
+            $("#tips-" + id).show();
+        });
+    });
+</script>

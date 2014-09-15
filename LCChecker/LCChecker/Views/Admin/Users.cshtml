@@ -1,0 +1,42 @@
+﻿@{
+    Layout = "_Layout.cshtml";
+    ViewBag.Title = "用户管理";
+    List<LCChecker.Models.User> list = ViewBag.List;
+}
+
+<table class="table table-bordered">
+    <tr>
+        <th>用户名</th>
+        <th>密码</th>
+        <th>所属城市</th>
+        <th style="width: 100px;">是否管理员</th>
+        <th style="width: 100px;">删除</th>
+    </tr>
+    @foreach (var user in list)
+    { 
+        <tr>
+            <td>@(user.Username)</td>
+            <td>@(user.Password)</td>
+            <td>@(user.City.ToString())</td>
+            <td>@(user.Flag ? "是" : "否")</td>
+            <td><a href="/admin/deleteUser?id=@(user.ID)" class="btn btn-xs btn-danger btn-delete">删除</a></td>
+        </tr>
+    }
+</table>
+<script>
+    $(function () {
+        $(".btn-delete").click(function () {
+            if (!confirm("你确定要删除这个用户吗？")) return false;
+            var href = $(this).attr("href");
+            $.getJSON(href, null, function (json) {
+                if (json.result) {
+                    alert("已删除");
+                    window.location.href = "/admin/users";
+                } else {
+                    alert(json.message);
+                }
+            });
+            return false;
+        });
+    });
+</script>

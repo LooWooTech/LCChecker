@@ -38,6 +38,71 @@ namespace LCChecker.Controllers
             return View();
         }
 
+        public ActionResult Users()
+        {
+            ViewBag.List = db.Users.ToList();
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult AddUser()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult AddUser(User user)
+        {
+            if (string.IsNullOrEmpty(user.Username))
+            {
+                return JsonError("用户名没有填写");
+            }
+
+            if (string.IsNullOrEmpty(user.Password))
+            {
+                return JsonError("密码没有填写");
+            }
+
+            var rePwd = Request.Form["repassword"];
+            if (string.IsNullOrEmpty(rePwd))
+            {
+                return JsonError("确认密码没有填写");
+            }
+
+            if (rePwd != user.Password)
+            {
+                return JsonError("密码输入不一致");
+            }
+
+            if (user.City == 0 && user.Flag == false)
+            {
+                return JsonError("非管理员用户请选择城市");
+            }
+
+            if (db.Users.Any(e => e.Username.ToLower() == user.Username.ToLower()))
+            {
+                return JsonError("用户名已被占用");
+            }
+
+            db.Users.Add(user);
+            db.SaveChanges();
+
+            return JsonSuccess();
+        }
+
+        public ActionResult DeleteUser(int id)
+        {
+            try
+            {
+                var entity = db.Users.FirstOrDefault(e => e.ID == id);
+                db.Users.Remove(entity);
+                db.SaveChanges();
+                return JsonSuccess();
+            }
+            catch(Exception ex) {
+                return JsonError(ex.Message);
+            }
+        }
+
         public ActionResult Projects(City? city, int page = 1)
         {
             var paging = new Page(page);

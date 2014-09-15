@@ -1,12 +1,10 @@
 ﻿@using LCChecker.Models
 @{
+    Layout = "_Layout.cshtml";
     ViewBag.Title = "市区项目概况";
     Dictionary<City, Summary> data = ViewBag.Summary;
 }
-@section nav{
-    <li><a href="/admin/">项目统计</a></li>
-    <li><a href="/admin/projects">项目列表</a></li>
-}
+
 <legend>导入项目</legend>
 <form class="form form-inline" method="post" enctype="multipart/form-data" action="/admin/uploadprojects">
     <div class="input-group">

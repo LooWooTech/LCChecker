@@ -27,6 +27,16 @@ namespace LCChecker.Controllers
             get { return _db == null ? _db = new LCDbContext() : _db; }
         }
 
+        protected ActionResult JsonSuccess(object data = null)
+        {
+            return Json(new { result = true, data }, JsonRequestBehavior.AllowGet);
+        }
+
+        protected ActionResult JsonError(string message = null)
+        {
+            return Json(new { result = false, message }, JsonRequestBehavior.AllowGet);
+        }
+
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             ViewBag.CurrentUser = CurrentUser;
