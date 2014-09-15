@@ -18,9 +18,6 @@ namespace LCChecker.Models
 
         public Dictionary<string, List<string>> Error = new Dictionary<string, List<string>>();
 
-
-
-
         public DetectEngine(string region)
         {
             var list = new List<IRowRule>();
@@ -34,8 +31,6 @@ namespace LCChecker.Models
             list.Add(new SumRowRule() { SumColumnIndex = 24, ColumnIndices = new[] { 25, 26 } });
             list.Add(new SumRowRule() { SumColumnIndex = 28, ColumnIndices = new[] { 29, 30 } });
             list.Add(new SumRowRule() { SumColumnIndex = 32, ColumnIndices = new[] { 33, 34 } });
-
-
 
             list.Add(new CellRangeRowRule() { ColumnIndex = 7, Values = new[] { "是", "否" } });
 
@@ -54,8 +49,6 @@ namespace LCChecker.Models
 
 
             list.Add(new UniqueValueRowRule(region) { ColumnIndex = 3, Keyword = "综合整治" });
-
-
 
             var rule1 = new CellRangeRowRule() { ColumnIndex = 7, Values = new[] { "是" } };
 
@@ -251,14 +244,9 @@ namespace LCChecker.Models
                     Values = new[] { "1、调剂出项目对方指标使用有误", "2、本县自行补充(含尚未调剂出)项目有误" }
                 }
             });
-
-
-            list.Add(new Format() { ColumnIndex = 35, form = "0.0" });
+            //list.Add(new Format() { ColumnIndex = 35, form = "0.0" });
 
             list.Add(new Special() { ColumnIndex = 36 });
-
-
-
 
             foreach (var item in list)
             {
@@ -301,44 +289,37 @@ namespace LCChecker.Models
         /// <param name="mistakes">错误信息</param>
         /// <param name="ship">项目编号  个数</param>
         /// <returns></returns>
-        public bool GetProject(string filePath, ref string mistakes, ref Dictionary<string, int> ship, ref int LastRowNumber)
+        public void GetProject(ISheet sheet, Dictionary<string, int> ship, ref int lastRowNumber)
         {
-            IWorkbook workbook = null;
-            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            lastRowNumber = 0;
+            for (var i = 0; i <= sheet.LastRowNum; i++)
             {
-                workbook = WorkbookFactory.Create(fs);
-            }
-            if (workbook == null)
-            {
-                mistakes = "打开文件失败：" + filePath;
-                return false;
-            }
-            ISheet sheet = workbook.GetSheetAt(0);
-            IRow row = sheet.GetRow(1);
-            int i = 1;
-            while (row != null)
-            {
+                var row = sheet.GetRow(i);
                 var value = row.GetCell(2, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
-                if (value != "")
+                if (string.IsNullOrEmpty(value)) break;
+                lastRowNumber++;
+                if (ship.ContainsKey(value))
                 {
-                    if (ship.ContainsKey(value))
-                    {
-                        ship[value]++;
-                    }
-                    else
-                    {
-                        ship.Add(value, 1);
-                    }
+                    ship[value]++;
                 }
-                else {
-                    break;
+                else
+                {
+                    ship.Add(value, 1);
                 }
-                row = sheet.GetRow(++i);
             }
-            LastRowNumber = i;
-            return true;
         }
 
+        public bool CheckExcel(string fileName, ref string mistakes, ref Dictionary<string, List<string>> errorMessage,
+                               ref Dictionary<string, int> relatship)
+        {
+            var startRow = 1;
+            var startCell = 0;
+            var sheet = OpenSheet(fileName, true, ref startRow, ref startCell, ref mistakes);
+            if (sheet == null)
+                return false;
+
+            return CheckExcel(sheet, startRow, startCell, ref mistakes, ref errorMessage, ref relatship);
+        }
 
         /*检查表格中的错误
          * Path 检查表格的路径
@@ -346,139 +327,139 @@ namespace LCChecker.Models
          * ErrorMessage 检查表格中的错误
          *  relatship 表格中每行中的编号对应的行号关系
          */
-        public bool CheckExcel(string Path, ref string mistakes, ref Dictionary<string, List<string>> ErrorMessage, ref Dictionary<string, int> relatship)
+        public bool CheckExcel(ISheet sheet, int startRow, int startCell, ref string mistakes, ref Dictionary<string, List<string>> errorMessage, ref Dictionary<string, int> relatship)
         {
-            IWorkbook workbook = null;
-            using (FileStream fs = new FileStream(Path, FileMode.Open, FileAccess.Read))
-            {
-                workbook = WorkbookFactory.Create(fs);
-            }
-            if (workbook == null)
-            {
-                mistakes = "打开文件失败";
-                return false;
-            }
-            
-            ISheet sheet = workbook.GetSheetAt(0);
-            int startRow = 0, startCell = 0;
-            if (!FindHeader(sheet, ref startRow, ref startCell))
-            {
-                mistakes = "未找到表格的表头";
-                return false;
-            }
             startRow++;
             int MaxRow = sheet.LastRowNum;
             for (int y = startRow; y <= MaxRow; y++)
             {
-                IRow row = sheet.GetRow(y);
+                var row = sheet.GetRow(y);
                 if (row == null)
                     continue;
-                List<string> RowError = new List<string>();
+
                 var value = row.GetCell(startCell + 2, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
-                if (value == "")
+                if (string.IsNullOrEmpty(value))
                     break;
+
                 relatship.Add(value, y);
+                var rowError = new List<string>();
                 foreach (var item in rules)
                 {
                     if (!item.Rule.Check(row, startCell))
                     {
-                        RowError.Add(item.Rule.Name);
+                        rowError.Add(item.Rule.Name);
                     }
                 }
-                if (RowError.Count() != 0)
-                {
-                    ErrorMessage.Add(value, RowError);
-                }
+                if (rowError.Count() > 0) errorMessage.Add(value, rowError);
             }
             return true;
         }
 
 
         /// <summary>
+        /// 打开Excel，找第一个Sheet，并返回表头
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="findHeader"></param>
+        /// <returns></returns>
+        private ISheet OpenSheet(string filePath, bool findHeader, ref int startRow, ref int startCol, ref string errMsg)
+        {
+            IWorkbook workbook = null;
+            try
+            {
+                using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                {
+                    workbook = WorkbookFactory.Create(fs);
+                }
+            }
+            catch 
+            {
+                errMsg = "打开Excel表格失败：" + filePath;
+                return null;
+            }
+
+            if (workbook == null)
+            {
+                errMsg = "打开Excel表格失败：" + filePath;
+                return null;
+            }
+
+            if (workbook.NumberOfSheets == 0)
+            {
+                errMsg = "Excel文件中没有表格。";
+                return null;
+            }
+
+            var sheet = workbook.GetSheetAt(0);
+
+            if (findHeader == false) return sheet;
+
+            if (FindHeader(sheet, ref startRow, ref startCol) == false)
+            {
+                errMsg = "未找到表头:" + filePath;
+                return sheet;
+            }
+            return sheet;
+        }
+
+        /// <summary>
         /// 保存正确项目的数据
         /// </summary>
         /// <param name="filePath">提交表格</param>
-        /// <param name="MasterPath">保存正确项目数据的文件路径</param>
+        /// <param name="masterPath">保存正确项目数据的文件路径</param>
         /// <param name="mistakes">错误信息</param>
-        /// <param name="ErrorMessage">提交表格中存在填写错误的信息</param>
+        /// <param name="errorMessage">提交表格中存在填写错误的信息</param>
         /// <param name="relatship">提交表格的项目编号 与在该表格中行号</param>
         /// <returns></returns>
-        public bool SaveCurrent(string filePath, string MasterPath, ref string mistakes, Dictionary<string, List<string>> ErrorMessage, Dictionary<string, int> relatship)
+        public bool SaveCurrent(string filePath, string masterPath, ref string mistakes, Dictionary<string, List<string>> errorMessage, Dictionary<string, int> relatship)
         {
-            Dictionary<string, int> ship = new Dictionary<string, int>();
+            var ship = new Dictionary<string, int>();
+            var startRow = 0;
+            var startCell = 0;
             int MasStartRow = 1;
-            if (!GetProject(MasterPath, ref mistakes, ref ship, ref MasStartRow))
-            {
-                return false;
-            }
 
-            IWorkbook MasWorkbook = null;
-            using (FileStream fs = new FileStream(MasterPath, FileMode.Open, FileAccess.Read))
-            {
-                MasWorkbook = WorkbookFactory.Create(fs);
-            }
-            if (MasWorkbook == null)
-            {
-                mistakes = "打开数据总表失败：" + MasterPath;
-                return false;
-            }
-            ISheet MasSheet = MasWorkbook.GetSheetAt(0);
+            var masSheet = OpenSheet(masterPath, false, ref startRow, ref startCell, ref mistakes);
+            if (masSheet == null) return false;
 
+            GetProject(masSheet, ship, ref MasStartRow);
 
-            IWorkbook workbook = null;
-            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-            {
-                workbook = WorkbookFactory.Create(fs);
-            }
-            if (workbook == null)
-            {
-                mistakes = "打开文件失败：" + filePath;
-                return false;
-            }
-            ISheet sheet = workbook.GetSheetAt(0);
-            int startRow = 0, startCell = 0;
-            if (!FindHeader(sheet, ref startRow, ref startCell))
-            {
-                mistakes = "未找到表头：" + filePath;
-                return false;
-            }
+            var sheet = OpenSheet(filePath, true, ref startRow, ref startCell, ref mistakes);
+            
             foreach (var item in relatship.Keys)
             {
-                if (ErrorMessage.ContainsKey(item))
+                if (errorMessage.ContainsKey(item))
                     continue;
                 if (ship.ContainsKey(item))
                     continue;
-                IRow MasRow = MasSheet.GetRow(MasStartRow++);
-
-                IRow row = sheet.GetRow(relatship[item]);
+                var masRow = masSheet.GetRow(MasStartRow++);
+                var row = sheet.GetRow(relatship[item]);
 
                 for (int x = startCell, y = 0; x < row.LastCellNum; x++, y++)
                 {
-                    ICell cell = row.GetCell(x);
+                    var cell = row.GetCell(x);
                     if (cell == null)
                         continue;
 
-                    ICell MasCell = MasRow.GetCell(y);
+                    var masCell = masRow.GetCell(y);
 
                     switch (cell.CellType)
                     {
                         case CellType.Boolean:
-                            MasCell.SetCellValue(cell.BooleanCellValue);
+                            masCell.SetCellValue(cell.BooleanCellValue);
                             break;
                         case CellType.Numeric:
-                            MasCell.SetCellValue(cell.NumericCellValue);
+                            masCell.SetCellValue(cell.NumericCellValue);
                             break;
                         case CellType.String:
-                            MasCell.SetCellValue(cell.StringCellValue);
+                            masCell.SetCellValue(cell.StringCellValue);
                             break;
                     }
                 }
             }
-            using (FileStream fs = new FileStream(MasterPath, FileMode.Open, FileAccess.Write))
+            using (var fs = new FileStream(masterPath, FileMode.Open, FileAccess.Write))
             {
-                MasWorkbook.Write(fs);
+                masSheet.Workbook.Write(fs);
             }
-
             return true;
         }
 
@@ -557,6 +538,8 @@ namespace LCChecker.Models
         {
             Dictionary<string, int> summaryShip = new Dictionary<string, int>();
             string Mistakes = null;
+            
+
             /*检查总表*/
             if (!CheckExcel(summaryPath, ref Mistakes, ref summaryError, ref summaryShip))
             {
@@ -575,12 +558,18 @@ namespace LCChecker.Models
                 fault = Mistakes;
                 return false;
             }
-            IWorkbook summWorkbook;
+            IWorkbook summWorkbook, subWorkbook;
             try
             {
-                FileStream fs = new FileStream(summaryPath, FileMode.Open, FileAccess.Read);
-                summWorkbook = WorkbookFactory.Create(fs);
-                fs.Close();
+                using (var fs = new FileStream(summaryPath, FileMode.Open, FileAccess.Read))
+                {
+                    summWorkbook = WorkbookFactory.Create(fs);
+                }
+
+                using (var fs = new FileStream(subPath, FileMode.Open, FileAccess.Read))
+                {
+                    subWorkbook = WorkbookFactory.Create(fs);
+                }
             }
             catch (Exception er)
             {
@@ -588,21 +577,16 @@ namespace LCChecker.Models
                 fault = Mistakes;
                 return false;
             }
-            IWorkbook subWorkbook;
-            try
+           
+            if (summWorkbook.NumberOfSheets == 0 || subWorkbook.NumberOfSheets == 0)
             {
-                FileStream fs = new FileStream(subPath, FileMode.Open, FileAccess.Read);
-                subWorkbook = WorkbookFactory.Create(fs);
-                fs.Close();
-            }
-            catch (Exception er)
-            {
-                Mistakes = er.Message;
+                Mistakes = "Excel文件中无表格";
                 fault = Mistakes;
                 return false;
             }
-            ISheet summsheet = summWorkbook.GetSheetAt(0);
-            ISheet subsheet = subWorkbook.GetSheetAt(0);
+
+            var summsheet = summWorkbook.GetSheetAt(0);
+            var subsheet = subWorkbook.GetSheetAt(0);
             int sumStartRow = 0, sumStartCell = 0;
             if (!FindHeader(summsheet, ref sumStartRow, ref sumStartCell))
             {
@@ -696,17 +680,15 @@ namespace LCChecker.Models
             return true;
         }
 
-
-
         /*查找表格的开始 各行的开始*/
         private bool FindHeader(ISheet sheet, ref int startrow, ref int startcol)
         {
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 10; i++)
             {
                 IRow row = sheet.GetRow(i);
                 if (row != null)
                 {
-                    for (int j = 0; j < 6; j++)
+                    for (int j = 0; j < 10; j++)
                     {
                         var value = row.GetCell(j, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
                         if (value == "1栏")
@@ -728,8 +710,5 @@ namespace LCChecker.Models
             }
             return false;
         }
-
-
-
     }
 }

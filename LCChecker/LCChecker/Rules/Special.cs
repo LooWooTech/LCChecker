@@ -19,7 +19,8 @@ namespace LCChecker.Rules
         public bool Check(NPOI.SS.UserModel.IRow row, int xoffset = 0)
         {
             var value = row.GetCell(ColumnIndex + xoffset, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
-            string[] team = value.Split(',');
+            var value2 = value.Replace("，", ",").Replace(".", string.Empty).Replace("。", string.Empty);
+            var team = value2.Split(',');
             foreach(string item in team)
             {
                 Regex r=new Regex(@"-?[0-9]");
@@ -29,8 +30,7 @@ namespace LCChecker.Rules
                     return false;
                 string b = item.Substring(position);
                 double c;
-                double.TryParse(b, out c);
-                if (c < double.Epsilon)
+                if(double.TryParse(b, out c) == false || c< double.Epsilon)
                     return false;
             }
             return true;

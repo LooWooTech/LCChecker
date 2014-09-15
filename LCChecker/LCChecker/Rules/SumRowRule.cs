@@ -24,23 +24,32 @@ namespace LCChecker.Rules
 
         public bool Check(NPOI.SS.UserModel.IRow row, int xoffset = 0)
         {
-            var value1 = row.GetCell(xoffset + SumColumnIndex, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString();
-            double sum = 0.0;
-            double.TryParse(value1, out sum);
-
+            var sum = GetValue(row.GetCell(xoffset + SumColumnIndex, MissingCellPolicy.CREATE_NULL_AS_BLANK));
+            
             var sum2 = 0.0;
-            double val;
-            var list = new List<double>();
+            
             for (var i = 0; i < ColumnIndices.Length; i++)
             {
-                var value2 = row.GetCell(xoffset + ColumnIndices[i], MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString();
-                val = 0;
-                double.TryParse(value2, out val);
-
+                var val = GetValue(row.GetCell(xoffset + ColumnIndices[i], MissingCellPolicy.CREATE_NULL_AS_BLANK));
                 sum2 += val;
             }
 
-            return Math.Abs(sum2 - sum) < 0.00001;
+            return Math.Abs(sum2 - sum) < 0.0001;
+        }
+
+        public static double GetValue(ICell cell)
+        {
+            if (cell.CellType == CellType.Numeric || cell.CellType == CellType.Formula)
+            {
+                return cell.NumericCellValue;
+            }
+            else
+            {
+                var value2 = cell.ToString();
+                double val;
+                double.TryParse(value2, out val);
+                return val;
+            }
         }
     }
 }

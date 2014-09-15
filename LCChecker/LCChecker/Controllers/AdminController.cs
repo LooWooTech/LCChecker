@@ -160,7 +160,7 @@ namespace LCChecker.Controllers
             for (var i = 1; i <= sheet.LastRowNum; i++)
             {
                 var row = sheet.GetRow(i);
-                if (string.IsNullOrEmpty(row.Cells[0].StringCellValue))
+                if (string.IsNullOrEmpty(row.Cells[0].ToString()))
                 {
                     continue;
                 }

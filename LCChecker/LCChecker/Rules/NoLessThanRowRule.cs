@@ -16,11 +16,12 @@ namespace LCChecker.Rules
 
         public bool Check(NPOI.SS.UserModel.IRow row, int xoffset = 0)
         {
-            var value1 = row.GetCell(xoffset + Column1Index, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString();
-            var value2 = row.GetCell(xoffset + Column2Index, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString();
-
-            double val1, val2;
-            return double.TryParse(value1, out val1) && double.TryParse(value2, out val2) && val1 >= val2;
+            var value1 = row.GetCell(xoffset + Column1Index, MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            var value2 = row.GetCell(xoffset + Column2Index, MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            return SumRowRule.GetValue(value1) >= SumRowRule.GetValue(value2);
+            //double val1, val2;
+            
+            //return double.TryParse(value1, out val1) && double.TryParse(value2, out val2) && val1 >= val2;
 
         }
     }
