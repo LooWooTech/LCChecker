@@ -105,6 +105,15 @@ namespace LCChecker.Controllers
             };
             if (id != 0)
             {
+                //string MastPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/", CurrentUser.City.ToString() + ".xls");
+                //filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filePath);
+                //CheckReport2 engine = new CheckReport2(MastPath);
+                //string fault = "";
+                //if (!engine.Check(filePath,ref fault))
+                //{ 
+                    
+                //}
+
                 ReportType reportType=(ReportType)Enum.Parse(typeof(ReportType),id.ToString());
                 
                 var record = db.Reports.Where(e => e.City == CurrentUser.City && e.Type ==reportType).FirstOrDefault();
@@ -146,7 +155,9 @@ namespace LCChecker.Controllers
 
             var masterfile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/", CurrentUser.City.ToString() + ".xls");
             //string Masterfile = @"D:\Work\浙江省土地整治项目核查平台\0914\trunk\LCChecker\LCChecker\App_Data\湖州市.xls";
-            if (!detectEngine.SaveCurrent(filePath, masterfile, ref fault, errors, ships))
+            var list = db.Projects.Where(x => x.City == CurrentUser.City).ToList();
+            
+            if (!detectEngine.SaveCurrent(filePath, masterfile, ref fault, errors, ships,list))
             {
                 throw new ArgumentException("保存正确项目失败");
             }
