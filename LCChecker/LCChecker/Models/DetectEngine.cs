@@ -423,7 +423,7 @@ namespace LCChecker.Models
         /// <param name="errorMessage">提交表格中存在填写错误的信息</param>
         /// <param name="relatship">提交表格的项目编号 与在该表格中行号</param>
         /// <returns></returns>
-        public bool SaveCurrent(string filePath, string masterPath, ref string mistakes, Dictionary<string, List<string>> errorMessage, Dictionary<string, int> relatship)
+        public bool SaveCurrent(string filePath, string masterPath, ref string mistakes, Dictionary<string, List<string>> errorMessage, Dictionary<string, int> relatship,List<Project> List)
         {
             var ship = new Dictionary<string, int>();
             var startRow = 0;
@@ -442,6 +442,8 @@ namespace LCChecker.Models
                 if (errorMessage.ContainsKey(item))
                     continue;
                 if (ship.ContainsKey(item))
+                    continue;
+                if (!List.Exists(x => x.ID == item))
                     continue;
                 var masRow = masSheet.GetRow(MasStartRow++);
                 var row = sheet.GetRow(relatship[item]);
