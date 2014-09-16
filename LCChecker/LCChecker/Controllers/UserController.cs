@@ -103,10 +103,22 @@ namespace LCChecker.Controllers
                 ErrorCount = db.Projects.Count(e => e.City == CurrentUser.City && e.Result == false),
 
             };
+            if (id != 0)
+            {
+                ReportType reportType=(ReportType)Enum.Parse(typeof(ReportType),id.ToString());
+                
+                var record = db.Reports.Where(e => e.City == CurrentUser.City && e.Type ==reportType).FirstOrDefault();
+                if (record != null)
+                {
+                    record.Result = false;
+                    db.Entry(record).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+                return RedirectToAction("Reports");
+            }
             //全部结束，进入第二阶段
             /*if (summary.TotalCount > 0 && summary.TotalCount == summary.SuccessCount)
             {
-
                 return RedirectToAction("CheckIndex", new { id = uploadFile.ID });
             }*/
             //上传成功后跳转到check页面进行检查，参数是File的ID
@@ -181,12 +193,20 @@ namespace LCChecker.Controllers
             var filePath = UploadHelper.GetAbsolutePath(file.SavePath);
 
             string masterPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", CurrentUser.City.ToString() + ".xls");
-            string fault = "";
+            //string fault = "";
+//<<<<<<< .mine
+//            CheckReport2 Engine = new CheckReport2(masterPath);
+//            if (!Engine.Check(filePath, ref fault))
+//            {
+//                throw new ArgumentException("检索附表失败"+fault);
+//            }
+//=======
             //CheckReport2 Engine = new CheckReport2(masterPath);
             //if (!Engine.Check(filePath, ref fault))
             //{
             //    throw new ArgumentException("检索附表失败");
             //}
+//>>>>>>> .r93
 
             //if (Engine.Error.Count() != 0)
             //{
