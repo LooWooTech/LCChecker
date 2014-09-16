@@ -6,7 +6,7 @@ using System.Web;
 
 namespace LCChecker.Rules
 {
-    public class DoubleEqual:IRowRule
+    public class DoubleEqual : IRowRule
     {
 
         public int ColumnIndex { get; set; }
@@ -15,14 +15,14 @@ namespace LCChecker.Rules
         {
             get
             {
-                return string.Format("第{0}栏填写的内容为{1}", ColumnIndex + 1,data);
+                return string.Format("第{0}栏填写的内容为{1}", ColumnIndex + 1, data);
             }
         }
 
         public bool Check(NPOI.SS.UserModel.IRow row, int xoffset = 0)
         {
             var value = row.GetCell(ColumnIndex, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
-            if (value == "")
+            if (string.IsNullOrEmpty(value))
                 return false;
             double a = double.Parse(value);
             if (data != a)
