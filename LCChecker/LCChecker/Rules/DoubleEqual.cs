@@ -21,7 +21,7 @@ namespace LCChecker.Rules
 
         public bool Check(NPOI.SS.UserModel.IRow row, int xoffset = 0)
         {
-            var value = row.GetCell(ColumnIndex, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+            var value = row.GetCell(ColumnIndex+xoffset, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
             if (string.IsNullOrEmpty(value))
                 return false;
             double a = double.Parse(value);
