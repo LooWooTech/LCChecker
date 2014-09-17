@@ -16,7 +16,6 @@ namespace LCChecker.Models
         public Dictionary<string, Index2> Ship = new Dictionary<string, Index2>();
         public Dictionary<string,double>  Grade=new Dictionary<string,double>();
 
-        //public Dictionary<string,double> 
         public CheckReport9()
         {
             var list = new List<IRowRule>();

@@ -31,29 +31,24 @@ namespace LCChecker.Models
                 list.Add(new ConditionalRowRule()
                 {
                     Condition = rule1,
-                    Rule = new StringEqual() { ColumnIndex = 1, Data = Ship[item].City }
+                    Rule = new AndRule()
+                    {
+                        Rule1 = new AndRule()
+                        {
+                            Rule1 = new AndRule()
+                            {
+                                Rule1 = new StringEqual() { ColumnIndex = 1, Data = Ship[item].City },
+                                Rule2 = new StringEqual() { ColumnIndex = 2, Data = Ship[item].County }
+                            },
+                            Rule2 = new AndRule()
+                            {
+                                Rule1 = new StringEqual() { ColumnIndex = 4, Data = Ship[item].Name },
+                                Rule2 = new StringEqual() { ColumnIndex=7,Data=Ship[item].Grade}
+                            }
+                        },
+                        Rule2 = new DoubleEqual() { ColumnIndex = 5, data = Ship[item].AddArea }
+                    }
                 });
-                list.Add(new ConditionalRowRule()
-                {
-                    Condition = rule1,
-                    Rule = new StringEqual() { ColumnIndex = 2, Data = Ship[item].County }
-                });
-                list.Add(new ConditionalRowRule()
-                {
-                    Condition = rule1,
-                    Rule = new StringEqual() { ColumnIndex = 4, Data = Ship[item].Name }
-                });
-                list.Add(new ConditionalRowRule()
-                {
-                    Condition = rule1,
-                    Rule = new DoubleEqual() { ColumnIndex = 5, data = Ship[item].AddArea }
-                });
-                list.Add(new ConditionalRowRule()
-                {
-                    Condition = rule1,
-                    Rule = new StringEqual() { ColumnIndex = 7, Data = Ship[item].Grade }
-                });
-
             }
             list.Add(new CellRangeRowRule() { ColumnIndex = 8, Values = new[] { "是", "否" } });
 

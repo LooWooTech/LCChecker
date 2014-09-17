@@ -30,17 +30,15 @@ namespace LCChecker.Models
                 list.Add(new ConditionalRowRule()
                 {
                     Condition = rule1,
-                    Rule = new StringEqual() { ColumnIndex = 1, Data = Ship[item].City }
-                });
-                list.Add(new ConditionalRowRule()
-                {
-                    Condition = rule1,
-                    Rule = new StringEqual() { ColumnIndex = 2, Data = Ship[item].County }
-                });
-                list.Add(new ConditionalRowRule()
-                {
-                    Condition = rule1,
-                    Rule = new StringEqual() { ColumnIndex = 4, Data = Ship[item].Name }
+                    Rule = new AndRule()
+                    {
+                        Rule1 = new AndRule()
+                        {
+                            Rule1 = new StringEqual() { ColumnIndex=1,Data=Ship[item].City},
+                            Rule2 = new StringEqual() { ColumnIndex=2,Data=Ship[item].County}
+                        },
+                        Rule2 = new StringEqual() { ColumnIndex=4,Data=Ship[item].Name}
+                    }
                 });
             }
             list.Add(new CellRangeRowRule() { ColumnIndex = 8, Values = new[] { "是", "否" } });
