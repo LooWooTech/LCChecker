@@ -44,6 +44,15 @@ namespace LCChecker.Controllers
             return View();
         }
 
+        public ActionResult Coordinates()
+        {
+            return View();
+        }
+
+        public ActionResult UploadCoordinates()
+        {
+            throw new NotImplementedException();
+        }
 
         public ActionResult Reports()
         {
@@ -167,7 +176,7 @@ namespace LCChecker.Controllers
 
             db.SaveChanges();
 
-            return RedirectToAction("projects");
+            return RedirectToAction("projects", new { result = (int)ResultFilter.Error });
         }
 
         public ActionResult CheckIndex(int id, ReportType typeId)
@@ -215,15 +224,7 @@ namespace LCChecker.Controllers
         /// <returns></returns>
         public ActionResult DownloadProjects(bool? result)
         {
-            List<Project> list;
-            if (result.HasValue)
-            {
-                list = db.Projects.Where(e => e.Result != result.Value).ToList();
-            }
-            else
-            {
-                list = db.Projects.Where(e => e.Result != null).ToList();
-            }
+            var list = db.Projects.Where(e => e.City == CurrentUser.City).ToList();
 
             var workbook = XslHelper.GetWorkbook("templates/modelSelf.xlsx");
 

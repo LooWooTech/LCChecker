@@ -9,11 +9,11 @@ namespace LCChecker.Models
     {
         public Page()
         {
-            PageSize = 40;
+            PageSize = 20;
             PageIndex = 1;
         }
 
-        public Page(int page = 1, int pageSize = 40)
+        public Page(int page = 1, int pageSize = 20)
             : this()
         {
             PageIndex = page < 1 ? 1 : page;
@@ -32,7 +32,8 @@ namespace LCChecker.Models
             {
                 var count = RecordCount / PageSize;
                 var last = RecordCount % PageSize;
-                return last > 0 ? count++ : count;
+                if (last > 0) count++;
+                return count;
             }
         }
     }

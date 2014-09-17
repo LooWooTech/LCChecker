@@ -1,0 +1,25 @@
+﻿@{
+    Layout = "_Layout.cshtml";
+    ViewBag.Title = "坐标点上传";
+}
+<div style="margin-bottom:10px; display:block;overflow:hidden;">
+<form class="form form-inline" method="post" enctype="multipart/form-data" action="/user/uploadprojects" style="float: left;">
+    <div class="input-group">
+        <div class="input-group-btn">
+            <input type="file" name="file1" class="form-control" />
+        </div>
+        <div class="input-group-btn">
+            <button type="submit" class="btn btn-primary">上传坐标文件</button>
+        </div>
+    </div>
+</form>
+</div>
+<table class="table table-bordered">
+    <tr>
+        <th style="width: 150px">项目编号</th>
+        <th>项目名称</th>
+        <th>所在县</th>
+        <th style="width: 100px">检验结果</th>
+        <th style="width: 300px;">备注</th>
+    </tr>
+</table>

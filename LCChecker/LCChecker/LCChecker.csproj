@@ -251,6 +251,7 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="Views\Admin\ReportSummary.cshtml" />
+    <Content Include="Views\User\Coordinates.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Uploads\丽水市\" />
