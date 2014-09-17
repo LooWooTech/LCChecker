@@ -6,6 +6,17 @@ using System.Web;
 
 namespace LCChecker
 {
+    public class ProjectFileter
+    {
+        public City? City { get; set; }
+
+        public ProjectType? Type { get; set; }
+
+        public NullableFilter Result { get; set; }
+
+        public Page Page { get; set; }
+    }
+
     public class ProjectHelper
     {
         public static void AddProjects(List<Project> list)
@@ -23,39 +34,40 @@ namespace LCChecker
             }
         }
 
-        public static List<Project> GetProjects(City city = City.浙江省, ResultFilter result = ResultFilter.All, Page page = null)
+        public static List<Project> GetProjects(ProjectFileter filter)
         {
             using (var db = new LCDbContext())
             {
-                bool? resultValue = null;
-                switch (result)
-                {
-                    case ResultFilter.Pass:
-                        resultValue = true;
-                        break;
-                    case ResultFilter.Error:
-                        resultValue = false;
-                        break;
-                    case ResultFilter.Uncheck:
-                        resultValue = null;
-                        break;
-                }
-
                 var query = db.Projects.AsQueryable();
-                if (city != City.浙江省)
+                if (filter.City.HasValue && filter.City.Value > 0)
                 {
-                    query = query.Where(e => e.City == city);
+                    query = query.Where(e => e.City == filter.City.Value);
                 }
 
-                if (result != ResultFilter.All)
+                switch (filter.Result)
                 {
-                    query = query.Where(e => e.Result == resultValue);
+                    case NullableFilter.True:
+                    case NullableFilter.False:
+                        var value = filter.Result == NullableFilter.True;
+                        query = query.Where(e => e.Result == value);
+                        break;
+                    case NullableFilter.Null:
+                        query = query.Where(e => e.Result == null);
+                        break;
+                    case NullableFilter.All:
+                    default:
+                        break;
                 }
 
-                if (page != null)
+                if (filter.Type.HasValue && filter.Type.Value > 0)
                 {
-                    page.RecordCount = query.Count();
-                    query = query.OrderBy(e => e.ID).Skip(page.PageSize * (page.PageIndex - 1)).Take(page.PageSize);
+                    query = query.Where(e => e.Type == filter.Type.Value);
+                }
+
+                if (filter.Page != null)
+                {
+                    filter.Page.RecordCount = query.Count();
+                    query = query.OrderByDescending(e => e.UpdateTime).Skip(filter.Page.PageSize * (filter.Page.PageIndex - 1)).Take(filter.Page.PageSize);
                 }
 
                 return query.ToList();

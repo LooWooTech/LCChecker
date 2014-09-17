@@ -10,7 +10,8 @@
     <tr>
         <th>表单名称</th>
         <th>检查结果</th>
-@*        <th>下载地址</th>*@
+        <th>错误原因</th>
+        @*        <th>下载地址</th>*@
         <th style="width: 200px;">上传验证</th>
     </tr>
 
@@ -37,13 +38,26 @@
                     <span class="label label-default">未检查</span>
                 }
             </td>
-@*            <td>
-                <a href="/User/downReportExcelIndex@(typeValue)" class="=btn btn-sm btn-primary">下载表单</a>
+            <td>
+                @if (!string.IsNullOrEmpty(item.Note))
+                {
+                    <a href="#@(item.ID)" class="btn btn-sm btn-default btn-details" data="@(item.ID)">详情</a>
+                    <div id="tips-@(item.ID)" class="tips">
+                        @Html.Raw(item.Note.Replace("\r\n", "<br />"))
+                    </div>
+                }
+                else
+                {
+                    <span>----</span>
+                }
+            </td>
+            @*            <td>
+                <a href="/User/DownloadReport?type=@(typeValue)" class="=btn btn-sm btn-primary">下载表单</a>
             </td>*@
             <td>
                 @if (item.Result != true)
                 {
-                    <form method="post" action="/user/UploadProjects?id=@(typeValue)" class="form-inline" enctype="multipart/form-data">
+                    <form method="post" action="/user/uploadreport?type=@(typeValue)" class="form-inline" enctype="multipart/form-data">
                         <input type="file" name="file" class="form-control input-sm" style="width: 100px;" />
                         <button type="submit" class="btn btn-sm btn-success">上传</button>
                     </form>
@@ -54,3 +68,18 @@
         }
     }
 </table>
+<script>
+    $(function () {
+        $("body").click(function (e) {
+            var target = $(e.target);
+            var className = target.attr("class");
+            if (className.indexOf("btn-details") > 0) return false;
+            $(".tips").hide();
+        });
+        $(".btn-details").click(function (e) {
+            var id = $(this).attr("data");
+            $(".tips").hide();
+            $("#tips-" + id).show();
+        });
+    });
+</script>

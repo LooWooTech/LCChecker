@@ -32,5 +32,8 @@ namespace LCChecker.Models
         /// 验证标志位
         /// </summary>
         public bool? Result { get; set; }
+
+        [MaxLength(1023)]
+        public string Note { get; set; }
     }
 }

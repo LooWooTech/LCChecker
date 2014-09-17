@@ -3,12 +3,13 @@
     {
         return;
     }
-    var page = Model as LCChecker.Models.Page;
-    if (page.PageSize == 0)
-    {
-        page.PageSize = 10;
-    }
     
+    var page = Model as LCChecker.Models.Page;
+
+    if(page.PageCount == 1)
+    {
+        return;
+    }    
 }
 
 <ul class="pagination">

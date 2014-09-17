@@ -225,7 +225,7 @@ namespace LCChecker.Models
             //项目类型为2007年前土地整理、土地复垦等项目  第19栏、第28栏、第29栏至少有一栏填写
             list.Add(new ConditionalRowRule()
             {
-                Condition = new ProjectType() { Time = 2007, Variety = new[] { "整理", "复垦" } },
+                Condition = new ProjectTypeRule() { Time = 2007, Variety = new[] { "整理", "复垦" } },
                 Rule = new MultipleCellRangeRowRule()
                 {
                     ColumnIndices = new[] { 18, 27, 28 },

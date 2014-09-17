@@ -48,7 +48,6 @@ namespace LCChecker
             return file;
         }
 
-
         public static string UploadExcel(HttpPostedFileBase file)
         {
 
@@ -67,6 +66,16 @@ namespace LCChecker
             file.SaveAs(GetAbsoluteUploadDirectory(fileName));
 
             return UploadDirectory + fileName;
+        }
+
+        public static int AddFileEntity(UploadFile entity)
+        {
+            using (var db = new LCDbContext())
+            {
+                db.Files.Add(entity);
+                db.SaveChanges();
+                return entity.ID;
+            }
         }
     }
 }

@@ -5,11 +5,11 @@ using System.Web;
 
 namespace LCChecker.Models
 {
-    public enum ResultFilter
+    public enum NullableFilter
     {
         All,
-        Pass,
-        Error,
-        Uncheck
+        True,
+        False,
+        Null
     }
 }

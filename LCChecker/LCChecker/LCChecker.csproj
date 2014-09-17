@@ -123,6 +123,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\MapController.cs" />
+    <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Helpers\AuthUtility.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\APIController.cs" />
@@ -153,7 +155,7 @@
     <Compile Include="Models\LCDbContext.cs" />
     <Compile Include="Models\Page.cs" />
     <Compile Include="Models\Project.cs" />
-    <Compile Include="Models\ResultFilter.cs" />
+    <Compile Include="Models\NullableFilter.cs" />
     <Compile Include="Models\RuleInfo.cs" />
     <Compile Include="Models\Summary.cs" />
     <Compile Include="Models\UploadFile.cs" />
@@ -169,7 +171,7 @@
     <Compile Include="Rules\Format.cs" />
     <Compile Include="Rules\MultipleCellRangeRowRule.cs" />
     <Compile Include="Rules\NoLessThanRowRule.cs" />
-    <Compile Include="Rules\ProjectType.cs" />
+    <Compile Include="Rules\ProjectTypeRule.cs" />
     <Compile Include="Rules\Special.cs" />
     <Compile Include="Rules\StringEqual.cs" />
     <Compile Include="Rules\SumRowRule.cs" />
@@ -235,7 +237,7 @@
     <Content Include="Views\User\Projects.cshtml" />
     <Content Include="Views\Shared\_pagination.cshtml" />
     <Content Include="Templates\ModelSelf.xlsx" />
-    <Content Include="Views\User\CheckIndex.cshtml" />
+    <Content Include="Views\User\CheckReport.cshtml" />
     <Content Include="Templates\2.xls" />
     <Content Include="Templates\3.xls" />
     <Content Include="Templates\4.xls" />
@@ -254,6 +256,7 @@
     </Content>
     <Content Include="Views\Admin\ReportSummary.cshtml" />
     <Content Include="Views\User\Coordinates.cshtml" />
+    <Content Include="Views\User\CheckProject.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Uploads\丽水市\" />

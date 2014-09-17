@@ -4,10 +4,18 @@
     Layout = "_Layout.cshtml";
     ViewBag.Title = "自检表管理";
     List<Project> list = ViewBag.List;
+    var projectType = (int)ViewBag.ProjectType;
 }
-
+<div class="nav nav-tabs" style="margin-bottom: 10px;">
+    @foreach (var name in Enum.GetNames(typeof(ProjectType)))
+    {
+        var val = (int)Enum.Parse(typeof(ProjectType), name);
+        <li class="@(val == projectType ? "active" : "")"><a href="?type=@(val)">@(name)项目</a></li>
+    }
+</div>
 <div style="clear: both; overflow: hidden; margin-bottom: 10px;">
     <form class="form form-inline" style="float: right;">
+        <input type="hidden" name="Type" value="@(projectType)" />
         <div class="input-group">
             <span class="input-group-addon">过滤项目</span>
             <div class="input-group-btn">
@@ -20,11 +28,11 @@
             </div>
             <div class="input-group-btn">
                 <button type="submit" class="btn btn-primary">过滤</button>
-                <a href="/user/downloadProjects" class="btn btn-warning">下载</a>
+                <a href="/user/downloadProjects?type=@(projectType)" class="btn btn-warning">下载</a>
             </div>
         </div>
     </form>
-    <form class="form form-inline" method="post" enctype="multipart/form-data" action="/user/uploadprojects" style="float: left;">
+    <form class="form form-inline" method="post" enctype="multipart/form-data" action="/user/uploadprojects?type=@(projectType)" style="float: left;">
         <div class="input-group">
             <div class="input-group-btn">
                 <input type="file" name="file1" class="form-control" />
@@ -73,7 +81,7 @@
                     { 
                     <a href="#@(project.ID)" class="btn-details" data="@(project.ID)">@(project.Note.Substring(0, 22))..</a>
                     <div id="tips-@(project.ID)" class="tips">
-                        @Html.Raw(project.Note.Replace("；", "<br />"))
+                        @Html.Raw(project.Note.Replace("\r\n", "<br />"))
                     </div>
                     }
                     else
@@ -95,7 +103,7 @@
         $("body").click(function (e) {
             var target = $(e.target);
             var className = target.attr("class");
-            if (className  == "btn-details") return false;
+            if (className == "btn-details") return false;
             $(".tips").hide();
         });
         $(".btn-details").click(function (e) {

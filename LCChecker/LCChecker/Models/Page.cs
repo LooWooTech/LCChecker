@@ -33,7 +33,7 @@ namespace LCChecker.Models
                 var count = RecordCount / PageSize;
                 var last = RecordCount % PageSize;
                 if (last > 0) count++;
-                return count;
+                return count == 0 ? 1 : count;
             }
         }
     }

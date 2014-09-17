@@ -10,6 +10,10 @@ namespace LCChecker.Models
     [Table("projects")]
     public class Project
     {
+        public Project()
+        {
+            UpdateTime = DateTime.Now;
+        }
         /// <summary>
         /// 项目编号
         /// </summary>
@@ -33,12 +37,22 @@ namespace LCChecker.Models
         /// </summary>
         public string County { get; set; }
 
+        [Column("Type", TypeName = "INT")]
+        public ProjectType Type { get; set; }
+
         /// <summary>
         /// 备注
         /// </summary>
         [MaxLength(1023)]
 
         public string Note { get; set; }
+
+        public DateTime UpdateTime { get; set; }
     }
 
+    public enum ProjectType
+    {
+        确认修改 = 1,
+        确认删除 = 2
+    }
 }

@@ -3,9 +3,9 @@
     var action =  Request.RequestContext.RouteData.Values["action"].ToString().ToLower();
 }
 @section nav{
-    <li class="@(action == "index" ? "active" : null)"><a href="/User/"><i class="glyphicon glyphicon-home"></i>&nbsp;首页</a></li>
+    <li class="@(action == "index" ? "active" : null)"><a href="/user/"><i class="glyphicon glyphicon-home"></i>&nbsp;首页</a></li>
     <li class="@(action == "projects" ? "active" : null)"><a href="/user/projects"><i class="glyphicon glyphicon-check"></i>&nbsp;自检表管理</a></li>
     <li class="@(action == "reports" ? "active" : null)"><a href="/user/reports"><i class="glyphicon glyphicon-paperclip"></i>&nbsp;报部表管理</a></li>
-    <li class="@(action == "coordinates" ? "active" : null)"><a href="/user/coordinates"><i class="glyphicon glyphicon-map-marker"></i>&nbsp;坐标点上传</a></li>
+    <li class="@(action == "map" ? "active" : null)"><a href="/user/map"><i class="glyphicon glyphicon-map-marker"></i>&nbsp;坐标点上传</a></li>
 }
 @RenderBody()

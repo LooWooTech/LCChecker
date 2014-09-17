@@ -5,8 +5,20 @@
     ViewBag.Title = "项目列表";
 
     List<LCChecker.Models.Project> list = ViewBag.List;
-    
+    var type = 1;
+    if (!int.TryParse(Request.QueryString["type"], out type))
+    {
+        type = 1;
+    }
 }
+
+<div class="nav nav-tabs" style="margin-bottom: 10px;">
+    @foreach (var name in Enum.GetNames(typeof(ProjectType)))
+    {
+        var val = (int)Enum.Parse(typeof(ProjectType), name);
+        <li class="@(val == type ? "active" : "")"><a href="?type=@(val)">@(name)项目</a></li>
+    }
+</div>
 <div style="clear: both; overflow: hidden; margin-bottom: 10px;">
     <form class="form form-inline" style="float: left;">
         <div class="input-group">
@@ -71,7 +83,7 @@
                     { 
                     <a href="#@(project.ID)" class="btn-details" data="@(project.ID)">@(project.Note.Substring(0, 22))..</a>
                     <div id="tips-@(project.ID)" class="tips">
-                        @Html.Raw(project.Note.Replace("；", "<br />"))
+                        @Html.Raw(project.Note.Replace("\r\n", "<br />"))
                     </div>
                     }
                     else
