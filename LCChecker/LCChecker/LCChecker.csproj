@@ -135,6 +135,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="ICheck.cs" />
     <Compile Include="IRowRule.cs" />
     <Compile Include="Models\CheckEngine.cs" />
     <Compile Include="Models\CheckReport2.cs" />
@@ -145,6 +146,7 @@
     <Compile Include="Models\CheckReport8.cs" />
     <Compile Include="Models\CheckReport9.cs" />
     <Compile Include="Models\Index2.cs" />
+    <Compile Include="Models\Land.cs" />
     <Compile Include="Models\Report.cs" />
     <Compile Include="Models\ReportType.cs" />
     <Compile Include="Models\City.cs" />

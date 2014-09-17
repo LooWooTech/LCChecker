@@ -68,42 +68,42 @@ namespace LCChecker.Controllers
             }
 
             var filePath = UploadHelper.GetAbsolutePath(file.SavePath);
+            string MastPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/", CurrentUser.City.ToString() + ".xls");
+            ICheck engine = null;
+            switch (type)
+            {
+                case ReportType.附表四:
+                    engine = new CheckReport4(MastPath);
+                    break;
+                case ReportType.附表五:
+                    engine = new CheckReport5(MastPath);
+                    break;
+                case ReportType.附表七:
+                    engine = new CheckReport7(MastPath);
+                    break;
+                case ReportType.附表八:
+                    engine = new CheckReport8(MastPath);
+                    break;
+                case ReportType.附表九:
+                    engine = new CheckReport9(MastPath);
+                    break;
+                default:
+                    throw new ArgumentException("不支持当前业务类型");
+            }
 
-            string masterPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", CurrentUser.City.ToString() + ".xls");
-            //string fault = "";
-            //<<<<<<< .mine
-            //            CheckReport2 Engine = new CheckReport2(masterPath);
-            //            if (!Engine.Check(filePath, ref fault))
-            //            {
-            //                throw new ArgumentException("检索附表失败"+fault);
-            //            }
-            //=======
-            //CheckReport2 Engine = new CheckReport2(masterPath);
-            //if (!Engine.Check(filePath, ref fault))
-            //{
-            //    throw new ArgumentException("检索附表失败");
-            //}
-            //>>>>>>> .r93
+            string fault = "";
+            if (!engine.Check(filePath, ref fault))
+            {
+                throw new ArgumentException("检索表格失败" + fault);
+            }
 
-            //if (Engine.Error.Count() != 0)
-            //{
+            var errors = engine.GetError();
 
-            //}
+            var record = db.Reports.FirstOrDefault(e => e.City == CurrentUser.City && e.Type == type);
+            record.Result = errors.Count == 0;
+            db.SaveChanges();
 
-            //var message = db.Reports.Where(x => x.City == CurrentUser.City && x.Type == typeId).FirstOrDefault();
-            //if (message == null)
-            //{
-            //    throw new ArgumentException("未找到上传信息");
-            //}
-            //message.Result = true;
-            //db.Entry(message).State = EntityState.Modified;
-            //db.SaveChanges();
-
-
-
-            Dictionary<string, List<string>> Error = new Dictionary<string, List<string>>();
-            ViewBag.Error = Error;
-            return View(Error);
+            return View(errors);
         }
 
         public ActionResult DownloadReport(ReportType type)

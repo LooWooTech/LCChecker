@@ -1,14 +1,10 @@
 ﻿using LCChecker.Rules;
-using NPOI.SS.UserModel;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Web;
 
 namespace LCChecker.Models
 {
-    public class CheckReport4 : CheckEngine
+    public class CheckReport4 : CheckEngine,ICheck
     {
         public CheckReport4(string filePath)
         {
@@ -45,15 +41,6 @@ namespace LCChecker.Models
             {
                 rules.Add(new RuleInfo() { Rule = item });
             }
-        }
-
-        public bool StartCheck(string filePath, ref string Mistakes)
-        {
-            if (!Check(filePath, ref Mistakes))
-            {
-                return false;
-            }
-            return true;
         }
 
     }
