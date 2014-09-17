@@ -28,24 +28,29 @@ namespace LCChecker.Models
                 list.Add(new ConditionalRowRule()
                 {
                     Condition = rule1,
-                    Rule = new AndRule()
-                    {
-                        Rule1 = new AndRule()
-                        {
-                            Rule1 = new AndRule()
-                            {
-                                Rule1 = new StringEqual() { ColumnIndex = 1, Data = Ship[item].City },
-                                Rule2 = new StringEqual() { ColumnIndex = 2, Data = Ship[item].County }
-                            },
-                            Rule2 = new AndRule()
-                            {
-                                Rule1 = new StringEqual() { ColumnIndex = 4, Data = Ship[item].Name },
-                                Rule2 = new DoubleEqual() { ColumnIndex=7,data=Ship[item].Indicators}
-                            }
-                        },
-                        Rule2 = new DoubleEqual() { ColumnIndex = 5, data = Ship[item].AddArea }
-                    }
+                    Rule = new StringEqual() { ColumnIndex = 1, Data = Ship[item].City }
                 });
+                list.Add(new ConditionalRowRule()
+                {
+                    Condition = rule1,
+                    Rule = new StringEqual() { ColumnIndex = 2, Data = Ship[item].County }
+                });
+                list.Add(new ConditionalRowRule()
+                {
+                    Condition = rule1,
+                    Rule = new StringEqual() { ColumnIndex = 4, Data = Ship[item].Name }
+                });
+                list.Add(new ConditionalRowRule()
+                {
+                    Condition = rule1,
+                    Rule = new DoubleEqual() { ColumnIndex = 5, data = Ship[item].AddArea }
+                });
+                list.Add(new ConditionalRowRule()
+                {
+                    Condition = rule1,
+                    Rule = new DoubleEqual() { ColumnIndex = 7, data = Ship[item].Indicators }
+                });
+
             }
 
             foreach (var item in list)

@@ -114,21 +114,14 @@ namespace LCChecker.Controllers
             };
             if (id != 0)
             {
-                string MastPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/", CurrentUser.City.ToString() + ".xls");
-                filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filePath);
-                //CheckReport4 engine = new CheckReport4(MastPath);
+                //string MastPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/", CurrentUser.City.ToString() + ".xls");
+                //filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filePath);
+                //CheckReport2 engine = new CheckReport2(MastPath);
                 //string fault = "";
-                //if (!engine.Check(filePath, ref fault))
-                //{
-                //    //验证失败;
-                //}
-
-                CheckReport5 engine = new CheckReport5(MastPath);
-                string fault = "";
-                if (!engine.Check(filePath, ref fault))
-                { 
+                //if (!engine.Check(filePath,ref fault))
+                //{ 
                     
-                }
+                //}
 
                 ReportType reportType=(ReportType)Enum.Parse(typeof(ReportType),id.ToString());
                 
