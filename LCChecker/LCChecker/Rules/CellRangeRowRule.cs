@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 
 namespace LCChecker.Rules
@@ -26,6 +27,10 @@ namespace LCChecker.Rules
             var value1 = row.GetCell(xoffset + ColumnIndex, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
             foreach (var star in Values)
             {
+                if (star == "经核实，项目由于___原因未实施或未终止实施，详细说明具体情况")
+                {
+                    return Regex.IsMatch(value1, @"^经核实[,，]项目由于([\w\W]+)原因未实施或未终止实施[,，]详细说明具体情况$");
+                }
                 if (star == value1)
                     return true;
             }

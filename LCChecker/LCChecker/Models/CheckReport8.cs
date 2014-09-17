@@ -8,13 +8,10 @@ using System.Web;
 
 namespace LCChecker.Models
 {
-    public class CheckReport7 : CheckEngine
+    public class CheckReport8:CheckEngine
     {
-
-
-        public CheckReport7(string filePath)
+        public CheckReport8()
         {
-            GetMessage(filePath);
             var list = new List<IRowRule>();
             int count = Ship.Count();
             string[] IDS = new string[count];
@@ -51,26 +48,27 @@ namespace LCChecker.Models
                 list.Add(new ConditionalRowRule()
                 {
                     Condition = rule1,
-                    Rule = new StringEqual() { ColumnIndex = 7, Data = Ship[item].Grade }
+                    Rule = new DoubleEqual() { ColumnIndex = 7, data = Ship[item].Indicators }
                 });
 
             }
-            list.Add(new CellRangeRowRule() { ColumnIndex = 8, Values = new[] { "是", "否" } });
 
             foreach (var item in list)
             {
                 rules.Add(new RuleInfo() { Rule = item });
             }
+        
         }
 
-
-        public new void GetMessage(string filePath)
+        public void GetMessage(string filePath)
         {
-            string fault = "";
-            IWorkbook workbook = GetWorkbook(filePath, ref fault);
+            IWorkbook workbook = null;
+            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            {
+                workbook = WorkbookFactory.Create(fs);
+            }
             if (workbook == null)
             {
-                Error.Add("大错误", new List<string>() { "获取项目总表失败" });
                 return;
             }
             RuleInfo engine = new RuleInfo()//要验证项目是存在补充耕地面积 那么第14 19 24 栏至少有一栏是有面积的 假如这个条件成立那么就是补充耕地项目编号
@@ -98,8 +96,9 @@ namespace LCChecker.Models
                 var value1 = row.GetCell(3, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
                 var cityName = row.Cells[1].StringCellValue.Split(',');
                 var AddArea = row.Cells[5].StringCellValue;
-                var grade = row.Cells[35].StringCellValue;
-                double data = double.Parse(AddArea);
+                var Indicator = row.Cells[13].StringCellValue;
+                double data1 = double.Parse(AddArea);
+                double data2 = double.Parse(Indicator);
                 if (cityName.Length < 3)
                 {
                     continue;
@@ -109,10 +108,13 @@ namespace LCChecker.Models
                     City = cityName[1],
                     County = cityName[2],
                     Name = value1,
-                    AddArea = data,
-                    Grade = grade
+                    AddArea = data1,
+                    Indicators=data2
                 });
             }
         }
+
+
+        
     }
 }
