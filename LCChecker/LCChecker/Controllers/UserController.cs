@@ -114,17 +114,10 @@ namespace LCChecker.Controllers
             };
             if (id != 0)
             {
-                //string MastPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/", CurrentUser.City.ToString() + ".xls");
-                //filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filePath);
-                //CheckReport2 engine = new CheckReport2(MastPath);
-                //string fault = "";
-                //if (!engine.Check(filePath,ref fault))
-                //{ 
-                    
-                //}
+                
 
                 ReportType reportType=(ReportType)Enum.Parse(typeof(ReportType),id.ToString());
-                
+                return RedirectToAction("CheckIndex", new { id = uploadFile.ID, typeId = id });
                 var record = db.Reports.Where(e => e.City == CurrentUser.City && e.Type ==reportType).FirstOrDefault();
                 if (record != null)
                 {
@@ -202,6 +195,12 @@ namespace LCChecker.Controllers
             return RedirectToAction("projects", new { result = (int)ResultFilter.Error });
         }
 
+        /// <summary>
+        /// 检查报部表格
+        /// </summary>
+        /// <param name="id">上传文件的id</param>
+        /// <param name="typeId">检验类型</param>
+        /// <returns></returns>
         public ActionResult CheckIndex(int id, ReportType typeId)
         {
             var file = db.Files.FirstOrDefault(e => e.ID == id);
@@ -211,41 +210,48 @@ namespace LCChecker.Controllers
             }
 
             var filePath = UploadHelper.GetAbsolutePath(file.SavePath);
+            string MastPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/", CurrentUser.City.ToString() + ".xls");
+            ICheck engine = null;
+            switch (typeId)
+            {
+                case ReportType.附表四:
+                    engine = new CheckReport4(MastPath);
+                    break;
+                case ReportType.附表五:
+                    engine = new CheckReport5(MastPath);
+                    break;
+                case ReportType.附表七:
+                    engine = new CheckReport7(MastPath);
+                    break;
+                case ReportType.附表八:
+                    engine = new CheckReport8(MastPath);
+                    break;
+                case ReportType.附表九:
+                    engine = new CheckReport9(MastPath);
+                    break;
+                default: break;
+            }
+            if (engine == null)
+            {
 
-            string masterPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", CurrentUser.City.ToString() + ".xls");
-            //string fault = "";
-//<<<<<<< .mine
-//            CheckReport2 Engine = new CheckReport2(masterPath);
-//            if (!Engine.Check(filePath, ref fault))
-//            {
-//                throw new ArgumentException("检索附表失败"+fault);
-//            }
-//=======
-            //CheckReport2 Engine = new CheckReport2(masterPath);
-            //if (!Engine.Check(filePath, ref fault))
-            //{
-            //    throw new ArgumentException("检索附表失败");
-            //}
-//>>>>>>> .r93
+            }
+            string fault = "";
+            if (!engine.Check(filePath, ref fault))
+            {
+                throw new ArgumentException("检索表格失败" + fault);
+            }
 
-            //if (Engine.Error.Count() != 0)
-            //{
-
-            //}
-
-            //var message = db.Reports.Where(x => x.City == CurrentUser.City && x.Type == typeId).FirstOrDefault();
-            //if (message == null)
-            //{
-            //    throw new ArgumentException("未找到上传信息");
-            //}
-            //message.Result = true;
-            //db.Entry(message).State = EntityState.Modified;
-            //db.SaveChanges();
-
-
-
-            Dictionary<string, List<string>> Error = new Dictionary<string, List<string>>();
-            ViewBag.Error = Error;
+            var record = db.Reports.Where(e => e.City == CurrentUser.City && e.Type == typeId).FirstOrDefault();
+            Dictionary<string, List<string>> Error = engine.GetError();
+            if (Error.Count() != 0)
+            {
+                record.Result = false;
+            }
+            else {
+                record.Result = true;
+            }
+            db.Entry(record).State = EntityState.Modified;
+            db.SaveChanges();
             return View(Error);
         }
 

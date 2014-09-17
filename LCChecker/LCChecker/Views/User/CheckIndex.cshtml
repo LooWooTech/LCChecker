@@ -15,7 +15,12 @@
     { 
         <tr>
             <td>@item</td>
-            <td>@Model[item]</td>
+            <td>
+                @foreach (var it in Model[item])
+                { 
+                    <p>@it</p>
+                }
+            </td>
         </tr>
     }
 </table>
