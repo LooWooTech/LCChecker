@@ -127,9 +127,25 @@ namespace LCChecker.Controllers
         }
 
         [HttpGet]
-        public ActionResult ProjectSummary()
+        public ActionResult Statistics()
         {
-            ViewBag.Summary = db.Projects.GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
+            ViewBag.ProjectSummary = db.Projects.GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
+            {
+                TotalCount = g.Count(),
+                ErrorCount = g.Count(e => e.Result == false),
+                SuccessCount = g.Count(e => e.Result == true),
+                City = g.Key
+            });
+
+            ViewBag.ReportSummary = db.Reports.GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
+            {
+                TotalCount = g.Count(),
+                ErrorCount = g.Count(e => e.Result == false),
+                SuccessCount = g.Count(e => e.Result == true),
+                City = g.Key
+            });
+
+            ViewBag.CoordSummary = db.CoordProjects.GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
             {
                 TotalCount = g.Count(),
                 ErrorCount = g.Count(e => e.Result == false),

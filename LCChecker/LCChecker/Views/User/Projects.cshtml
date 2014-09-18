@@ -101,6 +101,12 @@
 </table>
 <script>
     $(function () {
+        $("body").click(function (e) {
+            var target = $(e.target);
+            var className = target.attr("class");
+            if (className.indexOf("btn-details") > 0) return false;
+            $(".tips").hide();
+        });
         $(".btn-details").click(function (e) {
             var id = $(this).attr("data");
             $(".tips").hide();

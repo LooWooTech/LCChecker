@@ -5,7 +5,7 @@
     ViewBag.Title = "项目列表";
 
     List<LCChecker.Models.Project> list = ViewBag.List;
-    //ProjectType type = ViewBag.ProjectType;
+                    //ProjectType type = ViewBag.ProjectType;
 }
 
 @*<div class="nav nav-tabs" style="margin-bottom: 10px;">
@@ -16,7 +16,17 @@
     }
 </div>*@
 <div style="clear: both; overflow: hidden; margin-bottom: 10px;">
-    <form class="form form-inline" style="float: left;">
+    <form class="form form-inline" method="post" enctype="multipart/form-data" action="/user/uploadprojects" style="float: left;">
+        <div class="input-group">
+            <div class="input-group-btn">
+                <input type="file" name="file1" class="form-control" />
+            </div>
+            <div class="input-group-btn">
+                <button type="submit" class="btn btn-primary">上传项目</button>
+            </div>
+        </div>
+    </form>
+    <form class="form form-inline" style="float: right;">
         <div class="input-group">
             <span class="input-group-addon">过滤项目</span>
             <select name="city" class="form-control">
