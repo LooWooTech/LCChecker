@@ -5,13 +5,17 @@
     ViewBag.Title = "报部表管理";
     List<Report> list = ViewBag.List;
 }
-<h4>【注意】在自检表中项目全部检验通过后，再进行报部表的检查</h4>
+<div class="alert alert-warning">
+    1. 请严格按照样表填写报部表格。<br />
+    2. 请注意表4，表5，表8的项目与表三（下载）项目的对应关系，系统检查后会若提示不一致，请与省国土厅联系并进行说明。<br />
+    3. 表六请提供空白纸质表<br />
+    4. 在自检表中项目全部检验通过后，再进行报部表的检查
+</div>
 <table class="table">
     <tr>
         <th>表单名称</th>
         <th>检查结果</th>
-        <th>错误原因</th>
-        @*        <th>下载地址</th>*@
+        <th>样表下载</th>
         <th style="width: 200px;">上传验证</th>
     </tr>
 
@@ -39,17 +43,7 @@
                 }
             </td>
             <td>
-                @if (!string.IsNullOrEmpty(item.Note))
-                {
-                    <a href="#@(item.ID)" class="btn btn-sm btn-default btn-details" data="@(item.ID)">详情</a>
-                    <div id="tips-@(item.ID)" class="tips">
-                        @Html.Raw(item.Note.Replace("\r\n", "<br />"))
-                    </div>
-                }
-                else
-                {
-                    <span>----</span>
-                }
+                <a href="/templates/@(item.Type.ToString()).xlsx" class="btn btn-sm btn-primary">下载</a>
             </td>
             @*            <td>
                 <a href="/User/DownloadReport?type=@(typeValue)" class="=btn btn-sm btn-primary">下载表单</a>
@@ -68,18 +62,3 @@
         }
     }
 </table>
-<script>
-    $(function () {
-        $("body").click(function (e) {
-            var target = $(e.target);
-            var className = target.attr("class");
-            if (className.indexOf("btn-details") > 0) return false;
-            $(".tips").hide();
-        });
-        $(".btn-details").click(function (e) {
-            var id = $(this).attr("data");
-            $(".tips").hide();
-            $("#tips-" + id).show();
-        });
-    });
-</script>

@@ -10,15 +10,6 @@ namespace LCChecker.Models
         public CheckReport5(List<Project> projects)
         {
             var list = new List<IRowRule>();
-            //int count = projects.Count();
-            //string[] IDS = new string[count];
-            //int i = 0;
-            //foreach (var item in projects)
-            //{
-            //    IDS[i] = item.ID;
-            //    i++;
-            //}
-            //list.Add(new CellRangeRowRule() { ColumnIndex = 3, Values = IDS });
             foreach (var item in projects)
             {
                 var rule1 = new StringEqual() { ColumnIndex = 3, Data = item.ID };
@@ -46,13 +37,16 @@ namespace LCChecker.Models
         }
 
 
-        //public void SetWhether(List<Project> projects)
-        //{
-        //    foreach (var item in projects)
-        //    { 
-        //        Whether.Add(item.ID,)
-        //    }
-        //}
+        public override void SetWhether(List<Project> projects)
+        {
+            foreach (var item in projects)
+            {
+                if (item.IsHasError.HasValue)
+                {
+                    Whether.Add(item.ID, item.IsHasError.Value);
+                }
+            }
+        }
 
       
     }

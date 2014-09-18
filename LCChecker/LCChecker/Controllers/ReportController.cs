@@ -47,7 +47,8 @@ namespace LCChecker.Controllers
                 City = CurrentUser.City,
                 CreateTime = DateTime.Now,
                 FileName = file.FileName,
-                SavePath = filePath
+                SavePath = filePath,
+                Type = (UploadFileType)(int)type
             });
 
             var record = db.Reports.FirstOrDefault(e => e.City == CurrentUser.City && e.Type == type);
@@ -110,7 +111,7 @@ namespace LCChecker.Controllers
 
         public ActionResult DownloadReport(ReportType type)
         {
-            var workbook = XslHelper.GetWorkbook("Templates/" + (int)type + ".xls");
+            var workbook = XslHelper.GetWorkbook("Templates/" + type.ToString() + ".xlsx");
             var sheet = workbook.GetSheetAt(0);
             sheet.GetRow(1).Cells[0].SetCellValue(CurrentUser.City.ToString() + type.GetDescription());
 

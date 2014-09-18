@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50703
 File Encoding         : 65001
 
-Date: 2014-09-17 18:52:35
+Date: 2014-09-18 19:04:00
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -20,13 +20,13 @@ SET FOREIGN_KEY_CHECKS=0;
 -- ----------------------------
 DROP TABLE IF EXISTS `coord_projects`;
 CREATE TABLE `coord_projects` (
-  `ID` varchar(55) NOT NULL,
+  `ID` varchar(255) NOT NULL,
   `CityID` int(11) NOT NULL,
-  `Name` varchar(127) DEFAULT NULL,
-  `Result` tinyint(1) DEFAULT NULL,
+  `Name` varchar(255) DEFAULT NULL,
+  `Result` bit(1) DEFAULT NULL,
+  `County` varchar(255) DEFAULT NULL,
   `Note` varchar(255) DEFAULT NULL,
-  `County` varchar(55) DEFAULT NULL,
-  `UpdateTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `UpdateTime` date NOT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -41,10 +41,13 @@ CREATE TABLE `projects` (
   `Result` tinyint(1) DEFAULT NULL,
   `Note` varchar(255) DEFAULT NULL,
   `County` varchar(55) DEFAULT NULL,
-  `Type` int(11) DEFAULT NULL,
   `UpdateTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `Area` double DEFAULT NULL,
-  `NewArea` double DEFAULT NULL,  
+  `IsApplyDelete` bit(1) DEFAULT NULL,
+  `IsHasError` bit(1) DEFAULT NULL,
+  `IsShouldModify` bit(1) DEFAULT NULL,
+  `IsDecrease` bit(1) DEFAULT NULL,
+  `Area` decimal(10,0) DEFAULT NULL,
+  `NewArea` decimal(10,0) DEFAULT NULL,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `PK_PROJECT_ID` (`ID`),
   KEY `IX_PROJECT_CITY` (`CityID`),
@@ -74,10 +77,12 @@ CREATE TABLE `uploadfiles` (
   `FileName` varchar(55) DEFAULT NULL,
   `CreateTime` datetime NOT NULL,
   `SavePath` varchar(55) DEFAULT NULL,
+  `Type` int(11) NOT NULL DEFAULT '0',
+  `Proceeded` bit(1) NOT NULL DEFAULT b'0',
   PRIMARY KEY (`ID`),
   UNIQUE KEY `PK_FILE_ID` (`ID`) USING BTREE,
   KEY `IX_FILE_CITY` (`CityID`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for users

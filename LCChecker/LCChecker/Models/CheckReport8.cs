@@ -10,16 +10,6 @@ namespace LCChecker.Models
         {
             GetMessage(filePath);
             var list = new List<IRowRule>();
-            //int count = projects.Count();
-            //string[] IDS = new string[count];
-            //int i = 0;
-            //foreach (var item in projects)
-            //{
-            //    IDS[i] = item.ID;
-            //    i++;
-            //}
-            //list.Add(new CellRangeRowRule() { ColumnIndex = 3, Values = IDS });
-
             foreach (var item in projects)
             {
                 var rule1 = new StringEqual() { ColumnIndex = 3, Data = item.ID };

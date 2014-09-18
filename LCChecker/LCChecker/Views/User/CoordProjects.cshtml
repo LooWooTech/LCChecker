@@ -1,0 +1,64 @@
+﻿@using LCChecker.Models
+@{
+    Layout = "_Layout.cshtml";
+    ViewBag.Title = "坐标点存疑列表";
+    List<CoordProject> list = ViewBag.List;
+}
+<div style="clear: both; overflow: hidden; margin-bottom: 10px;">
+    <form class="form form-inline" method="post" enctype="multipart/form-data" action="/admin/UpdateCoordProjects" style="float: left;">
+        <div class="input-group-btn">
+            <input type="file" name="file1" class="form-control" style="width: 200px;" />
+            <select name="uploadfiletype" class="form-control">
+                <option value="@((int)UploadFileType.项目坐标)">项目坐标</option>
+            </select>
+            <div class="input-group">
+                <button type="submit" class="btn btn-primary">上传坐标点</button>
+            </div>
+        </div>
+    </form>
+</div>
+<table class="table table-bordered">
+    <tr>
+        <th style="width: 130px">所在地</th>
+        <th style="width: 150px">项目编号</th>
+        <th>项目名称</th>
+        <th style="width: 100px">检验结果</th>
+        <th style="width: 300px;">备注</th>
+    </tr>
+    @foreach (var project in list)
+    {
+        <tr>
+            <td>@(project.City.ToString()) - @(project.County)</td>
+            <td>@(project.ID)</td>
+            <td>@(project.Name)</td>
+            <td>
+                @if (project.Result.HasValue)
+                {
+                    if (project.Result.Value)
+                    {
+                    <span class="label label-success">无误</span>
+                    }
+                    else
+                    {
+                    <span class="label label-warning">存疑</span>
+                    }
+                }
+                else
+                {
+                    <span class="label label-default">未上传</span>
+                }
+            </td>
+            <td>
+                @if (!string.IsNullOrEmpty(project.Note))
+                {
+                    @Html.Raw(project.Note.Replace(";", "<br />"))
+                }
+            </td>
+        </tr>
+    }
+    <tr>
+        <td colspan="9">
+            @Html.Partial("_pagination", ViewBag.Page as object)
+        </td>
+    </tr>
+</table>

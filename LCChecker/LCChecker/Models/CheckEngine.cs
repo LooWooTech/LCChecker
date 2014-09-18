@@ -111,6 +111,11 @@ namespace LCChecker.Models
         }
 
 
+        public virtual void SetWhether(List<Project> projects) { 
+            
+        }
+
+
 
         /// <summary>
         /// 

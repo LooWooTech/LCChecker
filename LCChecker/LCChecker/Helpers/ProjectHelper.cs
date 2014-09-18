@@ -10,7 +10,7 @@ namespace LCChecker
     {
         public City? City { get; set; }
 
-        public ProjectType? Type { get; set; }
+        //public ProjectType? Type { get; set; }
 
         public NullableFilter Result { get; set; }
 
@@ -29,8 +29,23 @@ namespace LCChecker
                     {
                         db.Projects.Add(item);
                     }
-                    db.SaveChanges();
                 }
+                db.SaveChanges();
+            }
+        }
+
+        public static void AddCoordProjects(List<CoordProject> list)
+        {
+            using (var db = new LCDbContext())
+            {
+                foreach (var item in list)
+                {
+                    if (!db.CoordProjects.Any(e => e.ID == item.ID))
+                    {
+                        db.CoordProjects.Add(item);
+                    }
+                }
+                db.SaveChanges();
             }
         }
 
@@ -39,6 +54,46 @@ namespace LCChecker
             using (var db = new LCDbContext())
             {
                 var query = db.Projects.AsQueryable();
+                if (filter.City.HasValue && filter.City.Value > 0)
+                {
+                    query = query.Where(e => e.City == filter.City.Value);
+                }
+
+                switch (filter.Result)
+                {
+                    case NullableFilter.True:
+                    case NullableFilter.False:
+                        var value = filter.Result == NullableFilter.True;
+                        query = query.Where(e => e.Result == value);
+                        break;
+                    case NullableFilter.Null:
+                        query = query.Where(e => e.Result == null);
+                        break;
+                    case NullableFilter.All:
+                    default:
+                        break;
+                }
+
+                //if (filter.Type.HasValue && filter.Type.Value > 0)
+                //{
+                //    query = query.Where(e => e.Type == filter.Type.Value);
+                //}
+
+                if (filter.Page != null)
+                {
+                    filter.Page.RecordCount = query.Count();
+                    query = query.OrderByDescending(e => e.UpdateTime).Skip(filter.Page.PageSize * (filter.Page.PageIndex - 1)).Take(filter.Page.PageSize);
+                }
+
+                return query.ToList();
+            }
+        }
+
+        public static List<CoordProject> GetCoordProjects(ProjectFileter filter)
+        {
+            using (var db = new LCDbContext())
+            {
+                var query = db.CoordProjects.AsQueryable();
                 if (filter.City.HasValue && filter.City.Value > 0)
                 {
                     query = query.Where(e => e.City == filter.City.Value);
