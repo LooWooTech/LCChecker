@@ -9,12 +9,12 @@ namespace LCChecker.Controllers
 {
     public partial class UserController
     {
-        public ActionResult Map()
+        public ActionResult Coord(int page = 1)
         {
             return View();
         }
 
-        public ActionResult UpdateMapData()
+        public ActionResult UpdateCoord(UploadFileType type)
         {
             throw new NotImplementedException();
         }

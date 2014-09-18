@@ -109,7 +109,6 @@ namespace LCChecker.Controllers
                 Result = result,
                 Page = new Page(page)
             };
-            var paging = new Page(page);
             ViewBag.List = ProjectHelper.GetProjects(filter);
             ViewBag.Page = filter.Page;
             return View();
@@ -139,9 +138,9 @@ namespace LCChecker.Controllers
             });
             return View();
         }
-        
+
         /// <summary>
-        /// 上传总表数据
+        /// 上传总表数据（导入表3）
         /// </summary>
         /// <returns></returns>
         [HttpPost]
@@ -151,19 +150,10 @@ namespace LCChecker.Controllers
 
             var list = new List<Project>();
 
-            IWorkbook excel = null;
-            var ext = Path.GetExtension(file.FileName);
-            if (ext == ".xls")
-            {
-                excel = new HSSFWorkbook(file.InputStream);
-            }
-            else
-            {
-                excel = new XSSFWorkbook(file.InputStream);
-            }
-            //var excel = new HSSFWorkbook(file.InputStream);
+            var excel = XslHelper.GetWorkbook(file);
             var sheet = excel.GetSheetAt(0);
-            for (var i = 1; i <= sheet.LastRowNum; i++)
+
+            for (var i = 7; i <= sheet.LastRowNum; i++)
             {
                 var row = sheet.GetRow(i);
                 if (string.IsNullOrEmpty(row.Cells[0].ToString()))
@@ -173,15 +163,19 @@ namespace LCChecker.Controllers
 
                 City city = 0;
 
-                if (Enum.TryParse<City>(row.Cells[0].ToString(), out city))
+                if (Enum.TryParse<City>(row.Cells[1].ToString(), out city))
                 {
                     list.Add(new Project
                     {
                         City = city,
-                        County = row.Cells[1].StringCellValue,
-                        ID = row.Cells[2].NumericCellValue.ToString(),
-                        Name = row.Cells[3].StringCellValue,
-                        //Note = row.GetCell(4)
+                        County = row.Cells[2].StringCellValue,
+                        ID = row.Cells[3].NumericCellValue.ToString(),
+                        Name = row.Cells[4].StringCellValue,
+                        IsHasError = row.Cells[5].StringCellValue == "否",
+                        IsApplyDelete = row.Cells[6].StringCellValue == "是",
+                        IsShouldModify = row.Cells[7].StringCellValue == "是",
+                        IsDecrease = row.Cells[9].StringCellValue == "是",
+
                     });
                 }
 
@@ -189,7 +183,55 @@ namespace LCChecker.Controllers
 
             ProjectHelper.AddProjects(list);
 
-            return RedirectToAction("Index", "Admin");
+            return RedirectToAction("Projects", "Admin");
+        }
+
+        public ActionResult CoordProjects(NullableFilter result = NullableFilter.All, int page = 1)
+        {
+            var filter = new ProjectFileter
+            {
+                City = CurrentUser.City,
+                Result = result,
+                Page = new Page(page)
+            };
+            ViewBag.List = ProjectHelper.GetCoordProjects(filter);
+            ViewBag.Page = filter.Page;
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult UploadCoords()
+        {
+            var file = UploadHelper.GetPostedFile(HttpContext);
+
+
+            var excel = XslHelper.GetWorkbook(file);
+            var sheet = excel.GetSheetAt(0);
+
+            var list = new List<CoordProject>();
+            for (var i = 1; i <= sheet.LastRowNum; i++)
+            {
+                var row = sheet.GetRow(i);
+                if (string.IsNullOrEmpty(row.Cells[0].ToString()))
+                {
+                    continue;
+                }
+                City city = 0;
+
+                if (Enum.TryParse<City>(row.Cells[0].ToString(), out city))
+                {
+                    list.Add(new CoordProject
+                    {
+                        City = city,
+                        County = row.Cells[1].StringCellValue,
+                        ID = row.Cells[2].StringCellValue,
+                        Name = row.Cells[3].StringCellValue,
+                        Note = row.Cells[4].StringCellValue
+                    });
+                }
+            }
+            ProjectHelper.AddCoordProjects(list);
+            return RedirectToAction("CoordProjects");
         }
     }
 }

@@ -48,7 +48,7 @@ namespace LCChecker.Controllers
                 CreateTime = DateTime.Now,
                 FileName = file.FileName,
                 SavePath = filePath,
-                Type = (int)type
+                Type = (UploadFileType)(int)type
             });
 
             var record = db.Reports.FirstOrDefault(e => e.City == CurrentUser.City && e.Type == type);

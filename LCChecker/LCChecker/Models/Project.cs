@@ -42,10 +42,42 @@ namespace LCChecker.Models
         /// 备注
         /// </summary>
         [MaxLength(1023)]
-
         public string Note { get; set; }
 
+        /// <summary>
+        /// 最后检查时间
+        /// </summary>
         public DateTime UpdateTime { get; set; }
+
+        /// <summary>
+        /// 是否申请删除
+        /// </summary>
+        public bool? IsApplyDelete { get; set; }
+
+        /// <summary>
+        /// 是否确认无误
+        /// </summary>
+        public bool? IsHasError { get; set; }
+
+        /// <summary>
+        /// 是否需要修改
+        /// </summary>
+        public bool? IsShouldModify { get; set; }
+
+        /// <summary>
+        /// 是否是指标核减
+        /// </summary>
+        public bool? IsDecrease { get; set; }
+
+        /// <summary>
+        /// 项目总规模（公顷）
+        /// </summary>
+        public double? Area { get; set; }
+
+        /// <summary>
+        /// 新增耕地面积
+        /// </summary>
+        public double? NewArea { get; set; }
     }
 
     //public enum ProjectType

@@ -1,5 +1,7 @@
-﻿using NPOI.HSSF.Util;
+﻿using NPOI.HSSF.UserModel;
+using NPOI.HSSF.Util;
 using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,6 +21,19 @@ namespace LCChecker
     
     public static class XslHelper
     {
+        public static IWorkbook GetWorkbook(HttpPostedFileBase file)
+        {
+            var ext = Path.GetExtension(file.FileName);
+            if (ext == ".xls")
+            {
+                return new HSSFWorkbook(file.InputStream);
+            }
+            else
+            {
+                return new XSSFWorkbook(file.InputStream);
+            }
+        }
+
         public static IWorkbook GetWorkbook(string path)
         {
             var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path);
