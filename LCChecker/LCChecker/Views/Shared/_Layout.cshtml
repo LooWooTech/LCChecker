@@ -7,9 +7,12 @@
     <link rel="stylesheet" href="/content/bootstrap.css" media="screen">
     <link rel="stylesheet" href="/content/bootswatch.min.css" media="screen">
     <link rel="stylesheet" href="/content/main.min.css" media="screen">
-    <script src="/scripts/jquery-2.1.1.min.js"></script>
+    <!--[if lt IE 9]>
+      <script src="/scripts/html5shiv.js"></script>
+      <script src="/scripts/respond.min.js"></script>
+    <![endif]-->
+    <script src="/scripts/jquery-1.9.1.min.js"></script>
     <script src="/scripts/bootstrap.min.js"></script>
-    <script src="/scripts/bootswatch.js"></script>
     @{
         LCChecker.Models.User user = ViewBag.CurrentUser;
     }

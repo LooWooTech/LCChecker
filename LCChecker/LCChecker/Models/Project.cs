@@ -37,8 +37,8 @@ namespace LCChecker.Models
         /// </summary>
         public string County { get; set; }
 
-        [Column("Type", TypeName = "INT")]
-        public ProjectType Type { get; set; }
+        //[Column("Type", TypeName = "INT")]
+        //public ProjectType Type { get; set; }
 
         /// <summary>
         /// 备注

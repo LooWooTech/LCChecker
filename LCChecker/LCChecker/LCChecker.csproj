@@ -213,11 +213,11 @@
     <Content Include="App_Data\舟山市.xls" />
     <Content Include="App_Data\衢州市.xls" />
     <Content Include="App_Data\金华市.xls" />
-    <None Include="Scripts\jquery-2.1.1.intellisense.js" />
+    <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
-    <Content Include="Scripts\jquery-2.1.1.js" />
-    <Content Include="Scripts\jquery-2.1.1.min.js" />
-    <Content Include="Scripts\_references.js" />
+    <Content Include="Scripts\html5shiv.js" />
+    <Content Include="Scripts\jquery-1.9.1.js" />
+    <Content Include="Scripts\respond.min.js" />
     <Content Include="Templates\6.xls" />
     <Content Include="Templates\9.xls" />
     <Content Include="Web.config">
@@ -234,7 +234,6 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Scripts\jquery-2.1.1.min.map" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\User\Projects.cshtml" />
     <Content Include="Views\Shared\_pagination.cshtml" />
@@ -257,21 +256,11 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="Views\Admin\ReportSummary.cshtml" />
-    <Content Include="Views\User\Coordinates.cshtml" />
+    <Content Include="Views\User\Map.cshtml" />
     <Content Include="Views\User\CheckProject.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Uploads\丽水市\" />
-    <Folder Include="Uploads\台州市\" />
-    <Folder Include="Uploads\嘉兴市\" />
-    <Folder Include="Uploads\宁波市\" />
-    <Folder Include="Uploads\杭州市\" />
-    <Folder Include="Uploads\温州市\" />
-    <Folder Include="Uploads\湖州市\" />
-    <Folder Include="Uploads\绍兴市\" />
-    <Folder Include="Uploads\舟山市\" />
-    <Folder Include="Uploads\衢州市\" />
-    <Folder Include="Uploads\金华市\" />
+    <Folder Include="Uploads\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

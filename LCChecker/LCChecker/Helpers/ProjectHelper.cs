@@ -59,10 +59,10 @@ namespace LCChecker
                         break;
                 }
 
-                if (filter.Type.HasValue && filter.Type.Value > 0)
-                {
-                    query = query.Where(e => e.Type == filter.Type.Value);
-                }
+                //if (filter.Type.HasValue && filter.Type.Value > 0)
+                //{
+                //    query = query.Where(e => e.Type == filter.Type.Value);
+                //}
 
                 if (filter.Page != null)
                 {

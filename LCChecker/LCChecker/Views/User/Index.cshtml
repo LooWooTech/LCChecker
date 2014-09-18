@@ -7,8 +7,8 @@
 }
 <blockquote>
     <p><i class="glyphicon glyphicon-check"></i>&nbsp;<a href="/user/projects/">自检表管理</a></p>
-    
-	<ul>
+
+    <ul>
         <li class="small">项目总数：
         @(projectSummary.TotalCount)</li>
         <li class="small">检验通过总数：
@@ -16,15 +16,16 @@
         <li class="small">未通过总数：
         @(projectSummary.ErrorCount)</li>
         <li class="small">未上传总数：
-        @(projectSummary.UnCheckCount)</li></ul>
-    
-    <p><small><span class="badge badge-success">下载</span><a href="/重点项目复核确认总表.xls">重点项目复核确认总表下载</a></small></p>
+        @(projectSummary.UnCheckCount)</li>
+    </ul>
+
+    <p><small><span class="badge badge-success">下载</span><a href="/@(HttpUtility.UrlEncode("重点项目复核确认总表")).xls">重点项目复核确认总表下载</a></small></p>
 </blockquote>
 
 <blockquote>
     <p><i class="glyphicon glyphicon-paperclip"></i>&nbsp;<a href="/user/reports/">报部表管理</a></p>
-    
-	<ul>
+
+    <ul>
 
         <li class="small">项目总数：
         @(reportSummary.TotalCount)</li>
@@ -33,15 +34,15 @@
         <li class="small">未通过总数：
         @(reportSummary.ErrorCount)</li>
         <li class="small">未上传总数：
-        @(reportSummary.UnCheckCount)</li></ul> 
-    
+        @(reportSummary.UnCheckCount)</li>
+    </ul>
+
 </blockquote>
 
 <blockquote>
     <p><i class="glyphicon glyphicon-map-marker"></i>&nbsp;<a href="#">坐标点上传</a></p>
-    <small>
-        请提交坐标点文件至系统中。
+    <small>请提交坐标点文件至系统中。
     </small>
-	<p><small><span class="badge badge-success">下载</span><a href="/坐标存疑项目列表.xlsx">坐标存疑项目列表下载</a></small></p>
+    <p><small><span class="badge badge-success">下载</span><a href="/@(HttpUtility.UrlEncode("坐标存疑项目列表")).xlsx">坐标存疑项目列表下载</a></small></p>
 </blockquote>
 

@@ -171,24 +171,18 @@ namespace LCChecker.Controllers
                 {
                     continue;
                 }
-                var cityNames = row.Cells[0].StringCellValue.Split(',');
-                if (cityNames.Length < 3)
-                {
-                    continue;
-                }
-
-                var county = cityNames[2];
 
                 City city = 0;
 
-                if (Enum.TryParse<City>(cityNames[1], out city))
+                if (Enum.TryParse<City>(row.Cells[0].ToString(), out city))
                 {
                     list.Add(new Project
                     {
                         City = city,
-                        ID = row.Cells[1].NumericCellValue.ToString(),
-                        Name = row.Cells[2].StringCellValue,
-                        County = county
+                        County = row.Cells[1].StringCellValue,
+                        ID = row.Cells[2].NumericCellValue.ToString(),
+                        Name = row.Cells[3].StringCellValue,
+                        //Note = row.GetCell(4)
                     });
                 }
 

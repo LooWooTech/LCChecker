@@ -57,7 +57,7 @@ namespace LCChecker.Controllers
         /// <param name="form"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult UploadProjects(ProjectType type)
+        public ActionResult UploadProjects(/*ProjectType type*/)
         {
             var file = UploadHelper.GetPostedFile(HttpContext);
 
@@ -73,10 +73,10 @@ namespace LCChecker.Controllers
 
             var fileId = UploadHelper.AddFileEntity(uploadFile);
 
-            return RedirectToAction("CheckProject", new { id = fileId, type = (int)type });
+            return RedirectToAction("CheckProject", new { id = fileId/*, type = (int)type */});
         }
 
-        public ActionResult CheckProject(int id, ProjectType type)
+        public ActionResult CheckProject(int id/*, ProjectType type*/)
         {
             var file = db.Files.FirstOrDefault(e => e.ID == id);
             if (file == null)
@@ -134,7 +134,7 @@ namespace LCChecker.Controllers
 
             db.SaveChanges();
 
-            return RedirectToAction("projects", new { type = (int)type, result = (int)(errors.Count > 0 ? NullableFilter.False : NullableFilter.True) });
+            return RedirectToAction("projects", new { /*type = (int)type, */result = (int)(errors.Count > 0 ? NullableFilter.False : NullableFilter.True) });
         }
 
 
