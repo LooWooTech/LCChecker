@@ -10,7 +10,7 @@ namespace LCChecker
     {
         public City? City { get; set; }
 
-        public ProjectType? Type { get; set; }
+        //public ProjectType? Type { get; set; }
 
         public NullableFilter Result { get; set; }
 

@@ -25,6 +25,9 @@ namespace LCChecker.Models
         [MaxLength(55)]
         public string SavePath { get; set; }
 
-
+        /// <summary>
+        /// 0是自查，1-9是报部，10及以上是坐标
+        /// </summary>
+        public int Type { get; set; }
     }
 }

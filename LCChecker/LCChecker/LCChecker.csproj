@@ -216,10 +216,8 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\html5shiv.js" />
-    <Content Include="Scripts\jquery-1.9.1.js" />
+    <Content Include="Scripts\jquery-1.9.1.min.js" />
     <Content Include="Scripts\respond.min.js" />
-    <Content Include="Templates\6.xls" />
-    <Content Include="Templates\9.xls" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -239,12 +237,6 @@
     <Content Include="Views\Shared\_pagination.cshtml" />
     <Content Include="Templates\ModelSelf.xlsx" />
     <Content Include="Views\User\CheckReport.cshtml" />
-    <Content Include="Templates\2.xls" />
-    <Content Include="Templates\3.xls" />
-    <Content Include="Templates\4.xls" />
-    <Content Include="Templates\5.xls" />
-    <Content Include="Templates\7.xls" />
-    <Content Include="Templates\8.xls" />
     <Content Include="Views\Admin\Projects.cshtml" />
     <Content Include="Views\Admin\Users.cshtml" />
     <Content Include="Views\Admin\_Layout.cshtml" />
@@ -264,6 +256,16 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Templates\附表2.xlsx" />
+    <Content Include="Templates\附表3.xlsx" />
+    <Content Include="Templates\附表4.xlsx" />
+    <Content Include="Templates\附表5.xlsx" />
+    <Content Include="Templates\附表6.xlsx" />
+    <Content Include="Templates\附表7.xlsx" />
+    <Content Include="Templates\附表8.xlsx" />
+    <Content Include="Templates\附表9.xlsx" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

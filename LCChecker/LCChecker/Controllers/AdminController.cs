@@ -101,13 +101,12 @@ namespace LCChecker.Controllers
             }
         }
 
-        public ActionResult Projects(NullableFilter result = NullableFilter.All, ProjectType type = ProjectType.确认修改, int page = 1)
+        public ActionResult Projects(NullableFilter result = NullableFilter.All, int page = 1)
         {
             var filter = new ProjectFileter
             {
                 City = CurrentUser.City,
                 Result = result,
-                Type = type,
                 Page = new Page(page)
             };
             var paging = new Page(page);

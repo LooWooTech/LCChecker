@@ -47,7 +47,8 @@ namespace LCChecker.Controllers
                 City = CurrentUser.City,
                 CreateTime = DateTime.Now,
                 FileName = file.FileName,
-                SavePath = filePath
+                SavePath = filePath,
+                Type = (int)type
             });
 
             var record = db.Reports.FirstOrDefault(e => e.City == CurrentUser.City && e.Type == type);
@@ -72,19 +73,19 @@ namespace LCChecker.Controllers
             ICheck engine = null;
             switch (type)
             {
-                case ReportType.附表四:
+                case ReportType.附表4:
                     engine = new CheckReport4(MastPath);
                     break;
-                case ReportType.附表五:
+                case ReportType.附表5:
                     engine = new CheckReport5(MastPath);
                     break;
-                case ReportType.附表七:
+                case ReportType.附表7:
                     engine = new CheckReport7(MastPath);
                     break;
-                case ReportType.附表八:
+                case ReportType.附表8:
                     engine = new CheckReport8(MastPath);
                     break;
-                case ReportType.附表九:
+                case ReportType.附表9:
                     engine = new CheckReport9(MastPath);
                     break;
                 default:
@@ -108,7 +109,7 @@ namespace LCChecker.Controllers
 
         public ActionResult DownloadReport(ReportType type)
         {
-            var workbook = XslHelper.GetWorkbook("Templates/" + (int)type + ".xls");
+            var workbook = XslHelper.GetWorkbook("Templates/" + type.ToString() + ".xlsx");
             var sheet = workbook.GetSheetAt(0);
             sheet.GetRow(1).Cells[0].SetCellValue(CurrentUser.City.ToString() + type.GetDescription());
 
@@ -116,15 +117,15 @@ namespace LCChecker.Controllers
 
             switch (type)
             {
-                case ReportType.附表四:
-                case ReportType.附表八:
+                case ReportType.附表4:
+                case ReportType.附表8:
                     GetReportExcel4(sheet, list, 6);
                     break;
-                case ReportType.附表五:
-                case ReportType.附表七:
+                case ReportType.附表5:
+                case ReportType.附表7:
                     GetReportExcel5(sheet, list, 5);
                     break;
-                case ReportType.附表九:
+                case ReportType.附表9:
                     GetReportExcel9(sheet, list);
                     break;
             }

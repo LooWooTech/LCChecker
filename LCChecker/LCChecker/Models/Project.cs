@@ -7,6 +7,7 @@ using System.Web;
 
 namespace LCChecker.Models
 {
+    //ProjectName,ProjectNo, 县、市、是否申请删除、是否确认无误  是否是指标核减、是否需要修改
     [Table("projects")]
     public class Project
     {
@@ -37,9 +38,6 @@ namespace LCChecker.Models
         /// </summary>
         public string County { get; set; }
 
-        //[Column("Type", TypeName = "INT")]
-        //public ProjectType Type { get; set; }
-
         /// <summary>
         /// 备注
         /// </summary>
@@ -50,9 +48,10 @@ namespace LCChecker.Models
         public DateTime UpdateTime { get; set; }
     }
 
-    public enum ProjectType
-    {
-        确认修改 = 1,
-        确认删除 = 2
-    }
+    //public enum ProjectType
+    //{
+    //    确认存疑 = 1,
+    //    确认无误 = 2,
+    //    申请删除 = 3
+    //}
 }
