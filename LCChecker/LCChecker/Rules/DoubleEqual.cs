@@ -25,9 +25,10 @@ namespace LCChecker.Rules
             if (string.IsNullOrEmpty(value))
                 return false;
             double a = double.Parse(value);
-            if (data != a)
-                return false;
-            return true;
+            return Math.Abs(a - data) < 0.0001;
+            //if (data != a)
+            //    return false;
+            //return true;
         }
     }
 }

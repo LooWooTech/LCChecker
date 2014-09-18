@@ -1,4 +1,5 @@
-﻿using NPOI.HSSF.UserModel;
+﻿using LCChecker.Models;
+using NPOI.HSSF.UserModel;
 using NPOI.HSSF.Util;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
@@ -6,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 
 namespace LCChecker
@@ -65,6 +67,61 @@ namespace LCChecker
                     }
                 }
             }
+        }
+
+
+        public static bool FindHeader(this ISheet sheet, ref int startRow, ref int startCell,ReportType Type)
+        {
+            var Name = @"([\w\W])" + Type.GetDescription();
+            string[] Header = { "编号", "市", "县" };
+            for (int i = 0; i < 20; i++)
+            {
+                IRow row = sheet.GetRow(i);
+                if (row != null)
+                {
+                    for (int j = 0; j < 20; j++)
+                    {
+                        var value = row.GetCell(j, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+                        if (string.IsNullOrEmpty(value))
+                            continue;
+                        if (value == Type.ToString())
+                        {
+                            var Row = sheet.GetRow(i + 1);
+                            if (Row == null)
+                                return false;
+                            value = Row.GetCell(j, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+                            if (string.IsNullOrEmpty(value))
+                                return false;
+                            if (!Regex.IsMatch(value, Name))
+                                return false;
+                            i = i + 4;
+                            row = sheet.GetRow(i);
+                            if (row == null)
+                                return false;
+                            value = row.GetCell(j, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+                            if (string.IsNullOrEmpty(value))
+                                return false;
+                            if (value == Header[0])
+                            {
+                                for (int k = 1; k < 3; k++)
+                                {
+                                    value = row.GetCell(j + k, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+                                    if (value != Header[k])
+                                    {
+                                        return false;
+                                    }
+                                }
+                                startRow = i;
+                                startCell = j;
+                                return true;
+                            }
+                            return false;
+                        }
+                    }
+                }
+            }
+            return false;
+
         }
 
         //public static ICellStyle GetCellStyle(this IWorkbook workbook, XslHeaderStyle str)
