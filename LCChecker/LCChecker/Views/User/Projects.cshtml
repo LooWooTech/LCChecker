@@ -48,7 +48,7 @@
     <tr>
         <th style="width: 150px">项目编号</th>
         <th>项目名称</th>
-        <th>所在县</th>
+        <th style="width: 100px">所在县</th>
         <th style="width: 100px">检验结果</th>
         <th style="width: 300px;">备注</th>
     </tr>
@@ -80,9 +80,11 @@
                 {
                     if (project.Note.Length > 25)
                     { 
-                    <a href="#@(project.ID)" class="btn-details" data="@(project.ID)">@(project.Note.Substring(0, 22))..</a>
+                    <a href="#@(project.ID)" class="btn-details" data="@(project.ID)">点击查看详细错误</a>
                     <div id="tips-@(project.ID)" class="tips">
-                        @Html.Raw(project.Note.Replace("\r\n", "<br />"))
+                        <div class="tooltip-inner">
+                            @Html.Raw(project.Note.Replace("；", "<br />"))
+                        </div>
                     </div>
                     }
                     else
@@ -101,16 +103,15 @@
 </table>
 <script>
     $(function () {
-        $("body").click(function (e) {
-            var target = $(e.target);
-            var className = target.attr("class");
-            if (className.indexOf("btn-details") > 0) return false;
-            $(".tips").hide();
-        });
         $(".btn-details").click(function (e) {
             var id = $(this).attr("data");
-            $(".tips").hide();
-            $("#tips-" + id).show();
+            var tip = $("#tips-" + id);
+            if (tip.css('display') == "none") {
+                $(".tips").hide();
+                tip.show();
+            } else {
+                tip.hide();
+            }
         });
     });
 </script>

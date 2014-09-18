@@ -42,10 +42,7 @@ namespace LCChecker.Models
         {
             foreach (var item in projects)
             {
-                if (item.IsHasError.HasValue)
-                {
-                    Whether.Add(item.ID, item.IsHasError.Value);
-                }
+                Whether.Add(item.ID, item.IsHasError);
             }
         }
 

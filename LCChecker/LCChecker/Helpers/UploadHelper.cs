@@ -13,7 +13,7 @@ namespace LCChecker
 
         private static string GetAbsoluteUploadDirectory(string fileName)
         {
-            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory,UploadDirectory,fileName);
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, UploadDirectory, fileName);
         }
 
         public static string GetAbsolutePath(string filePath)
@@ -37,14 +37,14 @@ namespace LCChecker
                     break;
                 }
             }
-                //foreach (HttpPostedFileBase file1 in context.Request.Files)
-                //{
-                //    if (file1.ContentLength > 0)
-                //    {
-                //        file = file1;
-                //        break;
-                //    }
-                //}
+            //foreach (HttpPostedFileBase file1 in context.Request.Files)
+            //{
+            //    if (file1.ContentLength > 0)
+            //    {
+            //        file = file1;
+            //        break;
+            //    }
+            //}
             return file;
         }
 
@@ -61,7 +61,7 @@ namespace LCChecker
                 throw new ArgumentException("你上传的文件数据太大或者没有");
             }
 
-            var fileName =  DateTime.Now.Ticks.ToString() + ext;
+            var fileName = file.FileName.Replace(ext, "") + "-" + DateTime.Now.Ticks.ToString() + ext;
 
             file.SaveAs(GetAbsoluteUploadDirectory(fileName));
 

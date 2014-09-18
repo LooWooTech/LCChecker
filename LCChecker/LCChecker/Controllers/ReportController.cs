@@ -67,6 +67,7 @@ namespace LCChecker.Controllers
             {
                 throw new ArgumentException("参数错误");
             }
+            file.Proceeded = true;
 
             var filePath = UploadHelper.GetAbsolutePath(file.SavePath);
             string MastPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/", CurrentUser.City.ToString() + ".xls");
@@ -108,6 +109,7 @@ namespace LCChecker.Controllers
 
             var record = db.Reports.FirstOrDefault(e => e.City == CurrentUser.City && e.Type == type);
             record.Result = errors.Count == 0;
+
             db.SaveChanges();
 
             return View(errors);

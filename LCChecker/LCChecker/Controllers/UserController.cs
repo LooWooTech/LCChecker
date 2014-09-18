@@ -82,6 +82,7 @@ namespace LCChecker.Controllers
             {
                 throw new ArgumentException("参数错误");
             }
+            file.Proceeded = true;
 
             var filePath = UploadHelper.GetAbsolutePath(file.SavePath);
             //读取文件进行检查
@@ -136,9 +137,7 @@ namespace LCChecker.Controllers
                     item.UpdateTime = checkTime;
                 }
             }
-
             db.SaveChanges();
-
             return RedirectToAction("projects", new { /*type = (int)type, */result = (int)(errors.Count > 0 ? NullableFilter.False : NullableFilter.True) });
         }
 

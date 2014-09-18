@@ -23,7 +23,7 @@ namespace LCChecker.Controllers
         }
 
 
-        public ActionResult UpdateCoordProjects(UploadFileType type)
+        public ActionResult UploadCoordProjects(UploadFileType type)
         {
             throw new NotImplementedException();
         }

@@ -10,6 +10,7 @@ namespace LCChecker.Models
     [Table("uploadfiles")]
     public class UploadFile
     {
+
         [Key]
         [DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
@@ -28,7 +29,7 @@ namespace LCChecker.Models
         /// <summary>
         /// 是否已经被处理
         /// </summary>
-        public bool? Proceeded { get; set; }
+        public bool Proceeded { get; set; }
 
         /// <summary>
         /// 文件类型

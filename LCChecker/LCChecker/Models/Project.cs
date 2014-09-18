@@ -52,22 +52,22 @@ namespace LCChecker.Models
         /// <summary>
         /// 是否申请删除
         /// </summary>
-        public bool? IsApplyDelete { get; set; }
+        public bool IsApplyDelete { get; set; }
 
         /// <summary>
         /// 是否确认无误
         /// </summary>
-        public bool? IsHasError { get; set; }
+        public bool IsHasError { get; set; }
 
         /// <summary>
         /// 是否需要修改
         /// </summary>
-        public bool? IsShouldModify { get; set; }
+        public bool IsShouldModify { get; set; }
 
         /// <summary>
         /// 是否是指标核减
         /// </summary>
-        public bool? IsDecrease { get; set; }
+        public bool IsDecrease { get; set; }
 
         /// <summary>
         /// 项目总规模（公顷）

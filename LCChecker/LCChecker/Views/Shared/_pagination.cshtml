@@ -3,10 +3,10 @@
     {
         return;
     }
-    
+
     var page = Model as LCChecker.Models.Page;
 
-    if(page.PageCount == 1)
+    if (page.PageCount == 1)
     {
         return;
     }    
@@ -23,5 +23,6 @@
         <li><a href="?page=@(page.PageIndex + 1)">下一页</a></li>
     }
     <li><a href="?page=@(page.PageCount)">尾页</a></li>
-    <li><a>@(page.PageIndex)/@(page.PageCount)</a></li>
+    <li><a>共@(page.RecordCount)条记录</a></li>
+    <li><a>第@(page.PageIndex)页/共@(page.PageCount)页</a></li>
 </ul>

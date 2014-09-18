@@ -52,10 +52,7 @@ namespace LCChecker.Models
         {
             foreach (var item in projects)
             {
-                if (item.IsDecrease.HasValue)
-                {
-                    Whether.Add(item.ID, item.IsDecrease.Value);
-                }
+                Whether.Add(item.ID, item.IsDecrease);
             }
         }
     }

@@ -38,10 +38,7 @@ namespace LCChecker.Models
         {
             foreach (var item in projects)
             {
-                if (item.IsApplyDelete.HasValue)
-                {
-                    Whether.Add(item.ID, item.IsApplyDelete.Value);
-                }
+                Whether.Add(item.ID, item.IsApplyDelete);
             }
 
 

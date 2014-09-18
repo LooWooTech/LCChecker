@@ -42,9 +42,13 @@ legend {
 }
 .tips {
   display: none;
-  background-color: #f5f3be;
-  border: solid 1px #ccc;
   text-align: left;
   position: absolute;
-  padding: 10px;
+}
+.tooltip-inner {
+  max-width: 300px;
+  background-color: #f8f8de;
+  color: #000;
+  border: solid 1px #ccc;
+  text-align: left;
 }
