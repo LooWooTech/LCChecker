@@ -8,6 +8,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dbscripts", "dbscripts", "{
 		dbscripts\lcchecker.sql = dbscripts\lcchecker.sql
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoordAnalyseService", "CoordAnalyseService\CoordAnalyseService.csproj", "{8AF34291-26DB-4E27-B5E4-0FC39CF0B6C7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,6 +20,10 @@ Global
 		{FEF714AB-89EC-41CE-97C0-2DAA51D02E3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FEF714AB-89EC-41CE-97C0-2DAA51D02E3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FEF714AB-89EC-41CE-97C0-2DAA51D02E3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AF34291-26DB-4E27-B5E4-0FC39CF0B6C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AF34291-26DB-4E27-B5E4-0FC39CF0B6C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AF34291-26DB-4E27-B5E4-0FC39CF0B6C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AF34291-26DB-4E27-B5E4-0FC39CF0B6C7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

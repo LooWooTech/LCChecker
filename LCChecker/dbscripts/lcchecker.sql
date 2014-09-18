@@ -27,6 +27,7 @@ CREATE TABLE `coord_projects` (
   `County` varchar(255) DEFAULT NULL,
   `Note` varchar(255) DEFAULT NULL,
   `UpdateTime` date NOT NULL,
+  `Visible` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -77,8 +78,9 @@ CREATE TABLE `uploadfiles` (
   `FileName` varchar(55) DEFAULT NULL,
   `CreateTime` datetime NOT NULL,
   `SavePath` varchar(55) DEFAULT NULL,
-  `Type` int(11) NOT NULL DEFAULT '0',
-  `Proceeded` bit(1) NOT NULL DEFAULT b'0',
+  `Type` int(11) NULL,
+  `State` int(11) NOT NULL,
+  `ProcessMessage` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `PK_FILE_ID` (`ID`) USING BTREE,
   KEY `IX_FILE_CITY` (`CityID`)
