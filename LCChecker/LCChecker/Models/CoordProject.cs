@@ -7,13 +7,17 @@ using System.Web;
 
 namespace LCChecker.Models
 {
-    [Table("projects")]
-    public class Project
+    /// <summary>
+    /// 项目坐标
+    /// </summary>
+    [Table("coord_projects")]
+    public class CoordProject
     {
-        public Project()
+        public CoordProject()
         {
             UpdateTime = DateTime.Now;
         }
+
         /// <summary>
         /// 项目编号
         /// </summary>
@@ -37,9 +41,6 @@ namespace LCChecker.Models
         /// </summary>
         public string County { get; set; }
 
-        //[Column("Type", TypeName = "INT")]
-        //public ProjectType Type { get; set; }
-
         /// <summary>
         /// 备注
         /// </summary>
@@ -47,21 +48,5 @@ namespace LCChecker.Models
         public string Note { get; set; }
 
         public DateTime UpdateTime { get; set; }
-
-        /// <summary>
-        /// 项目总规模（公顷）
-        /// </summary>
-        public double? Area { get; set; }
-
-        /// <summary>
-        /// 新增耕地面积
-        /// </summary>
-        public double? NewArea { get; set; }
-    }
-
-    public enum ProjectType
-    {
-        确认修改 = 1,
-        确认删除 = 2
     }
 }

@@ -16,6 +16,21 @@ Date: 2014-09-17 18:52:35
 SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
+-- Table structure for coord_projects
+-- ----------------------------
+DROP TABLE IF EXISTS `coord_projects`;
+CREATE TABLE `coord_projects` (
+  `ID` varchar(55) NOT NULL,
+  `CityID` int(11) NOT NULL,
+  `Name` varchar(127) DEFAULT NULL,
+  `Result` tinyint(1) DEFAULT NULL,
+  `Note` varchar(255) DEFAULT NULL,
+  `County` varchar(55) DEFAULT NULL,
+  `UpdateTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
 -- Table structure for projects
 -- ----------------------------
 DROP TABLE IF EXISTS `projects`;
@@ -28,6 +43,8 @@ CREATE TABLE `projects` (
   `County` varchar(55) DEFAULT NULL,
   `Type` int(11) DEFAULT NULL,
   `UpdateTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `Area` double DEFAULT NULL,
+  `NewArea` double DEFAULT NULL,  
   PRIMARY KEY (`ID`),
   UNIQUE KEY `PK_PROJECT_ID` (`ID`),
   KEY `IX_PROJECT_CITY` (`CityID`),
