@@ -88,9 +88,10 @@ namespace LCChecker.Controllers
             //读取文件进行检查
             var errors = new Dictionary<string, List<string>>();
             var ships = new Dictionary<string, int>();
+            var areas=new Dictionary<string,double[]>();
             var detectEngine = new DetectEngine(filePath);
             var fault = "";
-            if (!detectEngine.CheckExcel(filePath, ref fault, ref errors, ref ships))
+            if (!detectEngine.CheckExcel(filePath, ref fault, ref errors, ref ships, ref areas))
             {
                 throw new ArgumentException("检索失败：" + fault);
             }
@@ -125,6 +126,11 @@ namespace LCChecker.Controllers
                     }
                     else
                     {
+                        if(areas.ContainsKey(item.ID))//更新总规模  新增耕地面积  在
+                        {
+                            item.Area=areas[item.ID][0];
+                            item.NewArea=areas[item.ID][1];
+                        }
                         item.Result = true;
                         item.Note = "";
                     }

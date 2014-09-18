@@ -69,22 +69,23 @@ namespace LCChecker.Controllers
 
             var filePath = UploadHelper.GetAbsolutePath(file.SavePath);
             string MastPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/", CurrentUser.City.ToString() + ".xls");
+            List<Project> projects = new List<Project>();
             ICheck engine = null;
             switch (type)
             {
-                case ReportType.附表四:
-                    engine = new CheckReport4(MastPath);
+                case ReportType.附表4:
+                    engine = new CheckReport4(projects);
                     break;
-                case ReportType.附表五:
-                    engine = new CheckReport5(MastPath);
+                case ReportType.附表5:
+                    engine = new CheckReport5(projects);
                     break;
-                case ReportType.附表七:
+                case ReportType.附表7:
                     engine = new CheckReport7(MastPath);
                     break;
-                case ReportType.附表八:
-                    engine = new CheckReport8(MastPath);
+                case ReportType.附表8:
+                    engine = new CheckReport8(MastPath,projects);
                     break;
-                case ReportType.附表九:
+                case ReportType.附表9:
                     engine = new CheckReport9(MastPath);
                     break;
                 default:
@@ -92,12 +93,13 @@ namespace LCChecker.Controllers
             }
 
             string fault = "";
-            if (!engine.Check(filePath, ref fault))
+            if (!engine.Check(filePath, ref fault,type,projects))
             {
                 throw new ArgumentException("检索表格失败" + fault);
             }
 
             var errors = engine.GetError();
+            var warning = engine.GetWarning();
 
             var record = db.Reports.FirstOrDefault(e => e.City == CurrentUser.City && e.Type == type);
             record.Result = errors.Count == 0;
@@ -116,15 +118,15 @@ namespace LCChecker.Controllers
 
             switch (type)
             {
-                case ReportType.附表四:
-                case ReportType.附表八:
+                case ReportType.附表4:
+                case ReportType.附表8:
                     GetReportExcel4(sheet, list, 6);
                     break;
-                case ReportType.附表五:
-                case ReportType.附表七:
+                case ReportType.附表5:
+                case ReportType.附表7:
                     GetReportExcel5(sheet, list, 5);
                     break;
-                case ReportType.附表九:
+                case ReportType.附表9:
                     GetReportExcel9(sheet, list);
                     break;
             }

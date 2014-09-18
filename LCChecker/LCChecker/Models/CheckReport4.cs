@@ -1,35 +1,35 @@
 ﻿using LCChecker.Rules;
+using NPOI.SS.UserModel;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace LCChecker.Models
 {
     public class CheckReport4 : CheckEngine,ICheck
-    {
-        public CheckReport4(string filePath)
+    {      
+        public CheckReport4(List<Project> projects)
         {
-            GetMessage(filePath);
             var list = new List<IRowRule>();
-            int count = Ship.Count();
-            string[] IDS = new string[count];
-            int i = 0;
-            foreach (var item in Ship.Keys)
-            {
-                IDS[i] = item;
-                i++;
-            }
+            //int count = projects.Count();
+            //string[] IDS = new string[count];
+            //int i = 0;
+            //foreach (var item in projects)
+            //{
+            //    IDS[i] = item.ID;
+            //    i++;
+            //}
 
-            list.Add(new CellRangeRowRule() { ColumnIndex = 3, Values = IDS });
-            foreach (var item in Ship.Keys)
+            //list.Add(new CellRangeRowRule() { ColumnIndex = 3, Values = IDS });
+            foreach (var item in projects)
             {
-                var rule1 = new StringEqual() { ColumnIndex = 3, Data = item };
+                var rule = new StringEqual() { ColumnIndex = 3, Data = item.ID };
                 list.Add(new ConditionalRowRule()
                 {
-                    Condition = rule1,
+                    Condition = rule,
                     Rule = new AndRule()
                     {
-                        Rule1 = new StringEqual() { ColumnIndex = 1, Data = Ship[item].City },
-                        Rule2 = new StringEqual() { ColumnIndex=2,Data=Ship[item].County}
+                        Rule1 = new StringEqual() { ColumnIndex = 1, Data =item.City.ToString() },
+                        Rule2 = new StringEqual() { ColumnIndex=2,Data=item.County}
                     }
                 });
             }
@@ -43,5 +43,12 @@ namespace LCChecker.Models
             }
         }
 
+        public void SetWhether(List<Project> projects)
+        {
+            foreach (var item in projects)
+            {
+                //Whether.Add(item.ID, item.Result);
+            }
+        }
     }
 }

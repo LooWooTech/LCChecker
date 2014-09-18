@@ -268,7 +268,7 @@ namespace LCChecker.Models
         }
 
         public bool CheckExcel(string fileName, ref string mistakes, ref Dictionary<string, List<string>> errorMessage,
-                            ref Dictionary<string, int> relatship)
+                            ref Dictionary<string, int> relatship,ref Dictionary<string,double[]> Area)
         {
             var startRow = 1;
             var startCell = 0;
@@ -276,7 +276,7 @@ namespace LCChecker.Models
             if (sheet == null)
                 return false;
 
-            return CheckExcel(sheet, startRow, startCell, ref mistakes, ref errorMessage, ref relatship);
+            return CheckExcel(sheet, startRow, startCell, ref mistakes, ref errorMessage, ref relatship,ref Area );
         }
 
 
@@ -286,7 +286,7 @@ namespace LCChecker.Models
          * ErrorMessage 检查表格中的错误
          *  relatship 表格中每行中的编号对应的行号关系
          */
-        public bool CheckExcel(ISheet sheet, int startRow, int startCell, ref string mistakes, ref Dictionary<string, List<string>> errorMessage, ref Dictionary<string, int> relatship)
+        public bool CheckExcel(ISheet sheet, int startRow, int startCell, ref string mistakes, ref Dictionary<string, List<string>> errorMessage, ref Dictionary<string, int> relatship,ref Dictionary<string,double[]> Area)
         {
             startRow++;
             int MaxRow = sheet.LastRowNum;
@@ -309,7 +309,14 @@ namespace LCChecker.Models
                         rowError.Add(item.Rule.Name);
                     }
                 }
-                if (rowError.Count() > 0) errorMessage.Add(value, rowError);
+                if (rowError.Count() > 0)
+                {
+                    errorMessage.Add(value, rowError);
+                }
+                else {
+                    var area = GetNewArea(row);
+                    Area.Add(value, area);
+                }
             }
             return true;
         }
@@ -394,7 +401,20 @@ namespace LCChecker.Models
             return false;
         }
 
-
+        /// <summary>
+        /// 获取总规模 项目新增耕地面积值
+        /// </summary>
+        /// <param name="row"></param>
+        /// <returns></returns>
+        private double[] GetNewArea(NPOI.SS.UserModel.IRow row)
+        {
+            double[] Area=new double[2];
+            var value = row.GetCell(4, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+            double.TryParse(value, out Area[0]);
+            value = row.GetCell(5, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+            double.TryParse(value, out Area[1]);
+            return Area;
+        }
 
         public static void InsertRow(ISheet sheet, int startRowIndex, int count)
         {

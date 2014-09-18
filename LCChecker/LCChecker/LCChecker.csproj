@@ -145,6 +145,7 @@
     <Compile Include="Models\CheckReport7.cs" />
     <Compile Include="Models\CheckReport8.cs" />
     <Compile Include="Models\CheckReport9.cs" />
+    <Compile Include="Models\CoordProject.cs" />
     <Compile Include="Models\Index2.cs" />
     <Compile Include="Models\Land.cs" />
     <Compile Include="Models\Report.cs" />

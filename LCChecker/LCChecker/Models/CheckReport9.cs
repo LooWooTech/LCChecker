@@ -54,22 +54,28 @@ namespace LCChecker.Models
                     Condition = rule1,
                     Rule = new AndRule()
                     {
-                        Rule1 = new AndRule()
-                        {
-                            Rule1 = new AndRule()
-                            {
-                                Rule1 = new StringEqual() { ColumnIndex = 1, Data = Ship[item].City },
-                                Rule2 = new StringEqual() { ColumnIndex = 2, Data = Ship[item].County }
-                            },
-                            Rule2 = new AndRule()
-                            {
-                                Rule1 = new StringEqual() { ColumnIndex = 4, Data = Ship[item].Name },
-                                Rule2 = new DoubleEqual() { ColumnIndex=5,data=Ship[item].AddArea}
-                            }
-                        },
-                        Rule2 = new MultipleCellRangeRowRule() { ColumnIndices = D, isAny = false, isEmpty = true, isNumeric = false }
+                        Rule1 = new StringEqual() { ColumnIndex = 1, Data = Ship[item].City },
+                        Rule2 = new StringEqual() { ColumnIndex=2,Data=Ship[item].County}
                     }
-                });           
+                });
+
+                list.Add(new ConditionalRowRule()
+                {
+                    Condition = rule1,
+                    Rule = new StringEqual() { ColumnIndex=4,Data=Ship[item].Name}
+                });
+
+                list.Add(new ConditionalRowRule()
+                {
+                    Condition = rule1,
+                    Rule = new DoubleEqual() {ColumnIndex=5,data=Ship[item].AddArea }
+                });
+
+                list.Add(new ConditionalRowRule()
+                {
+                    Condition = rule1,
+                    Rule = new MultipleCellRangeRowRule() { ColumnIndices = D, isAny = false, isEmpty = true, isNumeric = false }
+                });         
             }
             list.Add(new CellRangeRowRule() { ColumnIndex = 22, Values = new[] { "是", "否" } });
 
@@ -102,10 +108,10 @@ namespace LCChecker.Models
 
 
 
-        public bool CheckSpecial(string FilePath,ref string Mistakes)
+        public bool CheckSpecial(string FilePath,ref string Mistakes,ReportType Type)
         {
             int startRow=0,startCell=0;
-            ISheet sheet = OpenSheet(FilePath, true, ref startRow, ref startCell, ref Mistakes);
+            ISheet sheet = OpenSheet(FilePath, true, ref startRow, ref startCell, ref Mistakes,Type);
             if (sheet == null)
             {
                 Mistakes = "检索表格内无数据";
@@ -181,9 +187,9 @@ namespace LCChecker.Models
         }
 
 
-        public new bool Check(string FilePath, ref string Mistakes)
+        public  bool Check(string FilePath, ref string Mistakes,ReportType Type)
         {
-            return CheckSpecial(FilePath,ref Mistakes);
+            return CheckSpecial(FilePath,ref Mistakes,Type);
         }
     }
 
