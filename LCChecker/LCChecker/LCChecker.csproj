@@ -249,7 +249,7 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="Views\Admin\ReportSummary.cshtml" />
-    <Content Include="Views\User\Coord.cshtml" />
+    <Content Include="Views\User\CoordProjects.cshtml" />
     <Content Include="Views\User\CheckProject.cshtml" />
   </ItemGroup>
   <ItemGroup>

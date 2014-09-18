@@ -9,12 +9,21 @@ namespace LCChecker.Controllers
 {
     public partial class UserController
     {
-        public ActionResult Coord(int page = 1)
+        public ActionResult CoordProjects(NullableFilter result = NullableFilter.All, int page = 1)
         {
+            var filter = new ProjectFileter
+            {
+                City = CurrentUser.City,
+                Result = result,
+                Page = new Page(page)
+            };
+            ViewBag.List = ProjectHelper.GetCoordProjects(filter);
+            ViewBag.Page = filter.Page;
             return View();
         }
 
-        public ActionResult UpdateCoord(UploadFileType type)
+
+        public ActionResult UpdateCoordProjects(UploadFileType type)
         {
             throw new NotImplementedException();
         }
