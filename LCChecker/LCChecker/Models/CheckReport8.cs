@@ -6,9 +6,9 @@ namespace LCChecker.Models
 {
     public class CheckReport8:CheckEngine,ICheck
     {
-        public CheckReport8(string filePath,List<Project> projects)
+        public CheckReport8(List<Project> projects)
         {
-            GetMessage(filePath);
+            SetWhether(projects);
             var list = new List<IRowRule>();
             foreach (var item in projects)
             {
@@ -46,6 +46,17 @@ namespace LCChecker.Models
                 rules.Add(new RuleInfo() { Rule = item });
             }
         
-        }    
+        }
+
+        public override void SetWhether(List<Project> projects)
+        {
+            foreach (var item in projects)
+            {
+                if (item.IsDecrease.HasValue)
+                {
+                    Whether.Add(item.ID, item.IsDecrease.Value);
+                }
+            }
+        }
     }
 }

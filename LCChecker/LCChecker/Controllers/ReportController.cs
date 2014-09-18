@@ -70,21 +70,25 @@ namespace LCChecker.Controllers
 
             var filePath = UploadHelper.GetAbsolutePath(file.SavePath);
             string MastPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/", CurrentUser.City.ToString() + ".xls");
-            List<Project> projects = new List<Project>();
+            List<Project> projects = db.Projects.Where(e => e.City == CurrentUser.City).ToList();
+            bool Flag = false;
             ICheck engine = null;
             switch (type)
             {
                 case ReportType.附表4:
                     engine = new CheckReport4(projects);
+                    Flag = true;
                     break;
                 case ReportType.附表5:
                     engine = new CheckReport5(projects);
+                    Flag = true;
                     break;
                 case ReportType.附表7:
                     engine = new CheckReport7(MastPath);
                     break;
                 case ReportType.附表8:
-                    engine = new CheckReport8(MastPath,projects);
+                    engine = new CheckReport8(projects);
+                    Flag = true;
                     break;
                 case ReportType.附表9:
                     engine = new CheckReport9(MastPath);
@@ -94,7 +98,7 @@ namespace LCChecker.Controllers
             }
 
             string fault = "";
-            if (!engine.Check(filePath, ref fault,type,projects))
+            if (!engine.Check(filePath, ref fault,type,projects,Flag))
             {
                 throw new ArgumentException("检索表格失败" + fault);
             }

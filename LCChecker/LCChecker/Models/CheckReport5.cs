@@ -9,6 +9,7 @@ namespace LCChecker.Models
 
         public CheckReport5(List<Project> projects)
         {
+            SetWhether(projects);
             var list = new List<IRowRule>();
             foreach (var item in projects)
             {

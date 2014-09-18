@@ -22,7 +22,7 @@ namespace LCChecker.Models
         /// <summary>
         /// 提示
         /// </summary>
-        public Dictionary<string,string> Warning = new Dictionary<string,string>();
+        public Dictionary<string, string> Warning = new Dictionary<string, string>();
 
         /// <summary>
         /// 存放自查表中的一些数据
@@ -35,13 +35,31 @@ namespace LCChecker.Models
         /// </summary>
         public Dictionary<string, bool> Whether = new Dictionary<string, bool>();
 
-        public Dictionary<string, List<string>> GetError() {
+        public Dictionary<string, List<string>> GetError()
+        {
             return Error;
         }
 
-        public Dictionary<string, string> GetWarning() {
+        public Dictionary<string, string> GetWarning()
+        {
             return Warning;
         }
+        public virtual void SetWhether(List<Project> projects)
+        {
+
+        }
+        public bool Check(string filePath, ref string mistakes, ReportType Type, List<Project> Data, bool flag)
+        {
+            if (flag)
+            {
+                return Check(filePath, ref mistakes, Type, Data);
+            }
+            else
+            {
+                return Check(filePath, ref mistakes, Type);
+            }
+        }
+
         /// <summary>
         ///  用于 4 5 8 报部表格检查
         /// </summary>
@@ -50,10 +68,10 @@ namespace LCChecker.Models
         /// <param name="Type"></param>
         /// <param name="Data"></param>
         /// <returns></returns>
-        public bool Check(string filePath, ref string mistakes,ReportType Type,List<Project> Data)
+        public bool Check(string filePath, ref string mistakes, ReportType Type, List<Project> Data)
         {
             int startRow = 0, startCell = 0;
-            ISheet sheet = OpenSheet(filePath, true, ref startRow, ref startCell,  ref mistakes,Type);
+            ISheet sheet = OpenSheet(filePath, true, ref startRow, ref startCell, ref mistakes, Type);
             if (sheet == null)
             {
                 Error.Add("表格格式内容", new List<string> { "提交的表格无法检索 请核对格式" });
@@ -70,7 +88,7 @@ namespace LCChecker.Models
                 var value = row.GetCell(3, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
                 if (string.IsNullOrEmpty(value))
                     continue;
-               
+
                 if (Whether.ContainsKey(value))//在表3中存在
                 {
                     if (Whether[value])//重点复核确认总表中 填：是  提交表格存在这个项目  检查这个项目填写数据与格式
@@ -87,17 +105,19 @@ namespace LCChecker.Models
                             Error.Add(value, ErrorRow);
                         }
                     }
-                    else {//重点复核确认总表中 填：否  提交表格中存在   处理：提示
+                    else
+                    {//重点复核确认总表中 填：否  提交表格中存在   处理：提示
 
-                        Warning.Add(value,"与重点项目复核确认总表不符（）");
+                        Warning.Add(value, "与重点项目复核确认总表不符（）");
                     }
                     Whether.Remove(value);
                 }
-                else {//重点复核确认总表中 没有这个项目  提交表格中存在  处理：错误
+                else
+                {//重点复核确认总表中 没有这个项目  提交表格中存在  处理：错误
                     ErrorRow.Add("重点复核确认总表中不存在项目");
                     Error.Add(value, ErrorRow);
                 }
-               
+
             }
             foreach (var item in Whether.Keys)
             {
@@ -111,9 +131,9 @@ namespace LCChecker.Models
         }
 
 
-        public virtual void SetWhether(List<Project> projects) { 
-            
-        }
+        
+
+
 
 
 
@@ -153,7 +173,7 @@ namespace LCChecker.Models
                 {
                     Error.Add(value, ErrorRow);
                 }
-            }    
+            }
             return true;
         }
 
@@ -167,10 +187,10 @@ namespace LCChecker.Models
         /// <param name="startCell"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public bool FindHeader(ISheet sheet, ref int startRow, ref int startCell,ReportType type)
+        public bool FindHeader(ISheet sheet, ref int startRow, ref int startCell, ReportType type)
         {
 
-            var  Name=@"([\w\W])"+type.GetDescription();
+            var Name = @"([\w\W])" + type.GetDescription();
             string[] Header = { "编号", "市", "县" };
             for (int i = 0; i < 20; i++)
             {
@@ -184,16 +204,16 @@ namespace LCChecker.Models
                             continue;
                         if (value == type.ToString())
                         {
-                            var Row = sheet.GetRow(i+1);
+                            var Row = sheet.GetRow(i + 1);
                             if (Row == null)
                                 return false;
                             value = Row.GetCell(j, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
                             if (string.IsNullOrEmpty(value))
                                 return false;
-                            if (!Regex.IsMatch(value,Name))
+                            if (!Regex.IsMatch(value, Name))
                                 return false;
                             i = i + 4;
-                            row=sheet.GetRow(i);
+                            row = sheet.GetRow(i);
                             if (row == null)
                                 return false;
                             value = row.GetCell(j, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
@@ -231,7 +251,7 @@ namespace LCChecker.Models
         /// <param name="filePath"></param>
         /// <param name="findHeader"></param>
         /// <returns></returns>
-        public ISheet OpenSheet(string filePath, bool findHeader, ref int startRow, ref int startCol, ref string errMsg,ReportType Type)
+        public ISheet OpenSheet(string filePath, bool findHeader, ref int startRow, ref int startCol, ref string errMsg, ReportType Type)
         {
             IWorkbook workbook = null;
             try
@@ -263,7 +283,7 @@ namespace LCChecker.Models
 
             if (findHeader == false) return sheet;
 
-            if (FindHeader(sheet, ref startRow, ref startCol,Type) == false)
+            if (FindHeader(sheet, ref startRow, ref startCol, Type) == false)
             {
                 errMsg = "未找到附表文件的表头";
                 return null;
@@ -273,7 +293,7 @@ namespace LCChecker.Models
 
 
 
-       
+
 
 
 
@@ -287,14 +307,14 @@ namespace LCChecker.Models
         public void GetMessage(string filePath)
         {
             string fault = "";
-            int startRow = 1,starCell=0;
-            ISheet sheet = OpenSheet(filePath, false,ref startRow,ref starCell, ref fault,ReportType.附表8);
+            int startRow = 1, starCell = 0;
+            ISheet sheet = OpenSheet(filePath, false, ref startRow, ref starCell, ref fault, ReportType.附表8);
             if (sheet == null)
             {
                 Error.Add("表格内容格式", new List<string>() { "获取项目总表失败" });
                 return;
             }
-            
+
             for (int i = startRow; i <= sheet.LastRowNum; i++)
             {
                 IRow row = sheet.GetRow(i);
@@ -320,12 +340,12 @@ namespace LCChecker.Models
         public void GetSuppleMessage(string filePath)
         {
             string fault = "";
-            int startRow = 1,startCell=0;
-            ISheet sheet = OpenSheet(filePath, false, ref startRow, ref startCell, ref fault,ReportType.附表8);
+            int startRow = 1, startCell = 0;
+            ISheet sheet = OpenSheet(filePath, false, ref startRow, ref startCell, ref fault, ReportType.附表8);
             if (sheet == null)
             {
                 Error.Add("大错误", new List<string>() { "获取项目总表失败" });
-                return;  
+                return;
             }
             RuleInfo engine = new RuleInfo()//要验证项目是存在补充耕地面积 那么第14 19 24 栏至少有一栏是有面积的 假如这个条件成立那么就是补充耕地项目编号
             {
@@ -354,14 +374,14 @@ namespace LCChecker.Models
                     Error.Add("初始化", new List<string> { "获取核对信息失败" });
                 }
                 Ship.Add(value, CurrentData);
-               
+
             }
         }
 
 
         public Index2 GetCurrentData(NPOI.SS.UserModel.IRow row)
         {
-            
+
             //项目名称
             var value1 = row.GetCell(3, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
             //市  县
@@ -384,7 +404,8 @@ namespace LCChecker.Models
             {
                 return null;
             }
-            Index2 CurrentData = new Index2() {
+            Index2 CurrentData = new Index2()
+            {
                 City = cityName[1],//市
                 County = cityName[2],//县
                 Name = value1, //项目名称
@@ -409,12 +430,12 @@ namespace LCChecker.Models
                 int position = item.IndexOf(data);
                 if (position == 0)
                     continue;
-                string ground = item.Substring(0,position);
+                string ground = item.Substring(0, position);
                 string area = item.Substring(position);
                 double dArea;
-                double.TryParse(area,out dArea);
+                double.TryParse(area, out dArea);
                 switch (ground)
-                { 
+                {
                     case "水田":
                         land.Paddy = dArea;
                         break;
