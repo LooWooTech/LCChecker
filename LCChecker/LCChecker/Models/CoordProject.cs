@@ -48,5 +48,7 @@ namespace LCChecker.Models
         public string Note { get; set; }
 
         public DateTime UpdateTime { get; set; }
+
+        public bool Visible { get; set; }
     }
 }

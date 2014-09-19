@@ -10,11 +10,19 @@ namespace LCChecker
     {
         public City? City { get; set; }
 
-        //public ProjectType? Type { get; set; }
-
         public NullableFilter Result { get; set; }
 
         public Page Page { get; set; }
+
+        public bool? Visible { get; set; }
+
+        public bool? IsShouldModify { get; set; }
+
+        public bool? IsApplyDelete { get; set; }
+
+        public bool? IsHasError { get; set; }
+
+        public bool? IsDecrease { get; set; }
     }
 
     public class ProjectHelper
@@ -40,9 +48,16 @@ namespace LCChecker
             {
                 foreach (var item in list)
                 {
-                    if (!db.CoordProjects.Any(e => e.ID == item.ID))
+                    var entity = db.CoordProjects.FirstOrDefault(e => e.ID == item.ID);
+                    if (entity == null)
                     {
                         db.CoordProjects.Add(item);
+                    }
+                    else if(item.Visible == true)
+                    {
+                        entity.UpdateTime = DateTime.Now;
+                        entity.Note = item.Note;
+                        entity.Visible = item.Visible;
                     }
                 }
                 db.SaveChanges();
@@ -74,15 +89,31 @@ namespace LCChecker
                         break;
                 }
 
-                //if (filter.Type.HasValue && filter.Type.Value > 0)
-                //{
-                //    query = query.Where(e => e.Type == filter.Type.Value);
-                //}
+
+                if (filter.IsApplyDelete.HasValue)
+                {
+                    query = query.Where(e => e.IsApplyDelete == filter.IsApplyDelete.Value);
+                }
+
+                if (filter.IsDecrease.HasValue)
+                {
+                    query = query.Where(e => e.IsDecrease == filter.IsDecrease.Value);
+                }
+
+                if (filter.IsHasError.HasValue)
+                {
+                    query = query.Where(e => e.IsHasError == filter.IsHasError.Value);
+                }
+
+                if (filter.IsShouldModify.HasValue)
+                {
+                    query = query.Where(e => e.IsShouldModify == filter.IsShouldModify.Value);
+                }
 
                 if (filter.Page != null)
                 {
                     filter.Page.RecordCount = query.Count();
-                    query = query.OrderByDescending(e => e.UpdateTime).Skip(filter.Page.PageSize * (filter.Page.PageIndex - 1)).Take(filter.Page.PageSize);
+                    query = query.OrderBy(e => e.ID).Skip(filter.Page.PageSize * (filter.Page.PageIndex - 1)).Take(filter.Page.PageSize);
                 }
 
                 return query.ToList();
@@ -112,6 +143,11 @@ namespace LCChecker
                     case NullableFilter.All:
                     default:
                         break;
+                }
+
+                if (filter.Visible.HasValue)
+                {
+                    query = query.Where(e => e.Visible == filter.Visible.Value);
                 }
 
                 //if (filter.Type.HasValue && filter.Type.Value > 0)

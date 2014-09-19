@@ -42,7 +42,8 @@ namespace LCChecker.Controllers
             {
                 City = CurrentUser.City,
                 Result = result,
-                Page = new Page(page)
+                Page = new Page(page),
+                IsShouldModify = true
             };
             ViewBag.List = ProjectHelper.GetProjects(filter);
             ViewBag.Page = filter.Page;
@@ -82,7 +83,10 @@ namespace LCChecker.Controllers
             {
                 throw new ArgumentException("参数错误");
             }
-            file.Proceeded = true;
+            else
+            {
+                file.State = UploadFileProceedState.Proceeded;
+            }
 
             var filePath = UploadHelper.GetAbsolutePath(file.SavePath);
             //读取文件进行检查
@@ -136,6 +140,10 @@ namespace LCChecker.Controllers
                     }
                     item.UpdateTime = checkTime;
                 }
+            }
+            if (errors.Count > 0)
+            {
+                file.State = UploadFileProceedState.Error;
             }
             db.SaveChanges();
             return RedirectToAction("projects", new { /*type = (int)type, */result = (int)(errors.Count > 0 ? NullableFilter.False : NullableFilter.True) });

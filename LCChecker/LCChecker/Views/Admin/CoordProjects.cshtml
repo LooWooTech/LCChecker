@@ -4,6 +4,9 @@
     ViewBag.Title = "坐标点存疑列表";
     List<LCChecker.Models.CoordProject> list = ViewBag.List;
 }
+<div class="alert alert-warning">
+    【注意】请先上传一次表3数据，再上传坐标存疑表数据
+</div>
 <div style="clear: both; overflow: hidden; margin-bottom: 10px;">
     <form class="form form-inline" method="post" enctype="multipart/form-data" action="/admin/uploadcoords" style="float: left;">
         <div class="input-group">
@@ -11,7 +14,7 @@
                 <input type="file" name="file1" class="form-control" />
             </div>
             <div class="input-group-btn">
-                <button type="submit" class="btn btn-primary">上传坐标点</button>
+                <button type="submit" id="btn-upload-coord" class="btn btn-primary">上传项目/坐标点文件</button>
             </div>
         </div>
     </form>

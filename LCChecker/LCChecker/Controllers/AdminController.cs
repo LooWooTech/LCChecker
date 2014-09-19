@@ -101,11 +101,11 @@ namespace LCChecker.Controllers
             }
         }
 
-        public ActionResult Projects(NullableFilter result = NullableFilter.All, int page = 1)
+        public ActionResult Projects(City? city, NullableFilter result = NullableFilter.All, int page = 1)
         {
             var filter = new ProjectFileter
             {
-                City = CurrentUser.City,
+                City = city,
                 Result = result,
                 Page = new Page(page)
             };
@@ -114,22 +114,10 @@ namespace LCChecker.Controllers
             return View();
         }
 
-        public ActionResult ReportSummary()
-        {
-            ViewBag.Summary = db.Reports.GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
-            {
-                TotalCount = g.Count(),
-                ErrorCount = g.Count(e => e.Result == false),
-                SuccessCount = g.Count(e => e.Result == true),
-                City = g.Key
-            });
-            return View();
-        }
-
         [HttpGet]
         public ActionResult Statistics()
         {
-            ViewBag.ProjectSummary = db.Projects.GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
+            ViewBag.ProjectSummary = db.Projects.Where(e => e.IsShouldModify == true).GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
             {
                 TotalCount = g.Count(),
                 ErrorCount = g.Count(e => e.Result == false),
@@ -145,7 +133,7 @@ namespace LCChecker.Controllers
                 City = g.Key
             });
 
-            ViewBag.CoordSummary = db.CoordProjects.GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
+            ViewBag.CoordSummary = db.CoordProjects.Where(e => e.Visible == true).GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
             {
                 TotalCount = g.Count(),
                 ErrorCount = g.Count(e => e.Result == false),
@@ -185,18 +173,18 @@ namespace LCChecker.Controllers
 
                 City city = 0;
 
-                if (Enum.TryParse<City>(row.Cells[1].ToString(), out city))
+                if (Enum.TryParse<City>(row.Cells[1].GetValue(), out city))
                 {
                     list.Add(new Project
                     {
                         City = city,
-                        County = row.Cells[2].StringCellValue,
-                        ID = row.Cells[3].NumericCellValue.ToString(),
-                        Name = row.Cells[4].StringCellValue,
-                        IsHasError = row.Cells[5].StringCellValue == "否",
-                        IsApplyDelete = row.Cells[6].StringCellValue == "是",
-                        IsShouldModify = row.Cells[7].StringCellValue == "是",
-                        IsDecrease = row.Cells[9].StringCellValue == "是",
+                        County = row.Cells[2].GetValue(),
+                        ID = row.Cells[3].GetValue(),
+                        Name = row.Cells[4].GetValue(),
+                        IsHasError = row.Cells[5].GetValue() == "否",
+                        IsApplyDelete = row.Cells[6].GetValue() == "是",
+                        IsShouldModify = row.Cells[7].GetValue() == "是",
+                        IsDecrease = row.Cells[9].GetValue() == "是",
 
                     });
                 }
@@ -214,6 +202,7 @@ namespace LCChecker.Controllers
             {
                 City = CurrentUser.City,
                 Result = result,
+                Visible = true,
                 Page = new Page(page)
             };
             ViewBag.List = ProjectHelper.GetCoordProjects(filter);
@@ -231,24 +220,42 @@ namespace LCChecker.Controllers
             var sheet = excel.GetSheetAt(0);
 
             var list = new List<CoordProject>();
-            for (var i = 1; i <= sheet.LastRowNum; i++)
+
+            var visible = false;
+
+            var firstCell = sheet.GetRow(0).GetCell(0);
+            if (firstCell.GetValue() == "市")
             {
-                var row = sheet.GetRow(i);
+                visible = true;
+            }
+
+            var rowIndex = visible ? 1 : 7;
+            var cellIndex = visible ? 0 : 1;
+            for (; rowIndex <= sheet.LastRowNum; rowIndex++)
+            {
+                var row = sheet.GetRow(rowIndex);
                 if (string.IsNullOrEmpty(row.Cells[0].ToString()))
                 {
                     continue;
                 }
+
+                if (!visible && row.Cells[6].StringCellValue == "是")
+                {
+                    continue;
+                }
+
                 City city = 0;
 
-                if (Enum.TryParse<City>(row.Cells[0].ToString(), out city))
+                if (Enum.TryParse<City>(row.Cells[cellIndex].GetValue(), out city))
                 {
                     list.Add(new CoordProject
                     {
                         City = city,
-                        County = row.Cells[1].StringCellValue,
-                        ID = row.Cells[2].StringCellValue,
-                        Name = row.Cells[3].StringCellValue,
-                        Note = row.Cells[4].StringCellValue
+                        County = row.Cells[cellIndex + 1].GetValue(),
+                        ID = row.Cells[cellIndex + 2].GetValue(),
+                        Name = row.Cells[cellIndex + 3].GetValue(),
+                        Note = visible ? row.Cells[cellIndex + 4].GetValue() : null,
+                        Visible = visible
                     });
                 }
             }

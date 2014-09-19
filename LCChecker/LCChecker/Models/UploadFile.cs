@@ -27,15 +27,20 @@ namespace LCChecker.Models
         public string SavePath { get; set; }
 
         /// <summary>
-        /// 是否已经被处理
+        /// 处理状态
         /// </summary>
-        public bool Proceeded { get; set; }
+        [Column("State", TypeName = "INT")]
+        public UploadFileProceedState State { get; set; }
+
+        public string ProcessMessage { get; set; }
 
         /// <summary>
         /// 文件类型
         /// </summary>
         [Column("Type", TypeName = "INT")]
         public UploadFileType Type { get; set; }
+
+
     }
 
     /// <summary>
@@ -51,5 +56,12 @@ namespace LCChecker.Models
         附表九 = 9,
         项目坐标 = 10,
         新增耕地坐标 = 11
+    }
+
+    public enum UploadFileProceedState
+    {
+        UnProceed,
+        Proceeded,
+        Error
     }
 }
