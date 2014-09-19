@@ -37,14 +37,14 @@ namespace LCChecker.Models
             list.Add(new ConditionalRowRule()
             {
                 Condition = new CellEmptyRowRule() { ColumnIndex = 17, isEmpty = false, isNumeric = false },
-                Rule = new CellEmptyRowRule() { ColumnIndex = 18, isEmpty = true, isNumeric = true }
+                Rule = new CellEmptyRowRule() { ColumnIndex = 18, isEmpty = false, isNumeric = true }
             });
 
 
             list.Add(new ConditionalRowRule()
             {
                 Condition = new CellEmptyRowRule() { ColumnIndex = 17, isEmpty = true, isNumeric = false },
-                Rule = new CellEmptyRowRule() { ColumnIndex = 18, isEmpty = false, isNumeric = true }
+                Rule = new CellEmptyRowRule() { ColumnIndex = 18, isEmpty = true, isNumeric = true }
             });
 
 
@@ -116,7 +116,7 @@ namespace LCChecker.Models
 
             var rule2 = new CellRangeRowRule() { ColumnIndex = 7, Values = new[] { "否" } };
 
-            list.Add(new ConditionalRowRule()//第8栏填写：否  那么第9栏 一定要填写（3种类型）  1、调剂出项目对方指标使用有误；2、
+            /*list.Add(new ConditionalRowRule()//第8栏填写：否  那么第9栏 一定要填写（3种类型）  1、调剂出项目对方指标使用有误；2、
             {
                 Condition = rule2,
                 Rule =
@@ -125,7 +125,7 @@ namespace LCChecker.Models
                         ColumnIndex = 8,
                         Values = new[] { "1、调剂出项目对方指标使用有误", "2、本县自行补充(含尚未调剂出)项目有误", "3、属于复垦、整理、综合整治等项目无法确认信息项目" }
                     }
-            });
+            });*/
 
             list.Add(new ConditionalRowRule()//第8栏 填写：  否  第32栏  无填写
             {

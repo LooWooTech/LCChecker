@@ -62,7 +62,10 @@ namespace LCChecker
             }
 
             var fileName = file.FileName.Replace(ext, "") + "-" + DateTime.Now.Ticks.ToString() + ext;
-
+            if (fileName.Length > 100)
+            {
+                fileName = fileName.Substring(fileName.Length - 100);
+            }
             file.SaveAs(GetAbsoluteUploadDirectory(fileName));
 
             return UploadDirectory + fileName;
@@ -70,6 +73,10 @@ namespace LCChecker
 
         public static int AddFileEntity(UploadFile entity)
         {
+            if (entity.FileName.Length > 127)
+            {
+                entity.FileName = entity.FileName.Substring(0, 126);
+            }
             using (var db = new LCDbContext())
             {
                 db.Files.Add(entity);

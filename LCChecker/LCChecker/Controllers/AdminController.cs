@@ -156,33 +156,41 @@ namespace LCChecker.Controllers
 
             var excel = XslHelper.GetWorkbook(file);
             var sheet = excel.GetSheetAt(0);
-            for (var i = 7; i <= sheet.LastRowNum; i++)
+
+            int rowIndex = 0, cellIndex = 0;
+            var title = sheet.GetRow(rowIndex).GetCell(cellIndex).GetValue();
+            if (title != "")
+            {
+                throw new ArgumentException("上传的附表3：重点项目复核确认总表格式不正确，请参照样表。");
+            }
+            rowIndex++;
+            for (var i = rowIndex; i <= sheet.LastRowNum; i++)
             {
                 var row = sheet.GetRow(i);
-                if (string.IsNullOrEmpty(row.Cells[0].ToString()))
+                if (string.IsNullOrEmpty(row.Cells[cellIndex].ToString()))
                 {
                     continue;
                 }
-                var value = row.GetCell(3, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
-                if (string.IsNullOrEmpty(value))
+                var id = row.Cells[cellIndex + 3].GetValue().Trim();
+                if (!id.VerificationID())
+                {
                     continue;
-                if (!value.VerificationID())
-                    continue;
+                }
 
                 City city = 0;
 
-                if (Enum.TryParse<City>(row.Cells[1].GetValue(), out city))
+                if (Enum.TryParse<City>(row.Cells[cellIndex + 1].GetValue(), out city))
                 {
                     list.Add(new Project
                     {
                         City = city,
-                        County = row.Cells[2].GetValue(),
-                        ID = row.Cells[3].GetValue(),
-                        Name = row.Cells[4].GetValue(),
-                        IsHasError = row.Cells[5].GetValue() == "否",
-                        IsApplyDelete = row.Cells[6].GetValue() == "是",
-                        IsShouldModify = row.Cells[7].GetValue() == "是",
-                        IsDecrease = row.Cells[9].GetValue() == "是",
+                        County = row.Cells[cellIndex + 2].GetValue(),
+                        ID = id,
+                        Name = row.Cells[cellIndex + 4].GetValue(),
+                        IsHasError = row.Cells[cellIndex + 5].GetValue() == "否",
+                        IsApplyDelete = row.Cells[cellIndex + 6].GetValue() == "是",
+                        IsShouldModify = row.Cells[cellIndex + 7].GetValue() == "是",
+                        IsDecrease = row.Cells[cellIndex + 9].GetValue() == "是",
 
                     });
                 }
