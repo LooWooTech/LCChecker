@@ -43,7 +43,6 @@ namespace LCChecker.Controllers
                 City = CurrentUser.City,
                 Result = result,
                 Page = new Page(page),
-                IsShouldModify = true
             };
             ViewBag.List = ProjectHelper.GetProjects(filter);
             ViewBag.Page = filter.Page;
