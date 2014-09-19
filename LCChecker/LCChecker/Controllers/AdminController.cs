@@ -159,23 +159,25 @@ namespace LCChecker.Controllers
 
             int rowIndex = 0, cellIndex = 0;
             var title = sheet.GetRow(rowIndex).GetCell(cellIndex).GetValue();
-            if (title != "")
+            if (title != "附表3")
             {
                 throw new ArgumentException("上传的附表3：重点项目复核确认总表格式不正确，请参照样表。");
             }
             rowIndex++;
-            for (var i = rowIndex; i <= sheet.LastRowNum; i++)
+            for (var i = rowIndex+5; i <= sheet.LastRowNum; i++)
             {
                 var row = sheet.GetRow(i);
+                if (row == null)
+                    continue;
                 if (string.IsNullOrEmpty(row.Cells[cellIndex].ToString()))
                 {
                     continue;
                 }
                 var id = row.Cells[cellIndex + 3].GetValue().Trim();
-                if (!id.VerificationID())
-                {
-                    continue;
-                }
+                //if (!id.VerificationID())
+                //{
+                //    continue;
+                //}
 
                 City city = 0;
 
