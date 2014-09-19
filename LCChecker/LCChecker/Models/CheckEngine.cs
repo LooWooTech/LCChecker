@@ -29,6 +29,11 @@ namespace LCChecker.Models
         /// </summary>
         public Dictionary<string, Index2> Ship = new Dictionary<string, Index2>();
 
+        /// <summary>
+        /// 检查表格中的项目编号们
+        /// </summary>
+        List<string> IDS = new List<string>();
+
 
         /// <summary>
         /// 用于验证 表4  表5  表8 跟表3之间关系  编号 bool
@@ -43,6 +48,11 @@ namespace LCChecker.Models
         public Dictionary<string, string> GetWarning()
         {
             return Warning;
+        }
+
+        public List<string> GetIDS()
+        {
+            return IDS;
         }
         public virtual void SetWhether(List<Project> projects)
         {
@@ -100,7 +110,7 @@ namespace LCChecker.Models
                     continue;
                 if (!VerificationID(value))
                     continue;
-
+                IDS.Add(value);
                 if (Whether.ContainsKey(value))//在表3中存在
                 {
                     if (Whether[value])//重点复核确认总表中 填：是  提交表格存在这个项目  检查这个项目填写数据与格式

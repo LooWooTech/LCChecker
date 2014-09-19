@@ -182,6 +182,11 @@ namespace LCChecker.Controllers
                 {
                     continue;
                 }
+                var value = row.GetCell(startCell + 3, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+                if (string.IsNullOrEmpty(value))
+                    continue;
+                if (!value.VerificationID())
+                    continue;
 
                 City city = 0;
 

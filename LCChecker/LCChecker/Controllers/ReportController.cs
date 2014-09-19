@@ -106,6 +106,40 @@ namespace LCChecker.Controllers
 
             var errors = engine.GetError();
             var warning = engine.GetWarning();
+            var ids = engine.GetIDS();
+            var CheckTime = DateTime.Now;
+            foreach (var item in projects)
+            {
+                if (ids.Contains(item.ID))
+                {
+                    if (errors.ContainsKey(item.ID))
+                    {
+                        item.Note = "";
+                        item.Result = false;
+                        var i = 1;
+                        foreach (var msg in errors[item.ID])
+                        {
+                            item.Note = item.Note + string.Format("{0}{1}；", i, msg);
+                            i++;
+                        }
+                    }
+                    else {
+                        item.Note = "";
+                        item.Result = true;
+                    }
+                    item.UpdateTime = CheckTime;
+                }
+                
+                
+                if (warning.ContainsKey(item.ID))
+                {
+                    item.Note = warning[item.ID];
+                    item.Result = null;
+                    item.UpdateTime = CheckTime;
+                }
+            }
+            db.SaveChanges();
+
 
             var record = db.Reports.FirstOrDefault(e => e.City == CurrentUser.City && e.Type == type);
             record.Result = errors.Count == 0;

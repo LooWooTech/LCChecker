@@ -11,6 +11,8 @@ namespace LCChecker
         Dictionary<string, List<string>> GetError();
 
         Dictionary<string, string> GetWarning();
+
+        List<string> GetIDS();
         bool Check(string filePath, ref string mistakes,ReportType Type,List<Project> Data,bool flag);
     }
 }

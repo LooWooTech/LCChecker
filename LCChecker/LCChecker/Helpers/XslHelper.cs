@@ -124,6 +124,11 @@ namespace LCChecker
 
         }
 
+        public static bool VerificationID(this string value)
+        {
+            return Regex.IsMatch(value, @"^330[0-9]{3}20[0-9]{6}");
+        }
+
         //public static ICellStyle GetCellStyle(this IWorkbook workbook, XslHeaderStyle str)
         //{
         //    var cellStyle = workbook.CreateCellStyle();

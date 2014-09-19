@@ -55,34 +55,35 @@ namespace LCChecker.Models
             list.Add(new ConditionalRowRule()
             {
                 Condition = rule1,
-                Rule = new CellEmptyRowRule() { ColumnIndex = 8, isEmpty = true, isNumeric = false }
+                Rule = new CellRangeRowRule() { ColumnIndex = 8, Values = new[] { "" } }
             });
-            //list.Add(new ConditionalRowRule()
-            //{
-            //    Condition = rule1,
-            //    Rule = new CellEmptyRowRule() { ColumnIndex = 9, isEmpty = true, isNumeric = false }
-            //});
-            //list.Add(new ConditionalRowRule()
-            //{
-            //    Condition = rule1,
-            //    Rule = new CellEmptyRowRule() { ColumnIndex = 10, isEmpty = true, isNumeric = false }
-            //});
 
-            //list.Add(new ConditionalRowRule()
-            //{
-            //    Condition = rule1,
-            //    Rule = new CellEmptyRowRule() { ColumnIndex = 11, isEmpty = true, isNumeric = false }
-            //});
-            //list.Add(new ConditionalRowRule()
-            //{
-            //    Condition = rule1,
-            //    Rule = new CellEmptyRowRule() { ColumnIndex = 12, isEmpty = true, isNumeric = false }
-            //});
-            //list.Add(new ConditionalRowRule()
-            //{
-            //    Condition = rule1,
-            //    Rule = new CellEmptyRowRule() { ColumnIndex = 13, isEmpty = true, isNumeric = true }
-            //});
+            list.Add(new ConditionalRowRule()
+            {
+                Condition = rule1,
+                Rule = new CellRangeRowRule() { ColumnIndex = 9, Values = new[] {"","否" } }
+            });
+            list.Add(new ConditionalRowRule()
+            {
+                Condition = rule1,
+                Rule = new CellRangeRowRule() { ColumnIndex = 10, Values = new[] { "", "否" } }
+            });
+
+            list.Add(new ConditionalRowRule()
+            {
+                Condition = rule1,
+                Rule = new CellRangeRowRule() { ColumnIndex = 11, Values = new[] { "", "否" } }
+            });
+            list.Add(new ConditionalRowRule()
+            {
+                Condition = rule1,
+                Rule = new CellRangeRowRule() { ColumnIndex = 12, Values = new[] {"","否" } }
+            });
+            list.Add(new ConditionalRowRule()
+            {
+                Condition = rule1,
+                Rule = new CellEmptyRowRule() { ColumnIndex = 13, isEmpty = true, isNumeric = true }
+            });
             list.Add(new ConditionalRowRule()
             {
                 Condition = rule1,
@@ -92,7 +93,7 @@ namespace LCChecker.Models
             list.Add(new ConditionalRowRule()
             {
                 Condition = rule1,
-                Rule = new CellEmptyRowRule() { ColumnIndex = 19, isEmpty = true, isNumeric = true }
+                Rule = new CellEmptyRowRule() { ColumnIndex = 19, isEmpty = true, isNumeric = false }
             });
 
             list.Add(new ConditionalRowRule()
@@ -101,11 +102,11 @@ namespace LCChecker.Models
                 Rule = new CellEmptyRowRule() { ColumnIndex = 27, isEmpty = true, isNumeric = false }
             });
 
-            //list.Add(new ConditionalRowRule()
-            //{
-            //    Condition = rule1,
-            //    Rule = new CellEmptyRowRule() { ColumnIndex = 28, isEmpty = true, isNumeric = true }
-            //});
+            list.Add(new ConditionalRowRule()
+            {
+                Condition = rule1,
+                Rule = new CellEmptyRowRule() { ColumnIndex = 28, isEmpty = true, isNumeric = true }
+            });
 
             list.Add(new ConditionalRowRule()
             {
