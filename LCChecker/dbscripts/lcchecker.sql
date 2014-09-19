@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50703
 File Encoding         : 65001
 
-Date: 2014-09-19 12:06:04
+Date: 2014-09-19 15:48:02
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -79,11 +79,12 @@ CREATE TABLE `uploadfiles` (
   `CreateTime` datetime NOT NULL,
   `SavePath` varchar(55) DEFAULT NULL,
   `Type` int(11) NOT NULL DEFAULT '0',
-  `Proceeded` bit(1) NOT NULL DEFAULT b'0',
+  `State` bit(1) NOT NULL DEFAULT b'0',
+  `ProcessMessage` varchar(1023) DEFAULT NULL,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `PK_FILE_ID` (`ID`) USING BTREE,
   KEY `IX_FILE_CITY` (`CityID`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for users

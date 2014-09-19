@@ -32,6 +32,7 @@ namespace LCChecker.Models
         [Column("State", TypeName = "INT")]
         public UploadFileProceedState State { get; set; }
 
+        [MaxLength(1023)]
         public string ProcessMessage { get; set; }
 
         /// <summary>
