@@ -236,7 +236,7 @@
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\User\Projects.cshtml" />
     <Content Include="Views\Shared\_pagination.cshtml" />
-    <Content Include="Templates\ModelSelf.xlsx" />
+    <Content Include="Templates\自检表.xlsx" />
     <Content Include="Views\User\CheckReport.cshtml" />
     <Content Include="Views\Admin\Projects.cshtml" />
     <Content Include="Views\Admin\Users.cshtml" />

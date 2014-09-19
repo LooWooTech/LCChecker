@@ -96,6 +96,9 @@ namespace LCChecker.Controllers
             var fault = "";
             if (!detectEngine.CheckExcel(filePath, ref fault, ref errors, ref ships, ref areas))
             {
+                file.State = UploadFileProceedState.Error;
+                file.ProcessMessage = "检索失败：" + fault;
+                db.SaveChanges();
                 throw new ArgumentException("检索失败：" + fault);
             }
 
@@ -157,7 +160,7 @@ namespace LCChecker.Controllers
         {
             var list = db.Projects.Where(e => e.City == CurrentUser.City).ToList();
 
-            var workbook = XslHelper.GetWorkbook("templates/modelSelf.xlsx");
+            var workbook = XslHelper.GetWorkbook("templates/自检表.xlsx");
 
             var sheet = workbook.GetSheetAt(0);
             var rowIndex = 1;
