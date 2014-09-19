@@ -48,6 +48,16 @@ namespace LCChecker.Models
         {
 
         }
+
+        /// <summary>
+        /// 验证项目编号格式
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private bool VerificationID(string value)
+        {
+            return Regex.IsMatch(value, @"^330[0-9]{3}20[0-9]{6}");
+        }
         public bool Check(string filePath, ref string mistakes, ReportType Type, List<Project> Data, bool flag)
         {
             if (flag)
@@ -87,6 +97,8 @@ namespace LCChecker.Models
                 List<string> ErrorRow = new List<string>();
                 var value = row.GetCell(3, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
                 if (string.IsNullOrEmpty(value))
+                    continue;
+                if (!VerificationID(value))
                     continue;
 
                 if (Whether.ContainsKey(value))//在表3中存在

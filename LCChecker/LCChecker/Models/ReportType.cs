@@ -8,6 +8,9 @@ namespace LCChecker.Models
 {
     public enum ReportType
     {
+        [Description("重点项目复核确认总表")]
+        附表3=3,
+
         [Description("重点复核确认项目申请删除项目清单")]
         附表4 = 4,
 
