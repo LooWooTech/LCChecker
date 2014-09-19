@@ -15,6 +15,7 @@ namespace LCChecker.Controllers
             {
                 City = CurrentUser.City,
                 Result = result,
+                Visible = true,
                 Page = new Page(page)
             };
             ViewBag.List = ProjectHelper.GetCoordProjects(filter);

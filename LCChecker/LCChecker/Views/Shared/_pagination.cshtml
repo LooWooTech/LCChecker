@@ -9,20 +9,32 @@
     if (page.PageCount == 1)
     {
         return;
-    }    
+    }
+
+    var querystring = "?";
+    foreach (var key in Request.QueryString.AllKeys)
+    {
+        if (string.IsNullOrEmpty(key) || key == "page")
+        {
+            continue;
+        }
+        querystring += key + "=" + Request.QueryString[key] + "&";
+    }
 }
 
 <ul class="pagination">
     <li><a href="?page=1">首页</a></li>
     @if (page.PageIndex > 1)
     { 
-        <li><a href="?page=@(page.PageIndex - 1)">上一页</a></li>
+        <li><a href="@(querystring)page=@(page.PageIndex - 1)">上一页</a></li>
     }
     @if (page.PageIndex < page.PageCount - 1)
     { 
-        <li><a href="?page=@(page.PageIndex + 1)">下一页</a></li>
+        <li><a href="@(querystring)page=@(page.PageIndex + 1)">下一页</a></li>
     }
-    <li><a href="?page=@(page.PageCount)">尾页</a></li>
+    <li><a href="@(querystring)page=@(page.PageCount)">尾页</a></li>
+
     <li><a>共@(page.RecordCount)条记录</a></li>
+
     <li><a>第@(page.PageIndex)页/共@(page.PageCount)页</a></li>
 </ul>

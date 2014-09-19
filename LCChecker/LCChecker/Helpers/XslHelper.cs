@@ -12,15 +12,6 @@ using System.Web;
 
 namespace LCChecker
 {
-    //public enum XslHeaderStyle
-    //{
-    //    大头,
-    //    小头,
-    //    小小头,
-    //    文本,
-    //    默认
-    //}
-    
     public static class XslHelper
     {
         public static IWorkbook GetWorkbook(HttpPostedFileBase file)
@@ -69,8 +60,7 @@ namespace LCChecker
             }
         }
 
-
-        public static bool FindHeader(this ISheet sheet, ref int startRow, ref int startCell,ReportType Type)
+        public static bool FindHeader(this ISheet sheet, ref int startRow, ref int startCell, ReportType Type)
         {
             var Name = @"([\w\W])" + Type.GetDescription();
             string[] Header = { "编号", "市", "县" };
@@ -205,5 +195,27 @@ namespace LCChecker
 
         //    return cellStyle;
         //}
+        public static string GetValue(this ICell cell)
+        {
+            if (cell == null) return null;
+            switch (cell.CellType)
+            {
+                case CellType.Boolean:
+                    return cell.BooleanCellValue.ToString();
+                case CellType.Numeric:
+                    return cell.NumericCellValue.ToString();
+                case CellType.String:
+                    return cell.StringCellValue;
+                default:
+                    try
+                    {
+                        return cell.StringCellValue;
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+            }
+        }
     }
 }
