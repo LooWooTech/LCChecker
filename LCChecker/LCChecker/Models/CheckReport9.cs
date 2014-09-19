@@ -27,7 +27,11 @@ namespace LCChecker.Models
                 IDS[i] = item;
                 i++;
             }
-            list.Add(new CellRangeRowRule() { ColumnIndex = 3, Values = IDS });
+            if (Ship.Count != 0)
+            {
+                list.Add(new CellRangeRowRule() { ColumnIndex = 3, Values = IDS });
+            }
+           
             foreach (var item in Ship.Keys)
             {
                 int Degree = GetDegree(Ship[item].Grade);

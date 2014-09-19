@@ -151,6 +151,7 @@ namespace LCChecker.Controllers
                 file.State = UploadFileProceedState.Error;
             }
             db.SaveChanges();
+            ViewBag.Warning = warning;
 
             return View(errors);
         }

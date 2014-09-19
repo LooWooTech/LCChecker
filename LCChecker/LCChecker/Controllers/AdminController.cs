@@ -156,21 +156,14 @@ namespace LCChecker.Controllers
 
             var excel = XslHelper.GetWorkbook(file);
             var sheet = excel.GetSheetAt(0);
-
-            int startRow = 0, startCell = 0;
-            if (!sheet.FindHeader(ref startRow, ref startCell, ReportType.附表3))
-            {
-                throw new ArgumentException("未找到重点项目复核确认总表的表头");
-            }
-            startRow++;
-            for (var i = startRow; i <= sheet.LastRowNum; i++)
+            for (var i = 7; i <= sheet.LastRowNum; i++)
             {
                 var row = sheet.GetRow(i);
                 if (string.IsNullOrEmpty(row.Cells[0].ToString()))
                 {
                     continue;
                 }
-                var value = row.GetCell(startCell + 3, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+                var value = row.GetCell(3, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
                 if (string.IsNullOrEmpty(value))
                     continue;
                 if (!value.VerificationID())

@@ -26,12 +26,25 @@ namespace LCChecker.Rules
 
         public bool Check(NPOI.SS.UserModel.IRow row, int xoffset = 0)
         {
-            var value1=row.GetCell(xoffset+ColumnIndex,MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString();
-            if (isEmpty && string.IsNullOrEmpty(value1))// isEmpty :true  里面空的  1）无填写
-                return true;
+            var cell = row.GetCell(xoffset + ColumnIndex, MissingCellPolicy.CREATE_NULL_AS_BLANK);
 
+            var ret = false;
             double sum;
-            var ret = double.TryParse(value1, out sum);
+            if (cell.CellType == CellType.Numeric || cell.CellType == CellType.Formula)
+            {
+                ret = true;
+                sum = cell.NumericCellValue;
+            }
+            else
+            {
+                var value2 = cell.ToString();
+                ret = double.TryParse(value2, out sum);
+            }
+
+            var value1=row.GetCell(xoffset+ColumnIndex,MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString();
+            
+            if (isEmpty && string.IsNullOrEmpty(value1))
+                return true;
 
             if (isNumeric)//  面积问题
             {

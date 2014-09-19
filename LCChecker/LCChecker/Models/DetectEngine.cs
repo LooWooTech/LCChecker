@@ -61,7 +61,7 @@ namespace LCChecker.Models
             list.Add(new ConditionalRowRule()
             {
                 Condition = rule1,
-                Rule = new CellRangeRowRule() { ColumnIndex = 9, Values = new[] {"","否" } }
+                Rule = new CellRangeRowRule() { ColumnIndex = 9, Values = new[] { "", "否" } }
             });
             list.Add(new ConditionalRowRule()
             {
@@ -77,7 +77,7 @@ namespace LCChecker.Models
             list.Add(new ConditionalRowRule()
             {
                 Condition = rule1,
-                Rule = new CellRangeRowRule() { ColumnIndex = 12, Values = new[] {"","否" } }
+                Rule = new CellRangeRowRule() { ColumnIndex = 12, Values = new[] { "", "否" } }
             });
             list.Add(new ConditionalRowRule()
             {
@@ -251,13 +251,13 @@ namespace LCChecker.Models
 
             list.Add(new SumRowRule()
                 {
-                    ColumnIndices = new[] {37, 38},
+                    ColumnIndices = new[] { 37, 38 },
                     SumColumnIndex = 27
                 });
 
             list.Add(new SumRowRule()
                 {
-                    ColumnIndices = new[] {39, 40},
+                    ColumnIndices = new[] { 39, 40 },
                     SumColumnIndex = 31
                 });
 

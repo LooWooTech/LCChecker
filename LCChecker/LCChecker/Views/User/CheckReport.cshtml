@@ -2,6 +2,7 @@
 @{
     Layout = "_Layout.cshtml";
     ViewBag.Title = "检查结果";
+    Dictionary<string, string> Warning = ViewBag.Warning;
 }
 
 
@@ -22,6 +23,23 @@
                     <p>@it</p>
                 }
             </td>
+        </tr>
+    }
+</table>
+
+
+<table class="table">
+    <tr>
+        <th>项目编号</th>
+        <th>提示</th>
+    </tr>
+    @foreach (var item in Warning.Keys)
+    { 
+        <tr>
+            <td>
+                @item
+            </td>
+            <td>@Warning[item]</td>
         </tr>
     }
 </table>
