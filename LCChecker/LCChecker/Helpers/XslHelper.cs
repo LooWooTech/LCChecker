@@ -114,9 +114,11 @@ namespace LCChecker
 
         }
 
+
+        private static Regex _projectIdRe = new Regex(@"^330[0-9]{3}20[0-9]{6}", RegexOptions.Compiled);
         public static bool VerificationID(this string value)
         {
-            return Regex.IsMatch(value, @"^330[0-9]{3}20[0-9]{6}");
+            return _projectIdRe.IsMatch(value);
         }
 
         //public static ICellStyle GetCellStyle(this IWorkbook workbook, XslHeaderStyle str)

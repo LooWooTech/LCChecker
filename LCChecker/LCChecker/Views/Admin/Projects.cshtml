@@ -4,17 +4,12 @@
     Layout = "_Layout.cshtml";
     ViewBag.Title = "项目列表";
 
-    List<LCChecker.Models.Project> list = ViewBag.List;
-                    //ProjectType type = ViewBag.ProjectType;
+    List<Project> list = ViewBag.List;
 }
 
-@*<div class="nav nav-tabs" style="margin-bottom: 10px;">
-    @foreach (var name in Enum.GetNames(typeof(ProjectType)))
-    {
-        var val = (int)Enum.Parse(typeof(ProjectType), name);
-        <li class="@(val == (int)type ? "active" : "")"><a href="?type=@(val)">@(name)项目</a></li>
-    }
-</div>*@
+<div class="alert alert-warning">
+    导入文件格式为表3格式，<a href="/templates/@(HttpUtility.UrlEncode("附表3")).xlsx" target="_blank">点击下载样例</a>
+</div>
 <div style="clear: both; overflow: hidden; margin-bottom: 10px;">
     <form class="form form-inline" method="post" enctype="multipart/form-data" action="/admin/uploadprojects" style="float: left;">
         <div class="input-group">
@@ -46,7 +41,6 @@
             </div>
             <div class="input-group-btn">
                 <button type="submit" class="btn btn-primary">过滤</button>
-                @*                <a href="/user/downloadProjects" class="btn btn-success">下载项目</a>*@
             </div>
         </div>
     </form>
