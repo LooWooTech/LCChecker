@@ -17,7 +17,8 @@ namespace LCChecker.Models
  
         public CheckReport9(string filePath)
         {
-            GetSuppleMessage(filePath);
+           // GetSuppleMessage(filePath);
+            GetMessage(filePath);
             var list = new List<IRowRule>();
             int count = Ship.Count();
             string[] IDS = new string[count];
