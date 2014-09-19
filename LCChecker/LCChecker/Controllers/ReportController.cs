@@ -98,12 +98,18 @@ namespace LCChecker.Controllers
                     engine = new CheckReport9(MastPath);
                     break;
                 default:
+                    file.State = UploadFileProceedState.Error;
+                    file.ProcessMessage = "不支持当前业务类型：" + (int)type;
+                    db.SaveChanges();
                     throw new ArgumentException("不支持当前业务类型");
             }
 
             string fault = "";
-            if (!engine.Check(filePath, ref fault,type,projects,Flag))
+            if (!engine.Check(filePath, ref fault, type, projects, Flag))
             {
+                file.State = UploadFileProceedState.Error;
+                file.ProcessMessage = "检索失败：" + fault;
+                db.SaveChanges();
                 throw new ArgumentException("检索表格失败" + fault);
             }
 
@@ -126,14 +132,15 @@ namespace LCChecker.Controllers
                             i++;
                         }
                     }
-                    else {
+                    else
+                    {
                         item.Note = "";
                         item.Result = true;
                     }
                     item.UpdateTime = CheckTime;
                 }
-                
-                
+
+
                 if (warning.ContainsKey(item.ID))
                 {
                     item.Note = warning[item.ID];
