@@ -4,17 +4,16 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 
 namespace LCChecker.Models
 {
 
 
-    public class CheckReport9:CheckEngine,ICheck
+    public class CheckReport9:CheckEngine ,ICheck
     {
-       
-
- 
+      
         public CheckReport9(string filePath)
         {
            // GetSuppleMessage(filePath);
@@ -112,7 +111,6 @@ namespace LCChecker.Models
         }
 
 
-
         public bool CheckSpecial(string FilePath,ref string Mistakes,ReportType Type)
         {
             int startRow=0,startCell=0;
@@ -123,11 +121,21 @@ namespace LCChecker.Models
                 return false;
             }
             startRow++;
-            for (int i = startRow; i <= sheet.LastRowNum; i=i+3)
+            for (int i = startRow+1; i <= sheet.LastRowNum; i=i+3)
             {
                 IRow row = sheet.GetRow(i);
                 if (row == null)
                     break;
+                var value = row.GetCell(startCell + 3, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+                if (string.IsNullOrEmpty(value))
+                    continue;
+                if (!JudgeLand(sheet, i, startCell))
+                {
+                    Mistakes = "未找到水田  水浇地  旱地列";
+                    return false;
+                }
+                    
+
                 List<string> ErrorRow = new List<string>();
                 foreach (var item in rules)
                 {
@@ -136,13 +144,9 @@ namespace LCChecker.Models
                         ErrorRow.Add(item.Rule.Name);
                     }
                 }
-                //检查填写等别的数据
-                var val = row.GetCell(3, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
-                if (val == null)
-                    continue;
-                if (Ship.ContainsKey(val))
+                if (Ship.ContainsKey(value))
                 {
-                    Index2 Data = Ship[val];
+                    Index2 Data = Ship[value];
                     int Degree = GetDegree(Data.Grade);
                     Land rowData = GetExcelLand(sheet, i, Degree + startCell + 6);
                     if (!Data.Land.Compare(rowData)) 
@@ -152,12 +156,32 @@ namespace LCChecker.Models
                 }
                 if (ErrorRow.Count() != 0)
                 {
-                    Error.Add(val, ErrorRow);
+                    Error.Add(value, ErrorRow);
                 }
                 
             }
 
             
+            return true;
+        }
+
+
+        public bool JudgeLand(NPOI.SS.UserModel.ISheet sheet,int Line,int xoffset=0)
+        {
+            string[] Lands = new string[] { "水田", "水浇地", "旱地" };
+            foreach (var item in Lands)
+            {
+                IRow row = sheet.GetRow(Line++);
+                if (row == null)
+                {
+                    return false;
+                }
+                var value = row.GetCell(6 + xoffset, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+                if (string.IsNullOrEmpty(value))
+                    return false;
+                if (value != item)
+                    return false;
+            }
             return true;
         }
 
@@ -192,10 +216,11 @@ namespace LCChecker.Models
         }
 
 
-        public  bool Check(string FilePath, ref string Mistakes,ReportType Type)
+        public new  bool Check(string FilePath, ref string Mistakes,ReportType Type,List<Project> Data,bool flag)
         {
             return CheckSpecial(FilePath,ref Mistakes,Type);
         }
+
     }
 
 

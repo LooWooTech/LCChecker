@@ -19,5 +19,7 @@ namespace LCChecker.Models
         public DbSet<CoordProject> CoordProjects { get; set; }
 
         public DbSet<Report> Reports { get; set; }
+
+        public DbSet<Record> Records { get; set; }
     }
 }

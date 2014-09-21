@@ -148,6 +148,7 @@
     <Compile Include="Models\CoordProject.cs" />
     <Compile Include="Models\Index2.cs" />
     <Compile Include="Models\Land.cs" />
+    <Compile Include="Models\Record.cs" />
     <Compile Include="Models\Report.cs" />
     <Compile Include="Models\ReportType.cs" />
     <Compile Include="Models\City.cs" />

@@ -2,6 +2,8 @@
 using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -116,39 +118,39 @@ namespace LCChecker.Controllers
             var errors = engine.GetError();
             var warning = engine.GetWarning();
             var ids = engine.GetIDS();
-            var CheckTime = DateTime.Now;
-            foreach (var item in projects)
+            var list = db.Records.Where(x => x.City == CurrentUser.City && x.Type == type).ToList();
+            DeleteRecords(list);
+            List<Record> Records = new List<Record>();
+            foreach (var item in errors.Keys)
             {
-                if (ids.Contains(item.ID))
+                fault = "";
+                int i = 1;
+                foreach (var msg in errors[item])
                 {
-                    if (errors.ContainsKey(item.ID))
-                    {
-                        item.Note = "";
-                        item.Result = false;
-                        var i = 1;
-                        foreach (var msg in errors[item.ID])
-                        {
-                            item.Note = item.Note + string.Format("{0}{1}；", i, msg);
-                            i++;
-                        }
-                    }
-                    else
-                    {
-                        item.Note = "";
-                        item.Result = true;
-                    }
-                    item.UpdateTime = CheckTime;
+                    fault += string.Format("（{0}）{1}；", i, msg);
+                    i++;
                 }
-
-
-                if (warning.ContainsKey(item.ID))
+                Records.Add(new Record()
                 {
-                    item.Note = warning[item.ID];
-                    item.Result = null;
-                    item.UpdateTime = CheckTime;
-                }
+                    ProjectID = item,
+                    Type = type,
+                    City = CurrentUser.City,
+                    IsError = true,
+                    Note = fault
+                });
             }
-            db.SaveChanges();
+            foreach (var item in warning.Keys)
+            {
+                Records.Add(new Record()
+                {
+                    ProjectID = item,
+                    Type = type,
+                    City = CurrentUser.City,
+                    IsError = false,
+                    Note = warning[item]
+                });
+            }
+            AddRecords(Records);
 
 
             var record = db.Reports.FirstOrDefault(e => e.City == CurrentUser.City && e.Type == type);
@@ -161,6 +163,33 @@ namespace LCChecker.Controllers
             ViewBag.Warning = warning;
 
             return View(errors);
+        }
+
+        public  void DeleteRecords(List<Record> list)
+        {
+            using (var db = new LCDbContext())
+            {
+                foreach (var item in list)
+                {
+                    db.Records.Attach(item);
+                    db.Records.Remove(item);
+                }
+                db.SaveChanges();
+            }
+        }
+
+        public static void AddRecords(List<Record> list)
+        {
+            using (var db = new LCDbContext())
+            {
+                foreach (var item in list)
+                {
+                    db.Records.Add(item);
+                }
+                db.SaveChanges();
+            }
+   
+           
         }
 
         public ActionResult DownloadReport(ReportType type)

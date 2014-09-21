@@ -110,6 +110,17 @@ namespace LCChecker.Models
                     continue;
                 if (!VerificationID(value))
                     continue;
+                if (IDS.Contains(value))
+                {
+                    if (Error.ContainsKey(value))
+                    {
+                        Error[value].Add("表格中存在相同项目编号");
+                    }
+                    else {
+                        Error.Add(value, new List<string>() { "表格中存在相同项目编号" });
+                    }
+                    continue;
+                }
                 IDS.Add(value);
                 if (Whether.ContainsKey(value))//在表3中存在
                 {
@@ -137,7 +148,8 @@ namespace LCChecker.Models
                 else
                 {//重点复核确认总表中 没有这个项目  提交表格中存在  处理：错误
                     ErrorRow.Add("重点复核确认总表中不存在项目");
-                    Error.Add(value, ErrorRow);
+                    if(!Error.ContainsKey(value))
+                        Error.Add(value, ErrorRow);
                 }
 
             }
@@ -355,6 +367,8 @@ namespace LCChecker.Models
             }
         }
 
+
+
         /// <summary>
         /// 获取补充耕地项目中的数据
         /// </summary>
@@ -409,14 +423,33 @@ namespace LCChecker.Models
             //市  县
             var cityName = row.Cells[1].StringCellValue.Split(',');
             //新增耕地面积
-            var AddArea = row.GetCell(5, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
-            double data = double.Parse(AddArea);
+            var CellAddArea = row.GetCell(5, MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            double data;
+            if (CellAddArea.CellType == CellType.Numeric || CellAddArea.CellType == CellType.Formula)
+            {
+                data = CellAddArea.NumericCellValue;
+            }
+            else {
+                var AddArea = CellAddArea.ToString().Trim();
+                data = double.Parse(AddArea);
+            }
+            
             //等别
             var grade = row.GetCell(35, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
 
             //表8  14栏
-            var Indicator = row.GetCell(13, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
-            double data2 = double.Parse(Indicator);
+            var cell = row.GetCell(13, MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            double data2;
+            if (cell.CellType == CellType.Numeric || cell.CellType == CellType.Formula)
+            {
+                data2 = cell.NumericCellValue;
+            }
+            else {
+                var Indicator = cell.ToString();
+                data2 = double.Parse(Indicator);
+            }
+
+            
 
             var val = row.GetCell(36, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
 
@@ -439,11 +472,10 @@ namespace LCChecker.Models
             return CurrentData;
         }
 
-
         public Land GetLand(string value)
         {
             Land land = new Land();
-            string val = value.Replace("，", ",").Replace(".", string.Empty).Replace("。", string.Empty);
+            string val = value.Replace("，", ",").Replace("。", string.Empty);
             var team = val.Split(',');
             foreach (string item in team)
             {
@@ -472,5 +504,6 @@ namespace LCChecker.Models
             }
             return land;
         }
+        
     }
 }
