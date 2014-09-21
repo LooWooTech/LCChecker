@@ -1,0 +1,61 @@
+﻿@model IEnumerable<LCChecker.Models.Record>
+@{
+    ViewBag.Title = "";
+}
+
+
+<table class="table table-bordered">
+    <tr>
+        <th style="width:150px">项目编号</th>
+        <th style="width:100px">信息类型</th>
+        <th style="width:300px">备注</th>
+    </tr>
+    @foreach (var item in Model)
+    { 
+        <tr>
+            <td>@item.ProjectID</td>
+            <td>
+                @if (item.IsError)
+                { 
+                    <span class="label label-danger">错误</span>
+                }
+                else
+                { 
+                    <span class="label label-warning">提示</span>
+                }
+            </td>
+            <td>
+                @if (!string.IsNullOrEmpty(item.Note))
+                {
+                    if (item.Note.Length > 30)
+                    { 
+                        <a href="#@(item.ID)" class="btn-details" data="@(item.ID)">点击查看详细错误或提示</a>
+                    <div id="tips-@(item.ID)" class="tips">
+                        <div class="tooltip-inner">
+                            @Html.Raw(item.Note.Replace("；","<br />"))
+                        </div>
+                    </div>
+                    }
+                    else { 
+                        <span>@item.Note</span>
+                    }
+                }
+
+            </td>
+        </tr>
+    }
+</table>
+<script>
+    $(function () {
+        $(".btn-details").click(function (e) {
+            var id = $(this).attr("data");
+            var tip = $("#tips-" + id);
+            if (tip.css('display') == "none") {
+                $(".tips").hide();
+                tip.show();
+            } else {
+                tip.hide();
+            }
+        });
+    });
+</script>

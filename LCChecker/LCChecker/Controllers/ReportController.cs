@@ -147,7 +147,7 @@ namespace LCChecker.Controllers
                     Type = type,
                     City = CurrentUser.City,
                     IsError = false,
-                    Note = warning[item]
+                    Note = string.Format("(1){0}",warning[item])
                 });
             }
             AddRecords(Records);
@@ -292,6 +292,12 @@ namespace LCChecker.Controllers
 
                 rowNumber++;
             }
+        }
+
+        public ActionResult ReportResult(ReportType type)
+        {
+            var list = db.Records.Where(x => x.City == CurrentUser.City && x.Type == type).ToList();
+            return View(list);
         }
     }
 }

@@ -141,7 +141,7 @@ namespace LCChecker.Models
                     else
                     {//重点复核确认总表中 填：否  提交表格中存在   处理：提示
 
-                        Warning.Add(value, "与重点项目复核确认总表不符（例如：本表中不应该出现可是出现了）");
+                        Warning.Add(value, "与重点项目复核确认总表中项目类型不符");
                     }
                     Whether.Remove(value);
                 }
@@ -157,7 +157,7 @@ namespace LCChecker.Models
             {
                 if (Whether[item])//重点复核确认总表中 填：是  提交表格中没有这个项目  处理：提示
                 {
-                    Warning.Add(item, "请核对重点项目复核确认总表（例如：本表中应该包含的项目可是没有出现）");
+                    Warning.Add(item, "项目存在于重点项目复核确认总表，但不存在于本表中。");
                 }
             }
 
