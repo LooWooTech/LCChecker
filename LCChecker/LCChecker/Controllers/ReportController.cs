@@ -294,10 +294,18 @@ namespace LCChecker.Controllers
             }
         }
 
-        public ActionResult ReportResult(ReportType type)
+        public ActionResult ReportResult(ReportType type,int page=1)
         {
-            var list = db.Records.Where(x => x.City == CurrentUser.City && x.Type == type).ToList();
-            return View(list);
+            var list = db.Records.Where(x => x.City == CurrentUser.City && x.Type == type);
+            var Page = new Page(page);
+            if (Page != null)
+            {
+                Page.RecordCount = list.Count();
+                list=list.OrderBy(e=>e.ID).Skip(Page.PageSize*(Page.PageIndex-1)).Take(Page.PageSize);
+            }
+            ViewBag.Page = Page;
+            ViewBag.Title = type.GetDescription();
+            return View(list.ToList());
         }
     }
 }
