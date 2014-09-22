@@ -10,6 +10,10 @@ namespace LCChecker.Models
     [Table("uploadfiles")]
     public class UploadFile
     {
+        public UploadFile()
+        {
+            CreateTime = DateTime.Now;
+        }
 
         [Key]
         [DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity)]

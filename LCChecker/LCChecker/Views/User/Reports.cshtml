@@ -14,6 +14,7 @@
 <table class="table">
     <tr>
         <th>表单名称</th>
+        <th>检查状态</th>
         <th>检查结果</th>
         <th>样表下载</th>
         <th style="width: 200px;">上传验证</th>
@@ -25,26 +26,36 @@
             var typeValue = (int)item.Type;
         <tr>
             <td>@(item.Type + "：" + item.Type.GetDescription())</td>
-            <td>
-                @if (item.Result.HasValue)
-                {
-                    if (item.Result.Value)
-                    {
-                    <span class="label label-success">通过</span>
-                    }
-                    else
-                    {
-                    <span class="label label-warning"><a href="/User/ReportResult?type=@(typeValue)">失败</a></span>
-                    }
-                }
-                else
-                {
+            @switch (item.Result)
+            {
+                case null:
+                <td>
                     <span class="label label-default">未检查</span>
-                }
-            </td>
+                </td>
+                <td>----
+                </td>
+                    break;
+                case true:
+                <td>
+                    <span class="label label-success">无误</span>
+                </td>
+                <td>----
+                </td>
+                    break;
+                case false:
+                <td>
+                    <span class="label label-warning">存疑</span>
+                </td>
+                <td>
+                    <a href="/user/reportResult?type=@(typeValue)" class="btn btn-sm btn-default">查看</a>
+                </td>
+                    break;
+            }
+
             <td>
                 <a href="/templates/@(item.Type.ToString()).xlsx" class="btn btn-sm btn-primary">下载</a>
             </td>
+
             @*            <td>
                 <a href="/User/DownloadReport?type=@(typeValue)" class="=btn btn-sm btn-primary">下载表单</a>
             </td>*@

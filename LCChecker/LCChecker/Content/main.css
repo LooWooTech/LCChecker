@@ -52,3 +52,14 @@ legend {
   border: solid 1px #ccc;
   text-align: left;
 }
+.ie-warning {
+  line-height: 30px;
+  background-color: #FAF8D2;
+  font-weight: bold;
+  text-align: center;
+  position: absolute;
+  top: 0px;
+  left: 0;
+  right: 0;
+  z-index: 99999;
+}

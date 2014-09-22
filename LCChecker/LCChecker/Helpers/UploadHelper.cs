@@ -7,7 +7,7 @@ using System.Web;
 
 namespace LCChecker
 {
-    public class UploadHelper
+    public static class UploadHelper
     {
         private static string UploadDirectory = "Uploads/";
 
@@ -21,7 +21,7 @@ namespace LCChecker
             return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filePath);
         }
 
-        public static HttpPostedFileBase GetPostedFile(HttpContextBase context)
+        public static HttpPostedFileBase GetPostedFile(this HttpContextBase context)
         {
             if (context.Request.Files.Count == 0)
             {
@@ -48,19 +48,9 @@ namespace LCChecker
             return file;
         }
 
-        public static string UploadExcel(HttpPostedFileBase file)
+        public static string Upload(this HttpPostedFileBase file)
         {
-
             var ext = Path.GetExtension(file.FileName);
-            if (ext != ".xls" && ext != ".xlsx")
-            {
-                throw new ArgumentException("你上传的文件格式不对，目前支持.xls以及.xlsx格式的EXCEL表格");
-            }
-            if (file.ContentLength == 0 || file.ContentLength > 20971520)
-            {
-                throw new ArgumentException("你上传的文件数据太大或者没有");
-            }
-
             var fileName = file.FileName.Replace(ext, "") + "-" + DateTime.Now.Ticks.ToString() + ext;
             if (fileName.Length > 100)
             {

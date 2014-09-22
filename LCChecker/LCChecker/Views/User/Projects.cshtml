@@ -95,14 +95,20 @@
 </table>
 <script>
     $(function () {
-        $(".btn-details").click(function (e) {
-            var id = $(this).attr("data");
-            var tip = $("#tips-" + id);
-            if (tip.css('display') == "none") {
-                $(".tips").hide();
-                tip.show();
-            } else {
-                tip.hide();
+
+        $("body").click(function (e) {
+            $(".tips").hide();
+            var node = $(e.target);
+            var className = node.attr("class");
+            if (className && className.indexOf("btn-details") > -1) {
+                var id = node.attr("data");
+                var tip = $("#tips-" + id);
+                if (tip.css('display') == "none") {
+                    $(".tips").hide();
+                    tip.show();
+                } else {
+                    tip.hide();
+                }
             }
         });
     });

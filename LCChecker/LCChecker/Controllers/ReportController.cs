@@ -43,7 +43,12 @@ namespace LCChecker.Controllers
         {
             var file = UploadHelper.GetPostedFile(HttpContext);
 
-            var filePath = UploadHelper.UploadExcel(file);
+            var ext = Path.GetExtension(file.FileName);
+            if (ext != ".xls" && ext != ".xlsx")
+            {
+                throw new ArgumentException("你上传的文件格式不对，目前支持.xls以及.xlsx格式的EXCEL表格");
+            }
+            var filePath = UploadHelper.Upload(file);
             var fileId = UploadHelper.AddFileEntity(new UploadFile
             {
                 City = CurrentUser.City,

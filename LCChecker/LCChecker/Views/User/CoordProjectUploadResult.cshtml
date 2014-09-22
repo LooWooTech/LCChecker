@@ -1,0 +1,61 @@
+﻿@using LCChecker.Models
+@{
+    ViewBag.Title = "坐标点上传文件检查结果";
+    List<UploadFile> list = ViewBag.List;
+}
+<div style="clear: both; overflow: hidden; margin-bottom: 10px;">
+    <form class="form form-inline" style="float: right;">
+        <div class="input-group">
+            <span class="input-group-addon">文件过滤</span>
+            <div class="input-group-btn">
+                <select name="state" class="form-control">
+                    <option value="-1">全部</option>
+                    <option value="0" @(Request.QueryString["state"] == "0" ? "selected=selected" : "")>未处理</option>
+                    <option value="1" @(Request.QueryString["state"] == "1" ? "selected=selected" : "")>已处理</option>
+                    <option value="2" @(Request.QueryString["state"] == "2" ? "selected=selected" : "")>错误</option>
+                </select>
+            </div>
+            <div class="input-group-btn">
+                <button type="submit" class="btn btn-primary">过滤</button>
+                <a href="@(Request.Url.PathAndQuery)" class="btn btn-success">刷新</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<table class="table table-bordered">
+    <tr>
+        <th>文件名</th>
+        <th>上传日期</th>
+        <th>检查状态</th>
+        <th>检查结果</th>
+    </tr>
+    @foreach (var file in list)
+    { 
+        <tr>
+            <td>@(file.FileName)</td>
+            <td>@(file.CreateTime.ToString())</td>
+            @switch (file.State)
+            {
+                case UploadFileProceedState.UnProceed:
+                <td>
+                    <span class="label label-default">未处理</span>
+                </td>
+                <td>----</td>
+                    break;
+                case UploadFileProceedState.Proceeded:
+                <td>
+                    <span class="label label-default">已处理</span>
+                </td>
+                <td>----</td>
+                    break;
+                case UploadFileProceedState.Error:
+                <td>
+                    <span class="label label-default">出错</span>
+                </td>
+                <td>@(file.ProcessMessage)</td>
+                    break;
+            }
+        </tr>
+    }
+</table>
