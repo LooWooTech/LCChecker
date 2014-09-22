@@ -172,7 +172,7 @@ namespace LCChecker.Models
                     }
                 }
             });
-            //第8栏填写：否 第9栏为类型2  第11栏、12、13栏只能填写‘是’‘否’并且17 28 32栏中至少有一个是有面积
+            //第8栏填写：否 第9栏为类型2  第11栏、12、13栏只能填写‘是’或‘否’;并且17 28 32栏中至少有一个是有面积
             list.Add(new ConditionalRowRule(){
                 Condition=rule2,
                 Rule=new ConditionalRowRule(){
@@ -326,7 +326,7 @@ namespace LCChecker.Models
                     errorMessage.Add(value, rowError);
                 }
                 else {
-                    var area = GetNewArea(row);
+                    var area = GetNewArea(row,startCell);
                     Area.Add(value, area);
                 }
             }
@@ -418,13 +418,30 @@ namespace LCChecker.Models
         /// </summary>
         /// <param name="row"></param>
         /// <returns></returns>
-        private double[] GetNewArea(NPOI.SS.UserModel.IRow row)
+        private double[] GetNewArea(NPOI.SS.UserModel.IRow row,int xoffset=0)
         {
             double[] Area=new double[2];
-            var value = row.GetCell(4, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
-            double.TryParse(value, out Area[0]);
-            value = row.GetCell(5, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
-            double.TryParse(value, out Area[1]);
+            var cell = row.GetCell(4+xoffset, MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            double value;
+            if (cell.CellType == CellType.Numeric || cell.CellType == CellType.Formula)
+            {
+                Area[0] = cell.NumericCellValue;
+            }   
+            else
+            {
+                var val = cell.ToString().Trim();
+                double.TryParse(val, out Area[0]);
+            }
+            cell = row.GetCell(5+xoffset, MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            if (cell.CellType == CellType.Numeric || cell.CellType == CellType.Formula)
+            {
+                Area[1] = cell.NumericCellValue;
+            }
+            else
+            {
+                var val = cell.ToString().Trim();
+                double.TryParse(val, out Area[1]);
+            }
             return Area;
         }
 
