@@ -172,26 +172,31 @@ namespace LCChecker.Models
                     }
                 }
             });
-
-            list.Add(new ConditionalRowRule()//第8栏填写：否 第9栏为类型2  第11栏、12、13、17、28、32 有面积
-            {
-                Condition = rule2,
-                Rule = new ConditionalRowRule()
-                {
-                    Condition = new CellRangeRowRule()
-                    {
-                        ColumnIndex = 8,
-                        Values = new[] { "2、本县自行补充(含尚未调剂出)项目有误" }
-                    },
-                    Rule = new MultipleCellRangeRowRule()
-                    {
-                        ColumnIndices = new[] { 10, 11, 12, 16, 27, 31 },
-                        isAny = false,
-                        isEmpty = false,
-                        isNumeric = true
+            //第8栏填写：否 第9栏为类型2  第11栏、12、13栏只能填写‘是’‘否’并且17 28 32栏中至少有一个是有面积
+            list.Add(new ConditionalRowRule(){
+                Condition=rule2,
+                Rule=new ConditionalRowRule(){
+                    Condition=new CellRangeRowRule(){ColumnIndex=8,Values=new[]{"2、本县自行补充(含尚未调剂出)项目有误"}},
+                    Rule=new AndRule(){
+                        Rule1=new MultipleCellRangeRowRule(){
+                            ColumnIndices=new[]{16,27,31},
+                            isAny=true,
+                            isEmpty=false,
+                            isNumeric=true
+                        },
+                        Rule2=new AndRule(){
+                            Rule1=new AndRule(){
+                                Rule1=new CellRangeRowRule(){ColumnIndex=10,Values=new[]{"是","否"}},
+                                Rule2=new CellRangeRowRule(){ColumnIndex=11,Values=new[]{"是","否"}}
+                            },
+                            Rule2=new CellRangeRowRule(){ColumnIndex=12,Values=new[]{"是","否"}}
+                        }
                     }
                 }
             });
+
+
+           
 
             list.Add(new ConditionalRowRule()//第8栏填写：否 第9栏为类型3  ；28、29栏有面积 并且24、33栏无面积
             {
