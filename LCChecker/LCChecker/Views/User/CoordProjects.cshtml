@@ -4,6 +4,9 @@
     ViewBag.Title = "坐标点存疑列表";
     List<CoordProject> list = ViewBag.List;
 }
+<div class="alert alert-warning">
+    注意：请将包含坐标的国土部格式txt文件（多个文件）压缩成zip文件后上传
+</div>
 <div style="clear: both; overflow: hidden; margin-bottom: 10px;">
     <form class="form form-inline" method="post" enctype="multipart/form-data" action="/user/uploadcoordprojects" style="float: left;">
         <div class="input-group">
@@ -15,6 +18,7 @@
             </div>
             <div class="input-group-btn">
                 <button type="submit" class="btn btn-primary">上传坐标点</button>
+                <a href="/User/CoordProjectUploadResult" class="btn btn-default">查看上传历史</a>
             </div>
         </div>
     </form>
