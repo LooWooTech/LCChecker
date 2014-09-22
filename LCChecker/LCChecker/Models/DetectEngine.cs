@@ -235,14 +235,20 @@ namespace LCChecker.Models
                     isNumeric = false
                 }
             });
+
+           
             //项目为2007以后验收土地整理项目  第9栏只能填写 1 ，2 类型
             list.Add(new ConditionalRowRule()
             {
-                Condition = new Arrange() { Time = 2007, Variety = "整理" },
-                Rule = new CellRangeRowRule()
+                Condition = rule2,
+                Rule = new ConditionalRowRule()
                 {
-                    ColumnIndex = 8,
-                    Values = new[] { "1、调剂出项目对方指标使用有误", "2、本县自行补充(含尚未调剂出)项目有误" }
+                    Condition = new Arrange() { Time = 2007, Variety = "整理" },
+                    Rule = new CellRangeRowRule()
+                    {
+                        ColumnIndex = 8,
+                        Values = new[] { "1、调剂出项目对方指标使用有误", "2、本县自行补充(含尚未调剂出)项目有误" }
+                    }
                 }
             });
             //list.Add(new Format() { ColumnIndex = 35, form = "0.0" });
@@ -251,13 +257,13 @@ namespace LCChecker.Models
 
             list.Add(new SumRowRule()
                 {
-                    ColumnIndices = new[] { 37, 38 },
+                    ColumnIndices = new[] { 38, 39 },
                     SumColumnIndex = 27
                 });
 
             list.Add(new SumRowRule()
                 {
-                    ColumnIndices = new[] { 39, 40 },
+                    ColumnIndices = new[] { 40,41 },
                     SumColumnIndex = 31
                 });
 
