@@ -5,8 +5,8 @@
     ViewBag.Title = "自检表管理";
     List<Project> list = ViewBag.List;
 }
-<div class="alert alert-warning">
-    请严格按照省厅下发的自查表格式填写自查表，确保自查表包含<b>1栏至42栏</b>。<a href="/templates/@(HttpUtility.UrlEncode("自检表")).xlsx" class="btn btn-xs btn-primary">点击下载样例模板</a>
+<div class="alert alert-danger">
+    请严格按照省厅下发的自查表格式填写自查表，确保自查表包含<b>1栏至42栏</b>。<b>其中，表38栏是“备注”。</b><a href="/templates/@(HttpUtility.UrlEncode("自检表")).xlsx" class="btn btn-xs btn-primary">点击下载样例模板</a>
 </div>
 <div style="clear: both; overflow: hidden; margin-bottom: 10px;">
     <form class="form form-inline" style="float: right;">
