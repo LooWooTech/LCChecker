@@ -17,7 +17,7 @@ namespace LCChecker.Rules
                 var sb = new StringBuilder(string.Format("第{0}栏填写为：‘{1}’ ", ColumnIndex + 1, Values[0]));
                 for (var i = 1; i < Values.Length; i++)
                 {
-                    sb.AppendFormat("或“{0}”",Values[i]);
+                    sb.AppendFormat("或'{0}'",Values[i]);
                 }
                 return sb.ToString();
             }

@@ -116,16 +116,6 @@ namespace LCChecker.Models
 
             var rule2 = new CellRangeRowRule() { ColumnIndex = 7, Values = new[] { "否" } };
 
-            /*list.Add(new ConditionalRowRule()//第8栏填写：否  那么第9栏 一定要填写（3种类型）  1、调剂出项目对方指标使用有误；2、
-            {
-                Condition = rule2,
-                Rule =
-                    new CellRangeRowRule()
-                    {
-                        ColumnIndex = 8,
-                        Values = new[] { "1、调剂出项目对方指标使用有误", "2、本县自行补充(含尚未调剂出)项目有误", "3、属于复垦、整理、综合整治等项目无法确认信息项目" }
-                    }
-            });*/
 
             list.Add(new ConditionalRowRule()//第8栏 填写：  否  第32栏  无填写
             {
@@ -196,7 +186,7 @@ namespace LCChecker.Models
             });
 
 
-           
+
 
             list.Add(new ConditionalRowRule()//第8栏填写：否 第9栏为类型3  ；28、29栏有面积 并且24、33栏无面积
             {
@@ -241,7 +231,7 @@ namespace LCChecker.Models
                 }
             });
 
-           
+
             //项目为2007以后验收土地整理项目  第9栏只能填写 1 ，2 类型
             list.Add(new ConditionalRowRule()
             {
@@ -268,7 +258,7 @@ namespace LCChecker.Models
 
             list.Add(new SumRowRule()
                 {
-                    ColumnIndices = new[] { 40,41 },
+                    ColumnIndices = new[] { 40, 41 },
                     SumColumnIndex = 31
                 });
 
