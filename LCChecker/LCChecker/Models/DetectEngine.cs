@@ -28,7 +28,7 @@ namespace LCChecker.Models
             list.Add(new SumRowRule() { SumColumnIndex = 18, ColumnIndices = new[] { 19, 20 } });
             list.Add(new SumRowRule() { SumColumnIndex = 20, ColumnIndices = new[] { 21, 22 } });
 
-            /*list.Add(new SumRowRule() { SumColumnIndex = 23, ColumnIndices = new[] { 24, 27, 28, 31, 32 } });*/
+            list.Add(new SumRowRule() { SumColumnIndex = 23, ColumnIndices = new[] { 24, 27, 28, 31, 32 } });
 
             list.Add(new SumRowRule() { SumColumnIndex = 24, ColumnIndices = new[] { 25, 26 } });
             list.Add(new SumRowRule() { SumColumnIndex = 28, ColumnIndices = new[] { 29, 30 } });
@@ -196,7 +196,7 @@ namespace LCChecker.Models
 
 
 
-            list.Add(new ConditionalRowRule()//第8栏填写：否 第9栏为类型3  ；28、29栏有面积 并且24、33栏无面积
+           /* list.Add(new ConditionalRowRule()//第8栏填写：否 第9栏为类型3  ；28、29栏有面积 并且24、33栏无面积
             {
                 Condition = rule2,
                 Rule = new ConditionalRowRule()
@@ -224,7 +224,7 @@ namespace LCChecker.Models
                         }
                     }
                 }
-            });
+            });*/
 
             //项目类型为2007年前土地整理、土地复垦等项目  第19栏、第28栏、第29栏至少有一栏填写
             list.Add(new ConditionalRowRule()
