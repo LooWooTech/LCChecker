@@ -119,11 +119,11 @@ namespace LCChecker.Models
             var rule2 = new CellRangeRowRule() { ColumnIndex = 7, Values = new[] { "否" } };
 
 
-            list.Add(new ConditionalRowRule()//第8栏 填写：  否  第32栏  无填写
+            /*list.Add(new ConditionalRowRule()//第8栏 填写：  否  第32栏  无填写
             {
                 Condition = rule2,
                 Rule = new CellEmptyRowRule() { ColumnIndex = 31, isEmpty = true, isNumeric = false }
-            });
+            });*/
 
 
             list.Add(new ConditionalRowRule()//第8栏填写：否  第9栏 填写了 1 2类型  那么  11、12、13、17、20、28、32栏中至少有一栏填写
@@ -184,10 +184,10 @@ namespace LCChecker.Models
                         {
                             Rule1 = new AndRule()
                             {
-                                Rule1 = new CellRangeRowRule() { ColumnIndex = 10, Values = new[] { "是", "否" } },
-                                Rule2 = new CellRangeRowRule() { ColumnIndex = 11, Values = new[] { "是", "否" } }
+                                Rule1 = new CellRangeRowRule() { ColumnIndex = 10, Values = new[] { "是", "否","" } },
+                                Rule2 = new CellRangeRowRule() { ColumnIndex = 11, Values = new[] { "是", "否" ,""} }
                             },
-                            Rule2 = new CellRangeRowRule() { ColumnIndex = 12, Values = new[] { "是", "否" } }
+                            Rule2 = new CellRangeRowRule() { ColumnIndex = 12, Values = new[] { "是", "否" ,""} }
                         }
                     }
                 }
