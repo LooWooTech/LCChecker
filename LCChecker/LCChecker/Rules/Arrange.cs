@@ -24,7 +24,7 @@ namespace LCChecker.Rules
             if (a <= Time)
                 return false;
             var value2 = row.GetCell(xoffset + 3, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
-            if (value2.Contains(Variety))
+            if (value2.Contains(Variety) && value2.Contains("宅基地") == false)
                 return true;
             return false;
          
