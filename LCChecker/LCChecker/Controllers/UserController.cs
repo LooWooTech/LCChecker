@@ -94,11 +94,12 @@ namespace LCChecker.Controllers
             }
 
             var filePath = UploadHelper.GetAbsolutePath(file.SavePath);
+            var MyProjects = db.Projects.Where(e => e.City == CurrentUser.City).ToList();
             //读取文件进行检查
             var errors = new Dictionary<string, List<string>>();
             var ships = new Dictionary<string, int>();
             var areas=new Dictionary<string,double[]>();
-            var detectEngine = new DetectEngine(filePath);
+            var detectEngine = new DetectEngine(filePath,MyProjects);
             var fault = "";
             if (!detectEngine.CheckExcel(filePath, ref fault, ref errors, ref ships, ref areas))
             {

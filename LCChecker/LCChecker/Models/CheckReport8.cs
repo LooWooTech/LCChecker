@@ -36,7 +36,7 @@ namespace LCChecker.Models
                 list.Add(new ConditionalRowRule()
                 {
                     Condition = rule1,
-                    Rule = new DoubleEqual() {ColumnIndex=5,data= NewArea}
+                    Rule = new DoubleEqual() {ColumnIndex=5,data= NewArea/15}
                 });
 
             }

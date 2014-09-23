@@ -41,7 +41,14 @@ namespace LCChecker.Rules
         {
             if (cell.CellType == CellType.Numeric || cell.CellType == CellType.Formula)
             {
-                return cell.NumericCellValue;
+                try
+                {
+                    return cell.NumericCellValue;
+                }
+                catch
+                {
+                    return .0;
+                }
             }
             else
             {

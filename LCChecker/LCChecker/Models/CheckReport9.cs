@@ -72,7 +72,7 @@ namespace LCChecker.Models
                 list.Add(new ConditionalRowRule()
                 {
                     Condition = rule1,
-                    Rule = new DoubleEqual() {ColumnIndex=5,data=Ship[item].AddArea }
+                    Rule = new DoubleEqual() {ColumnIndex=5,data=Ship[item].AddArea/15 }
                 });
 
                 list.Add(new ConditionalRowRule()

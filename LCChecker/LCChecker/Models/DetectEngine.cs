@@ -18,9 +18,26 @@ namespace LCChecker.Models
 
         public Dictionary<string, List<string>> Error = new Dictionary<string, List<string>>();
 
-        public DetectEngine(string region)
+        public DetectEngine(string region,List<Project> Projects)
         {
             var list = new List<IRowRule>();
+
+            foreach (var item in Projects)
+            {
+                var division="浙江省,"+item.City.ToString()+","+item.County;
+                var IdRule = new StringEqual() { ColumnIndex = 2, Data = item.ID };
+                list.Add(new ConditionalRowRule()
+                {
+                    Condition = IdRule,
+                    Rule = new StringEqual() { ColumnIndex = 1, Data = division }
+                });
+                list.Add(new ConditionalRowRule()
+                {
+                    Condition = IdRule,
+                    Rule = new StringEqual() { ColumnIndex = 3, Data = item.Name }
+                });
+            }
+
 
             list.Add(new NoLessThanRowRule() { Column1Index = 5, Column2Index = 6 });
             list.Add(new SumRowRule() { SumColumnIndex = 6, ColumnIndices = new[] { 18, 23 } });

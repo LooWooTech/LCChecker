@@ -363,7 +363,10 @@ namespace LCChecker.Models
                 {
                     Error.Add(value, new List<string> { "获取核对数据失败，导致无法验证" });
                 }
-                Ship.Add(value, CurrentData);
+                else {
+                    Ship.Add(value, CurrentData);  
+                }
+                
             }
         }
 
@@ -431,7 +434,7 @@ namespace LCChecker.Models
             }
             else {
                 var AddArea = CellAddArea.ToString().Trim();
-                data = double.Parse(AddArea);
+                double.TryParse(AddArea, out data);
             }
             
             //等别
@@ -446,7 +449,7 @@ namespace LCChecker.Models
             }
             else {
                 var Indicator = cell.ToString();
-                data2 = double.Parse(Indicator);
+                double.TryParse(Indicator, out data2);
             }
 
             

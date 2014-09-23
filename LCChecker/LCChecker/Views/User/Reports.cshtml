@@ -4,6 +4,7 @@
     Layout = "_Layout.cshtml";
     ViewBag.Title = "报部表管理";
     List<Report> list = ViewBag.List;
+    bool Flag = ViewBag.Flag;
 }
 <div class="alert alert-warning">
     1. 请严格按照样表填写报部表格。<br />
@@ -60,13 +61,17 @@
                 <a href="/User/DownloadReport?type=@(typeValue)" class="=btn btn-sm btn-primary">下载表单</a>
             </td>*@
             <td>
-                @if (item.Result != true)
-                {
+                @if (Flag)
+                { 
+                    if (item.Result != true)
+                    {
                     <form method="post" action="/user/uploadreport?type=@(typeValue)" class="form-inline" enctype="multipart/form-data">
                         <input type="file" name="file" class="form-control input-sm" style="width: 100px;" />
                         <button type="submit" class="btn btn-sm btn-success">上传</button>
                     </form>
+                    }
                 }
+
             </td>
 
         </tr>
