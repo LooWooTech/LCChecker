@@ -22,99 +22,99 @@ namespace LCChecker.Models
         {
             var list = new List<IRowRule>();
 
-            list.Add(new NoLessThanRowRule() { Column1Index = 5, Column2Index = 6 });
-            list.Add(new SumRowRule() { SumColumnIndex = 6, ColumnIndices = new[] { 18, 23 } });
-            list.Add(new SumRowRule() { SumColumnIndex = 13, ColumnIndices = new[] { 14, 15 } });
-            list.Add(new SumRowRule() { SumColumnIndex = 18, ColumnIndices = new[] { 19, 20 } });
-            list.Add(new SumRowRule() { SumColumnIndex = 20, ColumnIndices = new[] { 21, 22 } });
+            //list.Add(new NoLessThanRowRule() { Column1Index = 5, Column2Index = 6 });
+            //list.Add(new SumRowRule() { SumColumnIndex = 6, ColumnIndices = new[] { 18, 23 } });
+            //list.Add(new SumRowRule() { SumColumnIndex = 13, ColumnIndices = new[] { 14, 15 } });
+            //list.Add(new SumRowRule() { SumColumnIndex = 18, ColumnIndices = new[] { 19, 20 } });
+            //list.Add(new SumRowRule() { SumColumnIndex = 20, ColumnIndices = new[] { 21, 22 } });
 
-            list.Add(new SumRowRule() { SumColumnIndex = 23, ColumnIndices = new[] { 24, 27, 28, 31, 32 } });
+            //list.Add(new SumRowRule() { SumColumnIndex = 23, ColumnIndices = new[] { 24, 27, 28, 31, 32 } });
 
-            list.Add(new SumRowRule() { SumColumnIndex = 24, ColumnIndices = new[] { 25, 26 } });
-            list.Add(new SumRowRule() { SumColumnIndex = 28, ColumnIndices = new[] { 29, 30 } });
-            list.Add(new SumRowRule() { SumColumnIndex = 32, ColumnIndices = new[] { 33, 34 } });
+            //list.Add(new SumRowRule() { SumColumnIndex = 24, ColumnIndices = new[] { 25, 26 } });
+            //list.Add(new SumRowRule() { SumColumnIndex = 28, ColumnIndices = new[] { 29, 30 } });
+            //list.Add(new SumRowRule() { SumColumnIndex = 32, ColumnIndices = new[] { 33, 34 } });
 
-            list.Add(new CellRangeRowRule() { ColumnIndex = 7, Values = new[] { "是", "否" } });
+            //list.Add(new CellRangeRowRule() { ColumnIndex = 7, Values = new[] { "是", "否" } });
 
-            list.Add(new ConditionalRowRule()
-            {
-                Condition = new CellEmptyRowRule() { ColumnIndex = 17, isEmpty = false, isNumeric = false },
-                Rule = new CellEmptyRowRule() { ColumnIndex = 18, isEmpty = false, isNumeric = true }
-            });
-
-
-            list.Add(new ConditionalRowRule()
-            {
-                Condition = new CellEmptyRowRule() { ColumnIndex = 17, isEmpty = true, isNumeric = false },
-                Rule = new CellEmptyRowRule() { ColumnIndex = 18, isEmpty = true, isNumeric = true }
-            });
+            //list.Add(new ConditionalRowRule()
+            //{
+            //    Condition = new CellEmptyRowRule() { ColumnIndex = 17, isEmpty = false, isNumeric = false },
+            //    Rule = new CellEmptyRowRule() { ColumnIndex = 18, isEmpty = false, isNumeric = true }
+            //});
 
 
-            list.Add(new UniqueValueRowRule(region) { ColumnIndex = 3, Keyword = "综合整治" });
+            //list.Add(new ConditionalRowRule()
+            //{
+            //    Condition = new CellEmptyRowRule() { ColumnIndex = 17, isEmpty = true, isNumeric = false },
+            //    Rule = new CellEmptyRowRule() { ColumnIndex = 18, isEmpty = true, isNumeric = true }
+            //});
 
-            var rule1 = new CellRangeRowRule() { ColumnIndex = 7, Values = new[] { "是" } };
 
-            list.Add(new ConditionalRowRule()
-            {
-                Condition = rule1,
-                Rule = new CellRangeRowRule() { ColumnIndex = 8, Values = new[] { "" } }
-            });
+            //list.Add(new UniqueValueRowRule(region) { ColumnIndex = 3, Keyword = "综合整治" });
 
-            list.Add(new ConditionalRowRule()
-            {
-                Condition = rule1,
-                Rule = new CellRangeRowRule() { ColumnIndex = 9, Values = new[] { "", "否" } }
-            });
-            list.Add(new ConditionalRowRule()
-            {
-                Condition = rule1,
-                Rule = new CellRangeRowRule() { ColumnIndex = 10, Values = new[] { "", "否" } }
-            });
+            //var rule1 = new CellRangeRowRule() { ColumnIndex = 7, Values = new[] { "是" } };
 
-            list.Add(new ConditionalRowRule()
-            {
-                Condition = rule1,
-                Rule = new CellRangeRowRule() { ColumnIndex = 11, Values = new[] { "", "否" } }
-            });
-            list.Add(new ConditionalRowRule()
-            {
-                Condition = rule1,
-                Rule = new CellRangeRowRule() { ColumnIndex = 12, Values = new[] { "", "否" } }
-            });
-            list.Add(new ConditionalRowRule()
-            {
-                Condition = rule1,
-                Rule = new CellEmptyRowRule() { ColumnIndex = 13, isEmpty = true, isNumeric = true }
-            });
-            list.Add(new ConditionalRowRule()
-            {
-                Condition = rule1,
-                Rule = new CellEmptyRowRule() { ColumnIndex = 16, isEmpty = true, isNumeric = false }
-            });
+            //list.Add(new ConditionalRowRule()
+            //{
+            //    Condition = rule1,
+            //    Rule = new CellRangeRowRule() { ColumnIndex = 8, Values = new[] { "" } }
+            //});
 
-            list.Add(new ConditionalRowRule()
-            {
-                Condition = rule1,
-                Rule = new CellEmptyRowRule() { ColumnIndex = 19, isEmpty = true, isNumeric = false }
-            });
+            //list.Add(new ConditionalRowRule()
+            //{
+            //    Condition = rule1,
+            //    Rule = new CellRangeRowRule() { ColumnIndex = 9, Values = new[] { "", "否" } }
+            //});
+            //list.Add(new ConditionalRowRule()
+            //{
+            //    Condition = rule1,
+            //    Rule = new CellRangeRowRule() { ColumnIndex = 10, Values = new[] { "", "否" } }
+            //});
 
-            list.Add(new ConditionalRowRule()
-            {
-                Condition = rule1,
-                Rule = new CellEmptyRowRule() { ColumnIndex = 27, isEmpty = true, isNumeric = false }
-            });
+            //list.Add(new ConditionalRowRule()
+            //{
+            //    Condition = rule1,
+            //    Rule = new CellRangeRowRule() { ColumnIndex = 11, Values = new[] { "", "否" } }
+            //});
+            //list.Add(new ConditionalRowRule()
+            //{
+            //    Condition = rule1,
+            //    Rule = new CellRangeRowRule() { ColumnIndex = 12, Values = new[] { "", "否" } }
+            //});
+            //list.Add(new ConditionalRowRule()
+            //{
+            //    Condition = rule1,
+            //    Rule = new CellEmptyRowRule() { ColumnIndex = 13, isEmpty = true, isNumeric = true }
+            //});
+            //list.Add(new ConditionalRowRule()
+            //{
+            //    Condition = rule1,
+            //    Rule = new CellEmptyRowRule() { ColumnIndex = 16, isEmpty = true, isNumeric = false }
+            //});
 
-            list.Add(new ConditionalRowRule()
-            {
-                Condition = rule1,
-                Rule = new CellEmptyRowRule() { ColumnIndex = 28, isEmpty = true, isNumeric = true }
-            });
+            //list.Add(new ConditionalRowRule()
+            //{
+            //    Condition = rule1,
+            //    Rule = new CellEmptyRowRule() { ColumnIndex = 19, isEmpty = true, isNumeric = false }
+            //});
 
-            list.Add(new ConditionalRowRule()
-            {
-                Condition = rule1,
-                Rule = new CellEmptyRowRule() { ColumnIndex = 31, isEmpty = true, isNumeric = false }
-            });
+            //list.Add(new ConditionalRowRule()
+            //{
+            //    Condition = rule1,
+            //    Rule = new CellEmptyRowRule() { ColumnIndex = 27, isEmpty = true, isNumeric = false }
+            //});
+
+            //list.Add(new ConditionalRowRule()
+            //{
+            //    Condition = rule1,
+            //    Rule = new CellEmptyRowRule() { ColumnIndex = 28, isEmpty = true, isNumeric = true }
+            //});
+
+            //list.Add(new ConditionalRowRule()
+            //{
+            //    Condition = rule1,
+            //    Rule = new CellEmptyRowRule() { ColumnIndex = 31, isEmpty = true, isNumeric = false }
+            //});
 
             var rule2 = new CellRangeRowRule() { ColumnIndex = 7, Values = new[] { "否" } };
 
@@ -146,52 +146,52 @@ namespace LCChecker.Models
                 }
             });
 
-            list.Add(new ConditionalRowRule()//第8栏填写：否   第9栏填写了类型1 那么20栏要有面积
-            {
-                Condition = rule2,
-                Rule = new ConditionalRowRule()
-                {
-                    Condition = new CellRangeRowRule()
-                    {
-                        ColumnIndex = 8,
-                        Values = new[] { "1、调剂出项目对方指标使用有误" }
-                    },
-                    Rule = new CellEmptyRowRule()
-                    {
-                        ColumnIndex = 19,
-                        isEmpty = false,
-                        isNumeric = true
-                    }
-                }
-            });
-            //第8栏填写：否 第9栏为类型2  第11栏、12、13栏只能填写‘是’或‘否’;并且17 28 32栏中至少有一个是有面积
-            list.Add(new ConditionalRowRule()
-            {
-                Condition = rule2,
-                Rule = new ConditionalRowRule()
-                {
-                    Condition = new CellRangeRowRule() { ColumnIndex = 8, Values = new[] { "2、本县自行补充(含尚未调剂出)项目有误" } },
-                    Rule = new AndRule()
-                    {
-                        Rule1 = new MultipleCellRangeRowRule()
-                        {
-                            ColumnIndices = new[] { 16, 27, 31 },
-                            isAny = true,
-                            isEmpty = false,
-                            isNumeric = true
-                        },
-                        Rule2 = new AndRule()
-                        {
-                            Rule1 = new AndRule()
-                            {
-                                Rule1 = new CellRangeRowRule() { ColumnIndex = 10, Values = new[] { "是", "否","" } },
-                                Rule2 = new CellRangeRowRule() { ColumnIndex = 11, Values = new[] { "是", "否" ,""} }
-                            },
-                            Rule2 = new CellRangeRowRule() { ColumnIndex = 12, Values = new[] { "是", "否" ,""} }
-                        }
-                    }
-                }
-            });
+            //list.Add(new ConditionalRowRule()//第8栏填写：否   第9栏填写了类型1 那么20栏要有面积
+            //{
+            //    Condition = rule2,
+            //    Rule = new ConditionalRowRule()
+            //    {
+            //        Condition = new CellRangeRowRule()
+            //        {
+            //            ColumnIndex = 8,
+            //            Values = new[] { "1、调剂出项目对方指标使用有误" }
+            //        },
+            //        Rule = new CellEmptyRowRule()
+            //        {
+            //            ColumnIndex = 19,
+            //            isEmpty = false,
+            //            isNumeric = true
+            //        }
+            //    }
+            //});
+            ////第8栏填写：否 第9栏为类型2  第11栏、12、13栏只能填写‘是’或‘否’;并且17 28 32栏中至少有一个是有面积
+            //list.Add(new ConditionalRowRule()
+            //{
+            //    Condition = rule2,
+            //    Rule = new ConditionalRowRule()
+            //    {
+            //        Condition = new CellRangeRowRule() { ColumnIndex = 8, Values = new[] { "2、本县自行补充(含尚未调剂出)项目有误" } },
+            //        Rule = new AndRule()
+            //        {
+            //            Rule1 = new MultipleCellRangeRowRule()
+            //            {
+            //                ColumnIndices = new[] { 16, 27, 31 },
+            //                isAny = true,
+            //                isEmpty = false,
+            //                isNumeric = true
+            //            },
+            //            Rule2 = new AndRule()
+            //            {
+            //                Rule1 = new AndRule()
+            //                {
+            //                    Rule1 = new CellRangeRowRule() { ColumnIndex = 10, Values = new[] { "是", "否","" } },
+            //                    Rule2 = new CellRangeRowRule() { ColumnIndex = 11, Values = new[] { "是", "否" ,""} }
+            //                },
+            //                Rule2 = new CellRangeRowRule() { ColumnIndex = 12, Values = new[] { "是", "否" ,""} }
+            //            }
+            //        }
+            //    }
+            //});
 
 
 
@@ -226,49 +226,49 @@ namespace LCChecker.Models
                 }
             });*/
 
-            //项目类型为2007年前土地整理、土地复垦等项目  第19栏、第28栏、第29栏至少有一栏填写
-            list.Add(new ConditionalRowRule()
-            {
-                Condition = new ProjectTypeRule() { Time = 2007, Variety = new[] { "整理", "复垦" } },
-                Rule = new MultipleCellRangeRowRule()
-                {
-                    ColumnIndices = new[] { 18, 27, 28 },
-                    isAny = true,
-                    isEmpty = false,
-                    isNumeric = false
-                }
-            });
+            ////项目类型为2007年前土地整理、土地复垦等项目  第19栏、第28栏、第29栏至少有一栏填写
+            //list.Add(new ConditionalRowRule()
+            //{
+            //    Condition = new ProjectTypeRule() { Time = 2007, Variety = new[] { "整理", "复垦" } },
+            //    Rule = new MultipleCellRangeRowRule()
+            //    {
+            //        ColumnIndices = new[] { 18, 27, 28 },
+            //        isAny = true,
+            //        isEmpty = false,
+            //        isNumeric = false
+            //    }
+            //});
 
 
-            //项目为2007以后验收土地整理项目  第9栏只能填写 1 ，2 类型
-            list.Add(new ConditionalRowRule()
-            {
-                Condition = rule2,
-                Rule = new ConditionalRowRule()
-                {
-                    Condition = new Arrange() { Time = 2007, Variety = "整理" },
-                    Rule = new CellRangeRowRule()
-                    {
-                        ColumnIndex = 8,
-                        Values = new[] { "1、调剂出项目对方指标使用有误", "2、本县自行补充(含尚未调剂出)项目有误" }
-                    }
-                }
-            });
-            //list.Add(new Format() { ColumnIndex = 35, form = "0.0" });
+            ////项目为2007以后验收土地整理项目  第9栏只能填写 1 ，2 类型
+            //list.Add(new ConditionalRowRule()
+            //{
+            //    Condition = rule2,
+            //    Rule = new ConditionalRowRule()
+            //    {
+            //        Condition = new Arrange() { Time = 2007, Variety = "整理" },
+            //        Rule = new CellRangeRowRule()
+            //        {
+            //            ColumnIndex = 8,
+            //            Values = new[] { "1、调剂出项目对方指标使用有误", "2、本县自行补充(含尚未调剂出)项目有误" }
+            //        }
+            //    }
+            //});
+            ////list.Add(new Format() { ColumnIndex = 35, form = "0.0" });
 
-            list.Add(new Special() { ColumnIndex = 36 });
+            //list.Add(new Special() { ColumnIndex = 36 });
 
-            list.Add(new SumRowRule()
-                {
-                    ColumnIndices = new[] { 38, 39 },
-                    SumColumnIndex = 27
-                });
+            //list.Add(new SumRowRule()
+            //    {
+            //        ColumnIndices = new[] { 38, 39 },
+            //        SumColumnIndex = 27
+            //    });
 
-            list.Add(new SumRowRule()
-                {
-                    ColumnIndices = new[] { 40, 41 },
-                    SumColumnIndex = 31
-                });
+            //list.Add(new SumRowRule()
+            //    {
+            //        ColumnIndices = new[] { 40, 41 },
+            //        SumColumnIndex = 31
+            //    });
 
             foreach (var item in list)
             {

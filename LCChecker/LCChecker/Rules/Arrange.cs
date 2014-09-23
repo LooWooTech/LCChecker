@@ -21,7 +21,7 @@ namespace LCChecker.Rules
             var value = row.GetCell(xoffset + 2, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
             string vtime = value.Substring(6,4);
             int a = int.Parse(vtime);
-            if (a < Time)
+            if (a <= Time)
                 return false;
             var value2 = row.GetCell(xoffset + 3, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
             if (value2.Contains(Variety))
