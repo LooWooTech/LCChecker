@@ -152,7 +152,7 @@ namespace LCChecker.Controllers
                     Type = type,
                     City = CurrentUser.City,
                     IsError = false,
-                    Note = string.Format("(1){0}",warning[item])
+                    Note = string.Format("(1){0}", warning[item])
                 });
             }
             AddRecords(Records);
@@ -160,7 +160,7 @@ namespace LCChecker.Controllers
 
             var record = db.Reports.FirstOrDefault(e => e.City == CurrentUser.City && e.Type == type);
             //当提交的表格没有错误并且没有提示的时候 设置标志位为true 有可能没有错误 但是有提示，那个时候可以让用户上传
-            record.Result = ((errors.Count == 0)&&(warning.Count==0));
+            record.Result = ((errors.Count == 0) && (warning.Count == 0));
             if (errors.Count > 0)
             {
                 file.State = UploadFileProceedState.Error;
@@ -168,10 +168,11 @@ namespace LCChecker.Controllers
             db.SaveChanges();
             ViewBag.Warning = warning;
 
+            //return RedirectToAction("ReportResult", new { type });
             return View(errors);
         }
 
-        public  void DeleteRecords(List<Record> list)
+        public void DeleteRecords(List<Record> list)
         {
             using (var db = new LCDbContext())
             {
@@ -194,8 +195,8 @@ namespace LCChecker.Controllers
                 }
                 db.SaveChanges();
             }
-   
-           
+
+
         }
 
         public ActionResult DownloadReport(ReportType type)
@@ -300,18 +301,26 @@ namespace LCChecker.Controllers
             }
         }
 
-        public ActionResult ReportResult(ReportType type,int page=1)
+        public ActionResult ReportResult(ReportType type = 0, bool? isError = null, int page = 1)
         {
-            var list = db.Records.Where(x => x.City == CurrentUser.City && x.Type == type);
-            var Page = new Page(page);
-            if (Page != null)
+            if (type == 0)
             {
-                Page.RecordCount = list.Count();
-                list=list.OrderBy(e=>e.ID).Skip(Page.PageSize*(Page.PageIndex-1)).Take(Page.PageSize);
+                throw new ArgumentException("参数错误，没有选择具体报部表");
             }
-            ViewBag.Page = Page;
+
+            var query = db.Records.Where(x => x.City == CurrentUser.City && x.Type == type);
+            if (isError != null)
+            {
+                query = query.Where(e => e.IsError == isError.Value);
+            }
+
+            var paging = new Page(page) { RecordCount = query.Count() };
+            var list = query.OrderBy(e => e.ID).Skip(paging.PageSize * (paging.PageIndex - 1)).Take(paging.PageSize);
+
+            ViewBag.Page = paging;
             ViewBag.Title = type.GetDescription();
-            return View(list.ToList());
+
+            return View(list);
         }
     }
 }
