@@ -52,7 +52,7 @@ namespace LCChecker.Controllers
 
         }
 
-        public ActionResult CoordProjectUploadResult(UploadFileType type = UploadFileType.项目坐标)
+        public ActionResult CoordProjectUploadResult(UploadFileType type = UploadFileType.项目坐标, UploadFileProceedState state = 0)
         {
             var query = db.Files.Where(e => e.City == CurrentUser.City && e.Type == type);
 
