@@ -7,6 +7,7 @@ using System.Web;
 
 namespace LCChecker.Models
 {
+    [Serializable]
     [Table("users")]
     public class User
     {

@@ -23,7 +23,15 @@
 }
 
 <ul class="pagination">
-    <li><a href="@(querystring)page=1">首页</a></li>
+    @if (page.PageIndex == 1)
+    { 
+        <li class="disabled"><a>首页</a></li>
+    }
+    else
+    {
+        <li><a href="@(querystring)page=1">首页</a></li>
+    }
+
     @if (page.PageIndex > 1)
     { 
         <li><a href="@(querystring)page=@(page.PageIndex - 1)">上一页</a></li>
@@ -33,7 +41,7 @@
         <li class="disabled"><a>上一页</a></li>
     }
 
-    @if (page.PageIndex < page.PageCount )
+    @if (page.PageIndex < page.PageCount)
     { 
         <li><a href="@(querystring)page=@(page.PageIndex + 1)">下一页</a></li>
     }
@@ -41,7 +49,15 @@
     {
         <li class="disabled"><a>下一页</a></li>
     }
-    <li><a href="@(querystring)page=@(page.PageCount)">尾页</a></li>
+
+    @if (page.PageIndex == page.PageCount)
+    { 
+        <li class="disabled"><a>尾页</a></li>
+    }
+    else
+    {
+        <li><a href="@(querystring)page=@(page.PageCount)">尾页</a></li>
+    }
 
     <li class="disabled"><a>共@(page.RecordCount)条记录</a></li>
 

@@ -168,8 +168,8 @@ namespace LCChecker.Controllers
             db.SaveChanges();
             ViewBag.Warning = warning;
 
-            //return RedirectToAction("ReportResult", new { type });
-            return View(errors);
+            return RedirectToAction("ReportResult", new { type });
+            //return View(errors);
         }
 
         public void DeleteRecords(List<Record> list)
