@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50703
 File Encoding         : 65001
 
-Date: 2014-09-22 08:58:13
+Date: 2014-09-23 10:42:44
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -42,7 +42,7 @@ CREATE TABLE `projects` (
   `Result` tinyint(1) DEFAULT NULL,
   `Note` varchar(255) DEFAULT NULL,
   `County` varchar(55) DEFAULT NULL,
-  `UpdateTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `UpdateTime` datetime NOT NULL,
   `IsApplyDelete` bit(1) NOT NULL,
   `IsHasError` bit(1) NOT NULL,
   `IsShouldModify` bit(1) NOT NULL,
@@ -60,7 +60,7 @@ CREATE TABLE `projects` (
 -- ----------------------------
 DROP TABLE IF EXISTS `records`;
 CREATE TABLE `records` (
-  `ID` int(11) NOT NULL,
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
   `ProjectID` varchar(255) NOT NULL,
   `Type` int(11) NOT NULL,
   `CityID` int(11) NOT NULL,
@@ -70,7 +70,7 @@ CREATE TABLE `records` (
   UNIQUE KEY `PK_RECORD_ID` (`ID`),
   KEY `IX_RECORD_PROJECTID` (`ProjectID`),
   KEY `IX_RECORD_CITYID` (`CityID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for reports
@@ -101,7 +101,7 @@ CREATE TABLE `uploadfiles` (
   PRIMARY KEY (`ID`),
   UNIQUE KEY `PK_FILE_ID` (`ID`) USING BTREE,
   KEY `IX_FILE_CITY` (`CityID`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=401 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for users
@@ -117,4 +117,4 @@ CREATE TABLE `users` (
   UNIQUE KEY `PK_USER_ID` (`ID`) USING BTREE,
   KEY `IX_USER_CITY` (`CityID`),
   KEY `IX_USERNAME` (`Username`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
