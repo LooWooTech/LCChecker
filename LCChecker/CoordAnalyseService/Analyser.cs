@@ -17,13 +17,13 @@ namespace CoordAnalyseService
 {
     public class Analyser
     {
-        static readonly Regex regex = new Regex("^330([0-9]{3})20([0-9]{6})$");
+        static readonly Regex regex = new Regex("^33([0-9]{4})20([0-9]{6})$");
         public static void ProcessNext()
         {
             try
             {
                 var factory = new AccessWorkspaceFactoryClass();
-                var ws = (IFeatureWorkspace) factory.OpenFromFile(ConfigurationManager.AppSettings["MdbFile"],0);
+                var ws = (IFeatureWorkspace)factory.OpenFromFile(AppDomain.CurrentDomain.BaseDirectory + "\\" + ConfigurationManager.AppSettings["MDBFile"], 0);
                 var fc = ws.OpenFeatureClass("Projects");
 
                 using (var conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["LC"].ConnectionString))
@@ -32,7 +32,7 @@ namespace CoordAnalyseService
                     using (var cmd = conn.CreateCommand())
                     {
                         cmd.CommandText =
-                            "SELECT ID,FileName,SavePath FROM uploadfiles WHERE Type = 10 AND State = 0 ORDER BY CreateTime LIMIT 0,1";
+                            "SELECT ID,FileName,SavePath,CityID FROM uploadfiles WHERE Type = 10 AND State = 0 ORDER BY CreateTime LIMIT 0,1";
                         using (var reader = cmd.ExecuteReader())
                         {
                             if (reader.Read() == false) return;
@@ -40,18 +40,33 @@ namespace CoordAnalyseService
                             var fileName = reader[1].ToString();
                             var SavePath = reader[2].ToString();
                             var id = Convert.ToInt32(reader[0]);
-
-                            var dest = string.Format("{0}\\Temp\\{1}", ConfigurationManager.AppSettings["BaseFolder"],
+                            var cityId = Convert.ToInt32(reader[3]);
+                            reader.Close();
+                            
+                            var dest = string.Format("{0}\\Spatial\\{1}", ConfigurationManager.AppSettings["BaseFolder"],
                                                      Guid.NewGuid());
                             var msg = string.Empty;
                             try
                             {
-                                (new FastZip()).ExtractZip(
-                                string.Format("{0}\\{1}", ConfigurationManager.AppSettings["BaseFolder"],
-                                              SavePath), dest, "*.txt"
+                                var src = string.Format("{0}\\{1}", ConfigurationManager.AppSettings["BaseFolder"],
+                                                         SavePath);
+                                
+                                (new FastZip()).ExtractZip(src
+                                , dest, ".txt$"
                                 );
-                                var folder = new DirectoryInfo(dest);
-                                ProcessFolder(folder, 5, fc, conn);
+                                if (Directory.Exists(dest))
+                                {
+                                    var folder = new DirectoryInfo(dest);
+                                    msg = CheckFolder(folder, 5, cityId, conn);
+                                    if (string.IsNullOrEmpty(msg))
+                                    {
+                                        ProcessFolder(folder, 5, cityId, fc, conn);
+                                    }
+                                }
+                                else
+                                {
+                                    msg = "压缩包内容为空或者不可识别。";
+                                }
                             }
                             catch (Exception ex)
                             {
@@ -79,12 +94,38 @@ namespace CoordAnalyseService
             
         }
 
-        private static void ProcessFolder(DirectoryInfo folder, int level, IFeatureClass fc, IDbConnection conn)
+        private static bool CheckCity(string projectNo, int cityId, IDbConnection conn)
+        {
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText =
+                    string.Format(
+                        "SELECT CityId FROM coord_projects WHERE ID='{0}' AND CityID = {1}",
+                        projectNo, cityId);
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    var ret = reader.Read();
+                    reader.Close();
+                    return ret;
+                }
+            }
+        }
+
+        private static string CheckFolder(DirectoryInfo folder, int level, int cityId, IDbConnection conn)
         {
             var files = folder.GetFiles("*.txt");
             foreach (var file in files)
             {
-                ProcessFile(file, fc, conn);
+                var filename = System.IO.Path.GetFileNameWithoutExtension(file.FullName);
+                if (regex.IsMatch(filename) == false)
+                {
+                    return "文件名必须为项目备案编号：" + filename;
+                }
+                else if(CheckCity(filename, cityId, conn) == false)
+                {
+                    return "不是本地区的项目：" + filename;
+                }
             }
 
             if (level > 0)
@@ -92,12 +133,36 @@ namespace CoordAnalyseService
                 var dirs = folder.GetDirectories();
                 foreach (var dir in dirs)
                 {
-                    ProcessFolder(dir, level - 1, fc, conn);
+                    CheckFolder(dir, level - 1, cityId, conn);
+                }
+            }
+            else
+            {
+                return "压缩包中目录结构太深，不能多于5层。";
+            }
+
+            return string.Empty;
+        }
+
+        private static void ProcessFolder(DirectoryInfo folder, int level, int cityId, IFeatureClass fc, IDbConnection conn)
+        {
+            var files = folder.GetFiles("*.txt");
+            foreach (var file in files)
+            {
+                ProcessFile(file, cityId, fc, conn);
+            }
+
+            if (level > 0)
+            {
+                var dirs = folder.GetDirectories();
+                foreach (var dir in dirs)
+                {
+                    ProcessFolder(dir, level - 1, cityId, fc, conn);
                 }
             }
         }
 
-        private static void ProcessFile(FileInfo file, IFeatureClass fc, IDbConnection conn)
+        private static void ProcessFile(FileInfo file, int cityId, IFeatureClass fc, IDbConnection conn)
         {
             var fileName = System.IO.Path.GetFileNameWithoutExtension(file.FullName);
             
@@ -108,8 +173,8 @@ namespace CoordAnalyseService
 
             using (var cmd = conn.CreateCommand())
             {
-                cmd.CommandText = string.Format("Update coord_projects SET Note='{0}', Result=1, Visible=1 WHERE ID='{1}'", 
-                    string.Join(";", msgs.ToArray()), fileName);
+                cmd.CommandText = string.Format("Update coord_projects SET Note='{0}', Result={2}, Visible=1, UpdateTime=now() WHERE ID='{1}' and CityID={3}", 
+                    string.Join(";", msgs.ToArray()), fileName, ret?"0":"1", cityId);
                 cmd.ExecuteNonQuery();
             }
         }
@@ -129,8 +194,15 @@ namespace CoordAnalyseService
 
             try
             {
-                if(CheckOverlay(list, projectNo, fc, out msg) == false) msgs.Add(msg);
-                UpdatePolygons(list, projectNo, fc);
+                if (CheckOverlay(list, projectNo, fc, out msg) == false)
+                {
+                    msgs.Add(msg);
+                }
+                else
+                {
+                    UpdatePolygons(list, projectNo, fc);
+                }
+                
             }
             catch (Exception ex)
             {
@@ -332,6 +404,7 @@ namespace CoordAnalyseService
 
         private static bool CheckOverlay(IList<IPolygon> polygons, string projectNo, IFeatureClass fc, out string msg)
         {
+            var area = 0.0;
             foreach (var pg in polygons)
             {
                 (pg as IPolygon4).SimplifyEx(true, true, true);
@@ -345,17 +418,18 @@ namespace CoordAnalyseService
 
                 var cursor = fc.Search(filter, true);
                 var feature = cursor.NextFeature();
+                
                 while (feature != null)
                 {
                     var shape = feature.ShapeCopy;
+
                     if (shape != null || shape.IsEmpty == false ||
                         shape.GeometryType == esriGeometryType.esriGeometryPolygon)
                     {
                         var intersect = to.Intersect(shape, esriGeometryDimension.esriGeometry2Dimension);
                         if (intersect is IArea && (intersect as IArea).Area > double.Epsilon)
                         {
-                            msg = "与其他项目图斑相交";
-                            return false;
+                            area += (intersect as IArea).Area;
                         }
                     }
 
@@ -363,8 +437,17 @@ namespace CoordAnalyseService
                 }
                 Marshal.ReleaseComObject(cursor);
             }
-            msg = string.Empty;
-            return true;
+            if (area < double.Parse(ConfigurationManager.AppSettings["OverlayTolerance"]))
+            {
+                msg = string.Empty;
+                return true;
+            }
+            else
+            {
+                msg = "与其他项目图斑相交";
+                return false;
+            }
+            
         }
 
         private static bool CheckArea(IList<IPolygon> polygons, string projectNo, IDbConnection conn, out string msg)
@@ -376,7 +459,7 @@ namespace CoordAnalyseService
             }
 
             area /= 10000;
-
+            var tol = double.Parse(ConfigurationManager.AppSettings["AreaTolerance"]);
             try
             {
                 using (var cmd = conn.CreateCommand())
@@ -384,24 +467,32 @@ namespace CoordAnalyseService
                     cmd.CommandText = string.Format("Select Area from projects where ID = '{0}'", projectNo);
                     using (var reader = cmd.ExecuteReader())
                     {
-                        if (reader.IsDBNull(0))
+                        if (reader.Read())
                         {
-                            msg = string.Format("已上传的自查表中找不到项目'{0}'，请先上传自查表", projectNo);
-                            return false;
-                        }
-                        else
-                        {
-                            var area2 = Convert.ToDouble(reader[0]);
-                            if (Math.Abs((area - area2)/area2) >= 0.2)
+                            if (reader.IsDBNull(0))
                             {
-                                msg = "图斑面积与项目总规模相差超过20%";
+                                msg = string.Format("已上传的自查表中找不到项目'{0}'，请先上传自查表", projectNo);
                                 return false;
                             }
                             else
                             {
-                                msg = string.Empty;
-                                return true;
+                                var area2 = Convert.ToDouble(reader[0]);
+                                if (Math.Abs((area - area2)/area2) >= tol)
+                                {
+                                    msg = string.Format("图斑面积与项目总规模相差超过{0}%", tol*100);
+                                    return false;
+                                }
+                                else
+                                {
+                                    msg = string.Empty;
+                                    return true;
+                                }
                             }
+                        }
+                        else
+                        {
+                            msg = string.Format("已上传的自查表中找不到项目'{0}'，请先上传自查表", projectNo);
+                            return false;
                         }
                     }
                 }

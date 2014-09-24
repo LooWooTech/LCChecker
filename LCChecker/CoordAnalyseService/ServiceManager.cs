@@ -31,7 +31,7 @@ namespace CoordAnalyseService
             thread.Join();
         }
 
-        private void MainLoop()
+        public void MainLoop()
         {
             var loopInterval = int.Parse(ConfigurationManager.AppSettings["LoopInterval"]);
             var init = new AoInitializeClass();
