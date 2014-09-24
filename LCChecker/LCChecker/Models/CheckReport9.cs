@@ -156,7 +156,14 @@ namespace LCChecker.Models
                 }
                 if (ErrorRow.Count() != 0)
                 {
-                    Error.Add(value, ErrorRow);
+                    //Error.Add(value, ErrorRow);
+                    if (Error2.ContainsKey(value))
+                    {
+                        Error2[value] += ";表格中存在相同项目";
+                    }
+                    else {
+                        Error2.Add(value, "与项目复核确认总表不符");
+                    }
                 }
                 
             }

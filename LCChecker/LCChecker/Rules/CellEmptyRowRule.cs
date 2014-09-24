@@ -33,7 +33,14 @@ namespace LCChecker.Rules
             if (cell.CellType == CellType.Numeric || cell.CellType == CellType.Formula)
             {
                 ret = true;
-                sum = cell.NumericCellValue;
+                try
+                {
+                    sum = cell.NumericCellValue;
+                }
+                catch {
+                    sum = .0;
+                }
+                
             }
             else
             {

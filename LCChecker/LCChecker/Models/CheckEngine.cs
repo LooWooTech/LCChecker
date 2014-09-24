@@ -17,7 +17,9 @@ namespace LCChecker.Models
         /// <summary>
         /// 错误信息
         /// </summary>
-        public Dictionary<string, List<string>> Error = new Dictionary<string, List<string>>();
+        //public Dictionary<string, List<string>> Error = new Dictionary<string, List<string>>();
+
+        public Dictionary<string, string> Error2 = new Dictionary<string, string>();
 
         /// <summary>
         /// 提示
@@ -40,9 +42,9 @@ namespace LCChecker.Models
         /// </summary>
         public Dictionary<string, bool> Whether = new Dictionary<string, bool>();
 
-        public Dictionary<string, List<string>> GetError()
+        public Dictionary<string, string> GetError()
         {
-            return Error;
+            return Error2;
         }
 
         public Dictionary<string, string> GetWarning()
@@ -94,7 +96,8 @@ namespace LCChecker.Models
             ISheet sheet = OpenSheet(filePath, true, ref startRow, ref startCell, ref mistakes, Type);
             if (sheet == null)
             {
-                Error.Add("表格格式内容", new List<string> { "提交的表格无法检索 请核对格式" });
+                //Error.Add("表格格式内容", new List<string> { "提交的表格无法检索 请核对格式" });
+                Error2.Add("表格格式内容", "提交表格无法检索，请核对格式");
                 return false;
             }
 
@@ -112,13 +115,21 @@ namespace LCChecker.Models
                     continue;
                 if (IDS.Contains(value))
                 {
-                    if (Error.ContainsKey(value))
+                    if (Error2.ContainsKey(value))
                     {
-                        Error[value].Add("表格中存在相同项目编号");
+                        Error2[value] += ";表格中存在相同项目编号";
                     }
                     else {
-                        Error.Add(value, new List<string>() { "表格中存在相同项目编号" });
+                        Error2.Add(value, "表格中存在相同项目编号");
                     }
+
+                    //if (Error.ContainsKey(value))
+                    //{
+                    //    Error[value].Add("表格中存在相同项目编号");
+                    //}
+                    //else {
+                    //    Error.Add(value, new List<string>() { "表格中存在相同项目编号" });
+                    //}
                     continue;
                 }
                 IDS.Add(value);
@@ -135,7 +146,8 @@ namespace LCChecker.Models
                         }
                         if (ErrorRow.Count() != 0)
                         {
-                            Error.Add(value, ErrorRow);
+                            Error2.Add(value, "与项目复核确认总表不符");
+                           // Error.Add(value, ErrorRow);
                         }
                     }
                     else
@@ -147,9 +159,13 @@ namespace LCChecker.Models
                 }
                 else
                 {//重点复核确认总表中 没有这个项目  提交表格中存在  处理：错误
-                    ErrorRow.Add("重点复核确认总表中不存在项目");
-                    if(!Error.ContainsKey(value))
-                        Error.Add(value, ErrorRow);
+                    //ErrorRow.Add("重点复核确认总表中不存在项目");
+                    if (!Error2.ContainsKey(value))
+                    {
+                       // Error.Add(value, ErrorRow);
+                        Error2.Add(value, "重点复核确认总表中不存在项目");
+                    }
+                        
                 }
 
             }
@@ -196,6 +212,18 @@ namespace LCChecker.Models
                 if (string.IsNullOrEmpty(value))
                     continue;
                 List<string> ErrorRow = new List<string>();
+                if (IDS.Contains(value))
+                {
+                    if (Error2.ContainsKey(value))
+                    {
+                        Error2[value] += ";表格中存在相同的项目";
+                    }
+                    else {
+                        Error2.Add(value, "表格中存在相同的项目");
+                    }
+                    continue;
+                }
+                IDS.Add(value);
                 foreach (var item in rules)
                 {
                     if (!item.Rule.Check(row, startCell))
@@ -205,7 +233,8 @@ namespace LCChecker.Models
                 }
                 if (ErrorRow.Count != 0)
                 {
-                    Error.Add(value, ErrorRow);
+                    //Error.Add(value, ErrorRow);
+                    Error2.Add(value, "与项目复核确认总表不符");
                 }
             }
             return true;
@@ -345,7 +374,8 @@ namespace LCChecker.Models
             ISheet sheet = OpenSheet(filePath, false, ref startRow, ref starCell, ref fault, ReportType.附表8);
             if (sheet == null)
             {
-                Error.Add("表格内容格式", new List<string>() { "获取项目总表失败" });
+                Error2.Add("表格内容格式", "获取项目总表失败");
+                //Error.Add("表格内容格式", new List<string>() { "获取项目总表失败" });
                 return;
             }
 
@@ -361,10 +391,11 @@ namespace LCChecker.Models
                 var CurrentData = GetCurrentData(row);
                 if (CurrentData == null)
                 {
-                    Error.Add(value, new List<string> { "获取核对数据失败，导致无法验证" });
+                    Error2.Add(value, "获取核对数据失败，导致无法验证");
+                    //Error.Add(value, new List<string> { "获取核对数据失败，导致无法验证" });
                 }
                 else {
-                    Ship.Add(value, CurrentData);  
+                    Ship.Add(value, CurrentData);        
                 }
                 
             }
@@ -383,7 +414,8 @@ namespace LCChecker.Models
             ISheet sheet = OpenSheet(filePath, false, ref startRow, ref startCell, ref fault, ReportType.附表8);
             if (sheet == null)
             {
-                Error.Add("大错误", new List<string>() { "获取项目总表失败" });
+                Error2.Add("项目总表", "获取项目总表失败");
+                //Error.Add("大错误", new List<string>() { "获取项目总表失败" });
                 return;
             }
             RuleInfo engine = new RuleInfo()//要验证项目是存在补充耕地面积 那么第14 19 24 栏至少有一栏是有面积的 假如这个条件成立那么就是补充耕地项目编号
@@ -410,7 +442,8 @@ namespace LCChecker.Models
                 var CurrentData = GetCurrentData(row);
                 if (CurrentData == null)
                 {
-                    Error.Add("初始化", new List<string> { "获取核对信息失败" });
+                    Error2.Add("初始化", "获取核对信息失败");
+                    //Error.Add("初始化", new List<string> { "获取核对信息失败" });
                 }
                 Ship.Add(value, CurrentData);
 
@@ -430,7 +463,14 @@ namespace LCChecker.Models
             double data;
             if (CellAddArea.CellType == CellType.Numeric || CellAddArea.CellType == CellType.Formula)
             {
-                data = CellAddArea.NumericCellValue;
+                try
+                {
+                    data = CellAddArea.NumericCellValue;
+                }
+                catch {
+                    data = .0;
+                }
+                
             }
             else {
                 var AddArea = CellAddArea.ToString().Trim();
@@ -445,7 +485,14 @@ namespace LCChecker.Models
             double data2;
             if (cell.CellType == CellType.Numeric || cell.CellType == CellType.Formula)
             {
-                data2 = cell.NumericCellValue;
+                try
+                {
+                    data2 = cell.NumericCellValue;
+                }
+                catch {
+                    data2 = .0;
+                }
+                
             }
             else {
                 var Indicator = cell.ToString();

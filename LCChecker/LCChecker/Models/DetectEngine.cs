@@ -20,8 +20,16 @@ namespace LCChecker.Models
 
         public DetectEngine(string region,List<Project> Projects)
         {
-            var list = new List<IRowRule>();
+            string[] ID = new string[Projects.Count];
+            int i = 0;
+            foreach (var item in Projects)
+            {
+                ID[i] = item.ID;
+                i++;
+            }
 
+            var list = new List<IRowRule>();
+            list.Add(new CellRangeRowRule() { ColumnIndex = 2, Values = ID });
             foreach (var item in Projects)
             {
                 var division="浙江省,"+item.City.ToString()+","+item.County;
@@ -352,9 +360,16 @@ namespace LCChecker.Models
                 var value = row.GetCell(startCell + 2, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
                 if (string.IsNullOrEmpty(value))
                     break;
-
-                relatship.Add(value, y);
                 var rowError = new List<string>();
+                if (relatship.ContainsKey(value))
+                {
+                    rowError.Add("表格中存在相同的项目");
+                }
+                else {
+                    relatship.Add(value, y);
+                }
+                
+                
                 foreach (var item in rules)
                 {
                     if (!item.Rule.Check(row, startCell))
@@ -364,7 +379,14 @@ namespace LCChecker.Models
                 }
                 if (rowError.Count() > 0)
                 {
-                    errorMessage.Add(value, rowError);
+                    if (errorMessage.ContainsKey(value))
+                    {
+                        errorMessage[value].Add("表格中存在相同项目");
+                    }
+                    else {
+                        errorMessage.Add(value, rowError);
+                    }
+                    
                 }
                 else {
                     var area = GetNewArea(row,startCell);
@@ -465,7 +487,14 @@ namespace LCChecker.Models
             var cell = row.GetCell(4+xoffset, MissingCellPolicy.CREATE_NULL_AS_BLANK);
             if (cell.CellType == CellType.Numeric || cell.CellType == CellType.Formula)
             {
-                Area[0] = cell.NumericCellValue;
+                try
+                {
+                    Area[0] = cell.NumericCellValue;
+                }
+                catch {
+                    Area[0] = .0;
+                }
+                
             }   
             else
             {
@@ -475,7 +504,14 @@ namespace LCChecker.Models
             cell = row.GetCell(5+xoffset, MissingCellPolicy.CREATE_NULL_AS_BLANK);
             if (cell.CellType == CellType.Numeric || cell.CellType == CellType.Formula)
             {
-                Area[1] = cell.NumericCellValue;
+                try
+                {
+                    Area[1] = cell.NumericCellValue;
+                }
+                catch {
+                    Area[1] = .0;
+                }
+                
             }
             else
             {
