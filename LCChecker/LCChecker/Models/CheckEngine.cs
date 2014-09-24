@@ -17,7 +17,7 @@ namespace LCChecker.Models
         /// <summary>
         /// 错误信息
         /// </summary>
-        //public Dictionary<string, List<string>> Error = new Dictionary<string, List<string>>();
+        public Dictionary<string, List<string>> Error = new Dictionary<string, List<string>>();
 
         public Dictionary<string, string> Error2 = new Dictionary<string, string>();
 
@@ -42,9 +42,9 @@ namespace LCChecker.Models
         /// </summary>
         public Dictionary<string, bool> Whether = new Dictionary<string, bool>();
 
-        public Dictionary<string, string> GetError()
+        public Dictionary<string, List<string>> GetError()
         {
-            return Error2;
+            return Error;
         }
 
         public Dictionary<string, string> GetWarning()
@@ -96,9 +96,14 @@ namespace LCChecker.Models
             ISheet sheet = OpenSheet(filePath, true, ref startRow, ref startCell, ref mistakes, Type);
             if (sheet == null)
             {
-                //Error.Add("表格格式内容", new List<string> { "提交的表格无法检索 请核对格式" });
-                //Error2.Add("表格格式内容", "提交表格无法检索，请核对格式");
-                Error2["表格格式内容"] = "提交表格无法检索，请核对格式";
+                if (Error.ContainsKey("表格格式内容"))
+                {
+                    Error["表格格式内容"].Add("提交的表格无法检索 请核对格式");
+                }
+                else {
+                    Error.Add("表格格式内容", new List<string> { "提交的表格无法检索 请核对格式" });
+                }
+                
                 return false;
             }
 
@@ -116,22 +121,14 @@ namespace LCChecker.Models
                     continue;
                 if (IDS.Contains(value))
                 {
-                    Error2[value] = "表格中存在相同项目编号";
-                    //if (Error2.ContainsKey(value))
-                    //{
-                    //    Error2[value] += ";";
-                    //}
-                    //else {
-                    //    Error2.Add(value, "表格中存在相同项目编号");
-                    //}
-
-                    //if (Error.ContainsKey(value))
-                    //{
-                    //    Error[value].Add("表格中存在相同项目编号");
-                    //}
-                    //else {
-                    //    Error.Add(value, new List<string>() { "表格中存在相同项目编号" });
-                    //}
+                    if (Error.ContainsKey(value))
+                    {
+                        Error[value].Add("表格中存在相同项目编号");
+                    }
+                    else
+                    {
+                        Error.Add(value, new List<string>() { "表格中存在相同项目编号" });
+                    }
                     continue;
                 }
                 IDS.Add(value);
@@ -148,9 +145,14 @@ namespace LCChecker.Models
                         }
                         if (ErrorRow.Count() != 0)
                         {
-                            Error2[value] = "与项目复核确认总表不符";
-                            //Error2.Add(value, "与项目复核确认总表不符");
-                           // Error.Add(value, ErrorRow);
+                            if (Error.ContainsKey(value))
+                            {
+                                Error[value] = ErrorRow;
+                            }
+                            else {
+                                Error.Add(value, ErrorRow);
+                            }
+                            
                         }
                     }
                     else
@@ -163,11 +165,11 @@ namespace LCChecker.Models
                 else
                 {//重点复核确认总表中 没有这个项目  提交表格中存在  处理：错误
                     //ErrorRow.Add("重点复核确认总表中不存在项目");
-                    if (!Error2.ContainsKey(value))
+                    if (!Error.ContainsKey(value))
                     {
-                       // Error.Add(value, ErrorRow);
+                       Error.Add(value, ErrorRow);
                         //Error2.Add(value, "重点复核确认总表中不存在项目");
-                        Error2[value] = "重点复核确认总表中不存在项目";
+                        //Error2[value] = "重点复核确认总表中不存在项目";
                     }
                         
                 }
@@ -221,12 +223,12 @@ namespace LCChecker.Models
                 List<string> ErrorRow = new List<string>();
                 if (IDS.Contains(value))
                 {
-                    if (Error2.ContainsKey(value))
+                    if (Error.ContainsKey(value))
                     {
-                        Error2[value] += ";表格中存在相同的项目";
+                        Error[value].Add("表格中存在相同的项目");
                     }
                     else {
-                        Error2.Add(value, "表格中存在相同的项目");
+                        Error.Add(value, new List<string>{"表格中存在相同的项目"});
                     }
                     continue;
                 }
@@ -240,8 +242,7 @@ namespace LCChecker.Models
                 }
                 if (ErrorRow.Count != 0)
                 {
-                    //Error.Add(value, ErrorRow);
-                    Error2.Add(value, "与项目复核确认总表不符");
+                    Error.Add(value, ErrorRow);
                 }
             }
             return true;
