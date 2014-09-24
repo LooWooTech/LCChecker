@@ -5,7 +5,12 @@
     List<CoordProject> list = ViewBag.List;
 }
 <div class="alert alert-warning">
-    注意：请将包含坐标的国土部格式txt文件（多个文件）压缩成zip文件后上传
+    注意：
+    <ul>
+        <li>坐标文件为国土部格式txt文件</li>
+        <li>坐标文件的文件名为项目备案编号（14位），例如33010420060002.txt</li>
+        <li>请将多个文件压缩成zip文件后上传</li>
+    </ul>
 </div>
 <div style="clear: both; overflow: hidden; margin-bottom: 10px;">
     <form class="form form-inline" method="post" enctype="multipart/form-data" action="/user/uploadcoordprojects" style="float: left;">
