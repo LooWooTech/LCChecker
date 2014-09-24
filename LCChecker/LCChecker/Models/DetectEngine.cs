@@ -611,7 +611,10 @@ namespace LCChecker.Models
                     continue;
                 if (!List.Exists(x => x.ID == item))
                     continue;
-                var masRow = masSheet.GetRow(MasStartRow++);
+                var masRow = masSheet.GetRow(MasStartRow);
+                if (masRow == null)
+                    masSheet.CreateRow(MasStartRow);
+                startRow++;
                 var row = sheet.GetRow(relatship[item]);
 
                 for (int x = startCell, y = 0; x < row.LastCellNum; x++, y++)
@@ -621,6 +624,8 @@ namespace LCChecker.Models
                         continue;
 
                     var masCell = masRow.GetCell(y);
+                    if (masCell == null)
+                        masCell = masRow.CreateCell(y);
 
                     switch (cell.CellType)
                     {

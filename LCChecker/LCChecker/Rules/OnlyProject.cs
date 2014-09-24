@@ -15,10 +15,10 @@ namespace LCChecker.Rules
         public Dictionary<string, Project> Projects { get; set; }
 
         public string Name { get {
-            var sb = new StringBuilder(string.Format("{0}", Values[0]));
+            var sb = new StringBuilder(string.Format("'{0}'", Values[0]));
             for (var i = 1; i < Values.Length; i++)
             {
-                sb.AppendFormat("或{0}", Values[i]);
+                sb.AppendFormat("或'{0}'", Values[i]);
             }
             sb.AppendFormat("不符");
             return sb.ToString();
