@@ -27,7 +27,7 @@ namespace LCChecker.Models
             }
 
             var list = new List<IRowRule>();
-            list.Add(new OnlyProject() { ColumnIndex = 2, Projects = Team });
+            list.Add(new OnlyProject() { ColumnIndex = 2, Projects = Team ,Values=new[]{"项目编号","行政区","项目名称"}});
             //list.Add(new CellRangeRowRule() { ColumnIndex = 2, Values = ID });
             //foreach (var item in Projects)
             //{

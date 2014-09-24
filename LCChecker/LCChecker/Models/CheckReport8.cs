@@ -6,41 +6,18 @@ namespace LCChecker.Models
 {
     public class CheckReport8:CheckEngine,ICheck
     {
-        public CheckReport8(List<Project> projects)
+        public CheckReport8(string filePath,List<Project> projects)
         {
             SetWhether(projects);
-            var list = new List<IRowRule>();
-            foreach (var item in projects)
+            GetMessage(filePath);
+            Dictionary<string,Project> Team=new Dictionary<string,Project>();
+            foreach(var item in projects)
             {
-                var rule1 = new StringEqual() { ColumnIndex = 3, Data = item.ID };
-                list.Add(new ConditionalRowRule()
-                {
-                    Condition = rule1,
-                    Rule = new AndRule()
-                    {
-                        Rule1 = new StringEqual() { ColumnIndex = 1, Data = item.City.ToString() },
-                        Rule2 = new StringEqual() { ColumnIndex=2,Data=item.County}
-                    }
-                });
-                list.Add(new ConditionalRowRule()
-                {
-                    Condition = rule1,
-                    Rule = new StringEqual() { ColumnIndex=4,Data=item.Name}
-                });
-                double NewArea = 0.0;
-                if (item.NewArea.HasValue)
-                {
-                    NewArea = item.NewArea.Value;
-                }
-
-                list.Add(new ConditionalRowRule()
-                {
-                    Condition = rule1,
-                    Rule = new DoubleEqual() {ColumnIndex=5,data= NewArea/15}
-                });
-
+                Team.Add(item.ID,item);
             }
-
+            var list = new List<IRowRule>();
+            list.Add(new OnlyProject() { ColumnIndex = 3, Projects = Team, Values = new[] { "项目编号", "市", "县", "项目名称", "新增耕地面积" } });
+            list.Add(new SpecialData() { ColumnIndex = 7, Value = "已与建设项目预挂钩应核销占补平衡指标", IDIndex = 3 ,ProjectData=Ship});
             foreach (var item in list)
             {
                 rules.Add(new RuleInfo() { Rule = item });

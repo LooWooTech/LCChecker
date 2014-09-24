@@ -219,5 +219,38 @@ namespace LCChecker
                     }
             }
         }
+
+        public static Land GetLand(this string value)
+        {
+            Land land = new Land();
+            string val = value.Replace("，", ",").Replace("。", string.Empty);
+            var team = val.Split(',');
+            foreach (string item in team)
+            {
+                Regex r = new Regex(@"-?[0-9]");
+                string data = r.Match(item).ToString();
+                int position = item.IndexOf(data);
+                if (position == 0)
+                    continue;
+                string ground = item.Substring(0, position);
+                string area = item.Substring(position);
+                double dArea;
+                double.TryParse(area, out dArea);
+                switch (ground)
+                {
+                    case "水田":
+                        land.Paddy = dArea;
+                        break;
+                    case "水浇地":
+                        land.Irrigated = dArea;
+                        break;
+                    case "旱地":
+                        land.Dry = dArea;
+                        break;
+                    default: break;
+                }
+            }
+            return land;
+        }
     }
 }

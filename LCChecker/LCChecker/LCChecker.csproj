@@ -138,8 +138,6 @@
     <Compile Include="ICheck.cs" />
     <Compile Include="IRowRule.cs" />
     <Compile Include="Models\CheckEngine.cs" />
-    <Compile Include="Models\CheckReport2.cs" />
-    <Compile Include="Models\CheckReport3.cs" />
     <Compile Include="Models\CheckReport4.cs" />
     <Compile Include="Models\CheckReport5.cs" />
     <Compile Include="Models\CheckReport7.cs" />
@@ -178,6 +176,7 @@
     <Compile Include="Rules\OnlyProject.cs" />
     <Compile Include="Rules\ProjectTypeRule.cs" />
     <Compile Include="Rules\Special.cs" />
+    <Compile Include="Rules\SpecialData.cs" />
     <Compile Include="Rules\StringEqual.cs" />
     <Compile Include="Rules\SumRowRule.cs" />
     <Compile Include="Rules\UniqueValueRowRule.cs" />

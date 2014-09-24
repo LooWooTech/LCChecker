@@ -97,7 +97,8 @@ namespace LCChecker.Models
             if (sheet == null)
             {
                 //Error.Add("表格格式内容", new List<string> { "提交的表格无法检索 请核对格式" });
-                Error2.Add("表格格式内容", "提交表格无法检索，请核对格式");
+                //Error2.Add("表格格式内容", "提交表格无法检索，请核对格式");
+                Error2["表格格式内容"] = "提交表格无法检索，请核对格式";
                 return false;
             }
 
@@ -115,13 +116,14 @@ namespace LCChecker.Models
                     continue;
                 if (IDS.Contains(value))
                 {
-                    if (Error2.ContainsKey(value))
-                    {
-                        Error2[value] += ";表格中存在相同项目编号";
-                    }
-                    else {
-                        Error2.Add(value, "表格中存在相同项目编号");
-                    }
+                    Error2[value] = "表格中存在相同项目编号";
+                    //if (Error2.ContainsKey(value))
+                    //{
+                    //    Error2[value] += ";";
+                    //}
+                    //else {
+                    //    Error2.Add(value, "表格中存在相同项目编号");
+                    //}
 
                     //if (Error.ContainsKey(value))
                     //{
@@ -146,14 +148,15 @@ namespace LCChecker.Models
                         }
                         if (ErrorRow.Count() != 0)
                         {
-                            Error2.Add(value, "与项目复核确认总表不符");
+                            Error2[value] = "与项目复核确认总表不符";
+                            //Error2.Add(value, "与项目复核确认总表不符");
                            // Error.Add(value, ErrorRow);
                         }
                     }
                     else
                     {//重点复核确认总表中 填：否  提交表格中存在   处理：提示
-
-                        Warning.Add(value, "与重点项目复核确认总表中项目类型不符");
+                        Warning[value] = "与重点项目复核确认总表中项目类型不符";
+                        //Warning.Add(value, "与重点项目复核确认总表中项目类型不符");
                     }
                     Whether.Remove(value);
                 }
@@ -163,7 +166,8 @@ namespace LCChecker.Models
                     if (!Error2.ContainsKey(value))
                     {
                        // Error.Add(value, ErrorRow);
-                        Error2.Add(value, "重点复核确认总表中不存在项目");
+                        //Error2.Add(value, "重点复核确认总表中不存在项目");
+                        Error2[value] = "重点复核确认总表中不存在项目";
                     }
                         
                 }
@@ -173,7 +177,8 @@ namespace LCChecker.Models
             {
                 if (Whether[item])//重点复核确认总表中 填：是  提交表格中没有这个项目  处理：提示
                 {
-                    Warning.Add(item, "项目存在于重点项目复核确认总表，但不存在于本表中。");
+                    Warning[item] = "项目存在于重点项目复核确认总表，但不存在与本表中。";
+                    //Warning.Add(item, "项目存在于重点项目复核确认总表，但不存在于本表中。");
                 }
             }
 
@@ -208,8 +213,10 @@ namespace LCChecker.Models
                 IRow row = sheet.GetRow(i);
                 if (row == null)
                     break;
-                var value = row.GetCell(2, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+                var value = row.GetCell(3+startCell, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
                 if (string.IsNullOrEmpty(value))
+                    continue;
+                if (!VerificationID(value))
                     continue;
                 List<string> ErrorRow = new List<string>();
                 if (IDS.Contains(value))
@@ -374,7 +381,8 @@ namespace LCChecker.Models
             ISheet sheet = OpenSheet(filePath, false, ref startRow, ref starCell, ref fault, ReportType.附表8);
             if (sheet == null)
             {
-                Error2.Add("表格内容格式", "获取项目总表失败");
+                Error2["表格内容格式"] = "获取项目总表失败";
+                //Error2.Add("表格内容格式", "获取项目总表失败");
                 //Error.Add("表格内容格式", new List<string>() { "获取项目总表失败" });
                 return;
             }
@@ -391,11 +399,13 @@ namespace LCChecker.Models
                 var CurrentData = GetCurrentData(row);
                 if (CurrentData == null)
                 {
-                    Error2.Add(value, "获取核对数据失败，导致无法验证");
+                    Error2[value] = "获取核对数据失败，导致无法验证";
+                   // Error2.Add(value, "获取核对数据失败，导致无法验证");
                     //Error.Add(value, new List<string> { "获取核对数据失败，导致无法验证" });
                 }
                 else {
-                    Ship.Add(value, CurrentData);        
+                    Ship[value] = CurrentData;
+                    //Ship.Add(value, CurrentData);        
                 }
                 
             }
@@ -414,7 +424,8 @@ namespace LCChecker.Models
             ISheet sheet = OpenSheet(filePath, false, ref startRow, ref startCell, ref fault, ReportType.附表8);
             if (sheet == null)
             {
-                Error2.Add("项目总表", "获取项目总表失败");
+                Error2["项目总表"] = "获取项目总表失败";
+             //   Error2.Add("项目总表", "获取项目总表失败");
                 //Error.Add("大错误", new List<string>() { "获取项目总表失败" });
                 return;
             }
@@ -442,41 +453,22 @@ namespace LCChecker.Models
                 var CurrentData = GetCurrentData(row);
                 if (CurrentData == null)
                 {
-                    Error2.Add("初始化", "获取核对信息失败");
+                    Error2["初始化"] = "获取核对信息失败";
+                    //Error2.Add("初始化", "获取核对信息失败");
                     //Error.Add("初始化", new List<string> { "获取核对信息失败" });
                 }
-                Ship.Add(value, CurrentData);
+                else {
+                    Ship[value] = CurrentData;
+                    //Ship.Add(value, CurrentData);
+                }
+                
 
             }
         }
 
 
         public Index2 GetCurrentData(NPOI.SS.UserModel.IRow row)
-        {
-
-            //项目名称
-            var value1 = row.GetCell(3, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
-            //市  县
-            var cityName = row.Cells[1].StringCellValue.Split(',');
-            //新增耕地面积
-            var CellAddArea = row.GetCell(5, MissingCellPolicy.CREATE_NULL_AS_BLANK);
-            double data;
-            if (CellAddArea.CellType == CellType.Numeric || CellAddArea.CellType == CellType.Formula)
-            {
-                try
-                {
-                    data = CellAddArea.NumericCellValue;
-                }
-                catch {
-                    data = .0;
-                }
-                
-            }
-            else {
-                var AddArea = CellAddArea.ToString().Trim();
-                double.TryParse(AddArea, out data);
-            }
-            
+        {     
             //等别
             var grade = row.GetCell(35, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
 
@@ -498,23 +490,12 @@ namespace LCChecker.Models
                 var Indicator = cell.ToString();
                 double.TryParse(Indicator, out data2);
             }
-
-            
-
             var val = row.GetCell(36, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
 
             Land LandData = GetLand(val);
 
-            if (cityName.Length < 3)
-            {
-                return null;
-            }
             Index2 CurrentData = new Index2()
             {
-                City = cityName[1],//市
-                County = cityName[2],//县
-                Name = value1, //项目名称
-                AddArea = data, //新增耕地面积
                 Grade = grade,//质量等别
                 Indicators = data2,//  表 8  14栏
                 Land = LandData//  水田  水浇地  旱地  数据

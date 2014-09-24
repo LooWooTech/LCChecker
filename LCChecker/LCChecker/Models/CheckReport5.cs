@@ -10,25 +10,13 @@ namespace LCChecker.Models
         public CheckReport5(List<Project> projects)
         {
             SetWhether(projects);
-            var list = new List<IRowRule>();
+            Dictionary<string, Project> Team = new Dictionary<string, Project>();
             foreach (var item in projects)
             {
-                var rule1 = new StringEqual() { ColumnIndex = 3, Data = item.ID };
-                list.Add(new ConditionalRowRule()
-                {
-                    Condition = rule1,
-                    Rule = new AndRule()
-                    {
-                        Rule1 = new StringEqual() { ColumnIndex = 1, Data = item.City.ToString() },
-                        Rule2 = new StringEqual() { ColumnIndex=2,Data=item.County}
-                    }
-                });
-                list.Add(new ConditionalRowRule()
-                {
-                    Condition = rule1,
-                    Rule = new StringEqual() { ColumnIndex=4,Data=item.Name}
-                });
+                Team.Add(item.ID, item);
             }
+            var list = new List<IRowRule>();
+            list.Add(new OnlyProject() { ColumnIndex = 3, Projects = Team, Values = new[] { "项目编号", "市", "县", "项目名称" } });
             list.Add(new CellRangeRowRule() { ColumnIndex = 8, Values = new[] { "是", "否" } });
 
             foreach (var item in list)

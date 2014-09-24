@@ -14,73 +14,16 @@ namespace LCChecker.Models
     public class CheckReport9:CheckEngine ,ICheck
     {
       
-        public CheckReport9(string filePath)
+        public CheckReport9(string filePath,List<Project> projects)
         {
-           // GetSuppleMessage(filePath);
             GetMessage(filePath);
+            Dictionary<string, Project> Team = new Dictionary<string, Project>();
+            foreach (var item in projects)
+            {
+                Team.Add(item.ID, item);
+            }
             var list = new List<IRowRule>();
-            int count = Ship.Count();
-            string[] IDS = new string[count];
-            int i = 0;
-            foreach (var item in Ship.Keys)
-            {
-                IDS[i] = item;
-                i++;
-            }
-            if (Ship.Count != 0)
-            {
-                list.Add(new CellRangeRowRule() { ColumnIndex = 3, Values = IDS });
-            }
-           
-            foreach (var item in Ship.Keys)
-            {
-                int Degree = GetDegree(Ship[item].Grade);
-
-                List<int> d = new List<int>();
-                for (int j = 1; j < 16; j++)
-                {
-                    if (j == Degree)
-                        continue;
-                    d.Add(j);
-                }
-                int[] D = new int[d.Count()];
-                int k = 0;
-                foreach (var Blank in d)
-                {
-                    D[k] = Blank+6;//一等对应第8栏 +7  列是从0开始 -1  =+6；  
-                    k++;
-                }
-
-                var rule1 = new StringEqual() { ColumnIndex = 3, Data = item };
-
-                list.Add(new ConditionalRowRule()
-                {
-                    Condition = rule1,
-                    Rule = new AndRule()
-                    {
-                        Rule1 = new StringEqual() { ColumnIndex = 1, Data = Ship[item].City },
-                        Rule2 = new StringEqual() { ColumnIndex=2,Data=Ship[item].County}
-                    }
-                });
-
-                list.Add(new ConditionalRowRule()
-                {
-                    Condition = rule1,
-                    Rule = new StringEqual() { ColumnIndex=4,Data=Ship[item].Name}
-                });
-
-                list.Add(new ConditionalRowRule()
-                {
-                    Condition = rule1,
-                    Rule = new DoubleEqual() {ColumnIndex=5,data=Ship[item].AddArea/15 }
-                });
-
-                list.Add(new ConditionalRowRule()
-                {
-                    Condition = rule1,
-                    Rule = new MultipleCellRangeRowRule() { ColumnIndices = D, isAny = false, isEmpty = true, isNumeric = false }
-                });         
-            }
+            list.Add(new OnlyProject() { ColumnIndex = 3, Projects = Team, Values = new[] { "项目编号", "市", "县", "项目名称", "新增耕地面积" } });
             list.Add(new CellRangeRowRule() { ColumnIndex = 22, Values = new[] { "是", "否" } });
 
             foreach (var item in list)
@@ -154,6 +97,7 @@ namespace LCChecker.Models
                         ErrorRow.Add(string.Format("水田：{0}；水浇地：{1}；旱地：{2}", Data.Land.Paddy, Data.Land.Irrigated, Data.Land.Dry));
                     }
                 }
+
                 if (ErrorRow.Count() != 0)
                 {
                     //Error.Add(value, ErrorRow);

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
+using System.Data.Entity.Validation;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -104,14 +105,14 @@ namespace LCChecker.Controllers
                     Flag = true;
                     break;
                 case ReportType.附表7:
-                    engine = new CheckReport7(MastPath);
+                    engine = new CheckReport7(MastPath,projects);
                     break;
                 case ReportType.附表8:
-                    engine = new CheckReport8(projects);
+                    engine = new CheckReport8(MastPath,projects);
                     Flag = true;
                     break;
                 case ReportType.附表9:
-                    engine = new CheckReport9(MastPath);
+                    engine = new CheckReport9(MastPath,projects);
                     break;
                 default:
                     file.State = UploadFileProceedState.Error;
@@ -138,12 +139,13 @@ namespace LCChecker.Controllers
             foreach (var item in errors.Keys)
             {
                 fault = "";
-                int i = 1;
-                foreach (var msg in errors[item])
-                {
-                    fault += string.Format("（{0}）{1}；", i, msg);
-                    i++;
-                }
+                fault = errors[item];
+                //int i = 1;
+                //foreach (var msg in errors[item])
+                //{
+                //    fault += string.Format("（{0}）{1}；", i, msg);
+                //    i++;
+                //}
                 Records.Add(new Record()
                 {
                     ProjectID = item,
@@ -161,7 +163,8 @@ namespace LCChecker.Controllers
                     Type = type,
                     City = CurrentUser.City,
                     IsError = false,
-                    Note = string.Format("(1){0}", warning[item])
+                    Note=warning[item]
+                    //Note = string.Format("(1){0}", warning[item])
                 });
             }
             AddRecords(Records);
@@ -202,7 +205,15 @@ namespace LCChecker.Controllers
                 {
                     db.Records.Add(item);
                 }
-                db.SaveChanges();
+                try
+                {
+                    db.SaveChanges();
+                }
+                catch (DbEntityValidationException dbEx)
+                { 
+                
+                }
+                
             }
 
 
