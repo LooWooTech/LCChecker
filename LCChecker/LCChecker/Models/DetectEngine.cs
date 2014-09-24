@@ -20,31 +20,30 @@ namespace LCChecker.Models
 
         public DetectEngine(string region,List<Project> Projects)
         {
-            string[] ID = new string[Projects.Count];
-            int i = 0;
+            Dictionary<string, Project> Team = new Dictionary<string, Project>();
             foreach (var item in Projects)
             {
-                ID[i] = item.ID;
-                i++;
+                Team.Add(item.ID, item);
             }
 
             var list = new List<IRowRule>();
-            list.Add(new CellRangeRowRule() { ColumnIndex = 2, Values = ID });
-            foreach (var item in Projects)
-            {
-                var division="浙江省,"+item.City.ToString()+","+item.County;
-                var IdRule = new StringEqual() { ColumnIndex = 2, Data = item.ID };
-                list.Add(new ConditionalRowRule()
-                {
-                    Condition = IdRule,
-                    Rule = new StringEqual() { ColumnIndex = 1, Data = division }
-                });
-                list.Add(new ConditionalRowRule()
-                {
-                    Condition = IdRule,
-                    Rule = new StringEqual() { ColumnIndex = 3, Data = item.Name }
-                });
-            }
+            list.Add(new OnlyProject() { ColumnIndex = 2, Projects = Team });
+            //list.Add(new CellRangeRowRule() { ColumnIndex = 2, Values = ID });
+            //foreach (var item in Projects)
+            //{
+            //    var division="浙江省,"+item.City.ToString()+","+item.County;
+            //    var IdRule = new StringEqual() { ColumnIndex = 2, Data = item.ID };
+            //    list.Add(new ConditionalRowRule()
+            //    {
+            //        Condition = IdRule,
+            //        Rule = new StringEqual() { ColumnIndex = 1, Data = division }
+            //    });
+            //    list.Add(new ConditionalRowRule()
+            //    {
+            //        Condition = IdRule,
+            //        Rule = new StringEqual() { ColumnIndex = 3, Data = item.Name }
+            //    });
+            //}
 
 
             list.Add(new NoLessThanRowRule() { Column1Index = 5, Column2Index = 6 });

@@ -175,6 +175,7 @@
     <Compile Include="Rules\Format.cs" />
     <Compile Include="Rules\MultipleCellRangeRowRule.cs" />
     <Compile Include="Rules\NoLessThanRowRule.cs" />
+    <Compile Include="Rules\OnlyProject.cs" />
     <Compile Include="Rules\ProjectTypeRule.cs" />
     <Compile Include="Rules\Special.cs" />
     <Compile Include="Rules\StringEqual.cs" />

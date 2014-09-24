@@ -15,14 +15,15 @@ namespace LCChecker.Controllers
     {
         public ActionResult Reports()
         {
-            var projects = new Summary
-            {
-                City = CurrentUser.City,
-                TotalCount = db.Projects.Count(e => e.City == CurrentUser.City),
-                SuccessCount = db.Projects.Count(e => e.City == CurrentUser.City && e.Result == true),
-                ErrorCount = db.Projects.Count(e => e.City == CurrentUser.City && e.Result == false)
-            };
-            ViewBag.Flag = (projects.TotalCount == projects.SuccessCount);
+            //var projects = new Summary
+            //{
+            //    City = CurrentUser.City,
+            //    TotalCount = db.Projects.Count(e => e.City == CurrentUser.City),
+            //    SuccessCount = db.Projects.Count(e => e.City == CurrentUser.City && e.Result == true),
+            //    ErrorCount = db.Projects.Count(e => e.City == CurrentUser.City && e.Result == false)
+            //};
+            //ViewBag.Flag = (projects.TotalCount == projects.SuccessCount);
+            ViewBag.Flag = true;
             if (!db.Reports.Any(e => e.City == CurrentUser.City))
             {
                 InitReports();
