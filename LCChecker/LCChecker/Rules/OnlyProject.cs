@@ -13,7 +13,7 @@ namespace LCChecker.Rules
         public Dictionary<string, Project> Projects { get; set; }
 
         public string Name { get {
-            return string.Format("第{0}栏项目编号不符",ColumnIndex+1);
+            return string.Format("项目编号、行政区或项目名称不符");
         } }
 
         public bool Check(NPOI.SS.UserModel.IRow row, int xoffset = 0)
