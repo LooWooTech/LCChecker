@@ -8,7 +8,7 @@ namespace LCChecker
 {
     public interface ICheck
     {
-        Dictionary<string, string> GetError();
+        Dictionary<string, List<string>> GetError();
 
         Dictionary<string, string> GetWarning();
 

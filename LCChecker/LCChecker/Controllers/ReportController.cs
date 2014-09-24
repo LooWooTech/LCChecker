@@ -139,13 +139,13 @@ namespace LCChecker.Controllers
             foreach (var item in errors.Keys)
             {
                 fault = "";
-                fault = errors[item];
-                //int i = 1;
-                //foreach (var msg in errors[item])
-                //{
-                //    fault += string.Format("（{0}）{1}；", i, msg);
-                //    i++;
-                //}
+                //fault = errors[item];
+                int i = 1;
+                foreach (var msg in errors[item])
+                {
+                    fault += string.Format("（{0}）{1}；", i, msg);
+                    i++;
+                }
                 Records.Add(new Record()
                 {
                     ProjectID = item,
