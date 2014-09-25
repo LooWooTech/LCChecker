@@ -163,7 +163,7 @@ namespace LCChecker.Controllers
             {
                 throw new ArgumentException("上传的附表3：重点项目复核确认总表格式不正确，请参照样表。");
             }
-            rowIndex=rowIndex+6;
+            rowIndex = rowIndex + 6;
             for (var i = rowIndex; i <= sheet.LastRowNum; i++)
             {
                 var row = sheet.GetRow(i);

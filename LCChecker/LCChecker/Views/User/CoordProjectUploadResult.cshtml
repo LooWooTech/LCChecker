@@ -26,9 +26,9 @@
 
 <table class="table table-bordered">
     <tr>
-        <th>文件名</th>
-        <th>上传日期</th>
-        <th>检查状态</th>
+        <th style="width:200px;">文件名</th>
+        <th style="width:150px;">上传日期</th>
+        <th style="width:100px;">检查状态</th>
         <th>检查结果</th>
     </tr>
     @foreach (var file in list)
@@ -42,17 +42,17 @@
                 <td>
                     <span class="label label-default">未处理</span>
                 </td>
-                <td>----</td>
+                <td></td>
                     break;
                 case UploadFileProceedState.Proceeded:
                 <td>
-                    <span class="label label-default">已处理</span>
+                    <span class="label label-success">已处理</span>
                 </td>
-                <td>----</td>
+                <td></td>
                     break;
                 case UploadFileProceedState.Error:
                 <td>
-                    <span class="label label-default">出错</span>
+                    <span class="label label-warning">有错误</span>
                 </td>
                 <td>@(file.ProcessMessage)</td>
                     break;

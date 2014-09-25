@@ -49,7 +49,7 @@
             {
                 var summary = kv.Value;
                 <tr>
-                    <td><a href="/admin/projects?city=@((int)summary.City)">@(summary.City)</a></td>
+                    <td>@(summary.City)</td>
                     <td>@(summary.TotalCount)</td>
                     <td>@(summary.SuccessCount)</td>
                     <td>@(summary.ErrorCount)</td>
@@ -71,7 +71,7 @@
             {
                 var summary = kv.Value;
                 <tr>
-                    <td><a href="/admin/projects?city=@((int)summary.City)">@(summary.City)</a></td>
+                    <td><a href="/admin/coordprojects?city=@((int)summary.City)">@(summary.City)</a></td>
                     <td>@(summary.TotalCount)</td>
                     <td>@(summary.SuccessCount)</td>
                     <td>@(summary.ErrorCount)</td>

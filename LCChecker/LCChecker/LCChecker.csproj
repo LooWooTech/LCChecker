@@ -204,17 +204,6 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Content\bootstrap.css.map" />
-    <Content Include="App_Data\丽水市.xls" />
-    <Content Include="App_Data\台州市.xls" />
-    <Content Include="App_Data\嘉兴市.xls" />
-    <Content Include="App_Data\宁波市.xls" />
-    <Content Include="App_Data\杭州市.xls" />
-    <Content Include="App_Data\温州市.xls" />
-    <Content Include="App_Data\湖州市.xls" />
-    <Content Include="App_Data\绍兴市.xls" />
-    <Content Include="App_Data\舟山市.xls" />
-    <Content Include="App_Data\衢州市.xls" />
-    <Content Include="App_Data\金华市.xls" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\html5shiv.js" />
@@ -254,6 +243,7 @@
     <Content Include="Views\User\CheckProject.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="App_Data\" />
     <Folder Include="Uploads\" />
   </ItemGroup>
   <ItemGroup>
