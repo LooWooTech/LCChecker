@@ -30,7 +30,7 @@ namespace LCChecker.Models
         {
             foreach (var item in projects)
             {
-                Whether.Add(item.ID, item.IsHasError);
+                Whether.Add(item.ID, item.IsShouldModify);
             }
         }
 
