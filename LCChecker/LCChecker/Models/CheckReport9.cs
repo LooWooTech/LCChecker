@@ -23,8 +23,8 @@ namespace LCChecker.Models
                 Team.Add(item.ID, item);
             }
             var list = new List<IRowRule>();
-            list.Add(new OnlyProject() { ColumnIndex = 3, Projects = Team, Values = new[] { "项目编号", "市", "县", "项目名称", "新增耕地面积" } });
-            list.Add(new CellRangeRowRule() { ColumnIndex = 22, Values = new[] { "是", "否" } });
+            list.Add(new OnlyProject() { ColumnIndex = 3, Projects = Team, Values = new[] { "项目编号", "市", "县", "项目名称", "新增耕地面积" },ID="2901" });
+            list.Add(new CellRangeRowRule() { ColumnIndex = 22, Values = new[] { "是", "否" } ,ID="2903"});
 
             foreach (var item in list)
             {
@@ -76,7 +76,7 @@ namespace LCChecker.Models
                     continue;
                 if (!JudgeLand(sheet, i, startCell))
                 {
-                    Mistakes = "未找到水田  水浇地  旱地列";
+                    Mistakes = "规则2907：未找到水田  水浇地  旱地列";
                     return false;
                 }
                 string Fault="";
@@ -99,7 +99,7 @@ namespace LCChecker.Models
                     Index2 Data = Ship[value];
                     if (!Data.Land.Compare(MineLand))
                     {
-                        ErrorRow.Add("水田、水浇地、旱地与自检表中数据不符");
+                        ErrorRow.Add("规则2905：水田、水浇地、旱地与自检表中一致");
                     }
                     if (Degree1[1] != 0)
                     {
@@ -109,7 +109,7 @@ namespace LCChecker.Models
                     double.TryParse(Data.Grade, out CurrentDegree);
                     if (((Degree1[0] - CurrentDegree) * (CurrentDegree - Degree1[2])) < 0)
                     {
-                        ErrorRow.Add("耕地质量等别与自检表不符");
+                        ErrorRow.Add("规则2906：自检表耕地质量等别在水田旱地等别之间，可以与其中一个等别相等");
                     }
                 }   
                 foreach (var item in rules)
@@ -199,7 +199,7 @@ namespace LCChecker.Models
                     continue;
                 if (Flag)
                 {
-                    Mistakes = "存在填写多个质量等别";
+                    Mistakes = "规则2904：水田、水浇地、旱地中同一个分类不允许填写多个质量等别";
                     return false;
                 }
                 

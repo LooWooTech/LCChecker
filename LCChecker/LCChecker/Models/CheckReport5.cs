@@ -16,8 +16,8 @@ namespace LCChecker.Models
                 Team.Add(item.ID, item);
             }
             var list = new List<IRowRule>();
-            list.Add(new OnlyProject() { ColumnIndex = 3, Projects = Team, Values = new[] { "项目编号", "市", "县", "项目名称" } });
-            list.Add(new CellRangeRowRule() { ColumnIndex = 8, Values = new[] { "是", "否" } });
+            list.Add(new OnlyProject() { ColumnIndex = 3, Projects = Team, Values = new[] { "项目编号", "市", "县", "项目名称" } ,ID="2501"});
+            list.Add(new CellRangeRowRule() { ColumnIndex = 8, Values = new[] { "是", "否" } ,ID="2503"});
 
             foreach (var item in list)
             {

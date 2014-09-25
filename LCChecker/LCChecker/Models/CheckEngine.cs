@@ -157,14 +157,14 @@ namespace LCChecker.Models
                     }
                     else
                     {//重点复核确认总表中 填：否  提交表格中存在   处理：提示
-                        Warning[value] = "与重点项目复核确认总表中项目类型不符";
+                        Warning[value] = "规则0006： 与重点项目复核确认总表中项目类型不符";
                         //Warning.Add(value, "与重点项目复核确认总表中项目类型不符");
                     }
                     Whether.Remove(value);
                 }
                 else
                 {//重点复核确认总表中 没有这个项目  提交表格中存在  处理：错误
-                    ErrorRow.Add("重点复核确认总表中不存在项目");
+                    ErrorRow.Add("规则0007：重点复核确认总表中不存在项目");
                     if (!Error.ContainsKey(value))
                     {
                        Error.Add(value, ErrorRow);
@@ -179,7 +179,7 @@ namespace LCChecker.Models
             {
                 if (Whether[item])//重点复核确认总表中 填：是  提交表格中没有这个项目  处理：提示
                 {
-                    Warning[item] = "项目存在于重点项目复核确认总表，但不存在与本表中。";
+                    Warning[item] = "规则0005：项目存在于重点项目复核确认总表，但不存在与本表中。";
                     //Warning.Add(item, "项目存在于重点项目复核确认总表，但不存在于本表中。");
                 }
             }

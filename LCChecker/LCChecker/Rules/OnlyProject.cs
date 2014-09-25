@@ -13,14 +13,15 @@ namespace LCChecker.Rules
         public int ColumnIndex { get; set; }
         public string[] Values { get; set; }
         public Dictionary<string, Project> Projects { get; set; }
+        public string ID { get; set; }
 
         public string Name { get {
-            var sb = new StringBuilder(string.Format("'{0}'", Values[0]));
+            var sb = new StringBuilder(string.Format("规则{0}:'{1}'",ID, Values[0]));
             for (var i = 1; i < Values.Length; i++)
             {
-                sb.AppendFormat("或'{0}'", Values[i]);
+                sb.AppendFormat("、'{0}'", Values[i]);
             }
-            sb.AppendFormat("不符");
+            sb.AppendFormat("与附表3中保持一致");
             return sb.ToString();
         } }
 

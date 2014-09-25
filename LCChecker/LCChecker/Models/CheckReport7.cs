@@ -22,9 +22,9 @@ namespace LCChecker.Models
                 Team.Add(item.ID, item);
             }
 
-            list.Add(new OnlyProject() { ColumnIndex = 3, Values = new[] { "项目编号", "市", "县", "项目名称", "新增耕地面积" },Projects=Team });
-            list.Add(new SpecialData() { ColumnIndex = 7, Value = "耕地质量等别", IDIndex = 3, ProjectData = Ship });
-            list.Add(new CellRangeRowRule() { ColumnIndex = 8, Values = new[] { "是", "否" } });
+            list.Add(new OnlyProject() { ColumnIndex = 3, Values = new[] { "项目编号", "市", "县", "项目名称", "新增耕地面积" },Projects=Team,ID="2701" });
+            list.Add(new SpecialData() { ColumnIndex = 7, Value = "耕地质量等别", IDIndex = 3, ProjectData = Ship,ID="2702" });
+            list.Add(new CellRangeRowRule() { ColumnIndex = 8, Values = new[] { "是", "否" } ,ID="2703"});
 
             foreach (var item in list)
             {

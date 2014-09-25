@@ -13,10 +13,11 @@ namespace LCChecker.Rules
         public string Value { get; set; }
         public int IDIndex { get; set; }//项目编号所在的列
         public Dictionary<string, Index2> ProjectData { get; set; }
+        public string ID { get; set; }
 
         public string Name {
             get{
-                return string.Format("{0}与项目不符", Value);
+                return string.Format("规则{0}：{1}与项目不符", ID,Value);
             }  
         }
 
