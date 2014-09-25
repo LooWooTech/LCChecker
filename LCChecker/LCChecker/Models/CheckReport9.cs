@@ -77,9 +77,22 @@ namespace LCChecker.Models
                     Mistakes = "未找到水田  水浇地  旱地列";
                     return false;
                 }
-                    
+                string Fault="";
+                Land MineLand = new Land();
+                int[] Degree1 = new int[3];
+                double[] Area = new double[3];
+                
 
                 List<string> ErrorRow = new List<string>();
+                for (var j = 0; j < 3; j++)
+                {
+                    Fault = "";
+                    if (!CheckLand(sheet, i+j, ref Area[j], ref Degree1[j], ref Fault, startCell + 7))
+                    {
+                        ErrorRow.Add(Fault);
+                    }
+                }
+                    
                 foreach (var item in rules)
                 {
                     if (!item.Rule.Check(row, startCell))
@@ -87,27 +100,28 @@ namespace LCChecker.Models
                         ErrorRow.Add(item.Rule.Name);
                     }
                 }
+
                 if (Ship.ContainsKey(value))
                 {
                     Index2 Data = Ship[value];
-                    int Degree = GetDegree(Data.Grade);
-                    Land rowData = GetExcelLand(sheet, i, Degree + startCell + 6);
-                    if (!Data.Land.Compare(rowData)) 
-                    {
-                        ErrorRow.Add(string.Format("水田：{0}；水浇地：{1}；旱地：{2}", Data.Land.Paddy, Data.Land.Irrigated, Data.Land.Dry));
-                    }
+                    int CurrentDegree = GetDegree(Data.Grade);
+                    //Land rowData = GetExcelLand(sheet, i, Degree + startCell + 6);
+                    //if (!Data.Land.Compare(rowData)) 
+                    //{
+                    //    ErrorRow.Add(string.Format("水田：{0}；水浇地：{1}；旱地：{2}", Data.Land.Paddy, Data.Land.Irrigated, Data.Land.Dry));
+                    //}
                 }
 
                 if (ErrorRow.Count() != 0)
                 {
-                    //Error.Add(value, ErrorRow);
-                    if (Error2.ContainsKey(value))
-                    {
-                        Error2[value] += ";表格中存在相同项目";
-                    }
-                    else {
-                        Error2.Add(value, "与项目复核确认总表不符");
-                    }
+                    Error.Add(value, ErrorRow);
+                    //if (Error2.ContainsKey(value))
+                    //{
+                      //  Error2[value] += ";表格中存在相同项目";
+                    //}
+                    //else {
+                     //   Error2.Add(value, "与项目复核确认总表不符");
+                   // }
                 }
                 
             }
@@ -164,6 +178,56 @@ namespace LCChecker.Models
             land.Irrigated = data[1];
             land.Dry = data[2];
             return land;
+        }
+
+
+        public bool CheckLand(NPOI.SS.UserModel.ISheet sheet,int Line,ref double LandArea,ref int Degree,ref string Mistakes,int xoffset=7)
+        {
+            IRow row = sheet.GetRow(Line);
+            if (row == null)
+            {
+                Mistakes = "未获得相关表格行";
+                return false;
+            }
+            int Max=xoffset+15;
+            bool Flag = false;
+            double Area = 0.0;
+            for (var i = xoffset; i < Max; i++)
+            {
+                var cell = row.GetCell(i, MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                if (string.IsNullOrEmpty(cell.ToString().Trim()))
+                    continue;
+                if (Flag)
+                {
+                    Mistakes = "存在填写多个内容";
+                    return false;
+                }
+                
+                if (cell.CellType == CellType.Numeric || cell.CellType == CellType.Formula)
+                {
+                    try
+                    {
+                        Area = cell.NumericCellValue;
+                    }
+                    catch
+                    {
+                        Area = .0;
+                    }
+                }
+                else {
+                    var val = cell.ToString().Trim();
+                    double.TryParse(val, out Area);
+                }
+                Degree = i;
+                Flag = true;
+            }
+            if (!Flag)
+            {
+                Mistakes = "未获取相关信息";
+                return false;
+            }
+            LandArea = Area;    
+            return true;
         }
 
 

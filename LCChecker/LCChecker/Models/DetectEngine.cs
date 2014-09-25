@@ -28,22 +28,7 @@ namespace LCChecker.Models
 
             var list = new List<IRowRule>();
             list.Add(new OnlyProject() { ColumnIndex = 2, Projects = Team ,Values=new[]{"项目编号","行政区","项目名称"}});
-            //list.Add(new CellRangeRowRule() { ColumnIndex = 2, Values = ID });
-            //foreach (var item in Projects)
-            //{
-            //    var division="浙江省,"+item.City.ToString()+","+item.County;
-            //    var IdRule = new StringEqual() { ColumnIndex = 2, Data = item.ID };
-            //    list.Add(new ConditionalRowRule()
-            //    {
-            //        Condition = IdRule,
-            //        Rule = new StringEqual() { ColumnIndex = 1, Data = division }
-            //    });
-            //    list.Add(new ConditionalRowRule()
-            //    {
-            //        Condition = IdRule,
-            //        Rule = new StringEqual() { ColumnIndex = 3, Data = item.Name }
-            //    });
-            //}
+            
 
 
             list.Add(new NoLessThanRowRule() { Column1Index = 5, Column2Index = 6 });
@@ -611,11 +596,19 @@ namespace LCChecker.Models
                     continue;
                 if (!List.Exists(x => x.ID == item))
                     continue;
+                var row = sheet.GetRow(relatship[item]);
                 var masRow = masSheet.GetRow(MasStartRow);
                 if (masRow == null)
-                    masSheet.CreateRow(MasStartRow);
+                {
+                    masRow= masSheet.CreateRow(MasStartRow);
+                    if (row.RowStyle != null)
+                    {
+                        masRow.RowStyle = row.RowStyle;
+                    }
+                }
+                    
                 startRow++;
-                var row = sheet.GetRow(relatship[item]);
+                
 
                 for (int x = startCell, y = 0; x < row.LastCellNum; x++, y++)
                 {
@@ -625,7 +618,14 @@ namespace LCChecker.Models
 
                     var masCell = masRow.GetCell(y);
                     if (masCell == null)
-                        masCell = masRow.CreateCell(y);
+                    {
+                        masCell = masRow.CreateCell(y,cell.CellType);
+                        if (cell.CellStyle != null)
+                        {
+                            masCell.CellStyle = cell.CellStyle;
+                        }
+                    }
+                        
 
                     switch (cell.CellType)
                     {

@@ -19,7 +19,7 @@ namespace LCChecker.Models
         /// </summary>
         public Dictionary<string, List<string>> Error = new Dictionary<string, List<string>>();
 
-        public Dictionary<string, string> Error2 = new Dictionary<string, string>();
+       // public Dictionary<string, string> Error2 = new Dictionary<string, string>();
 
         /// <summary>
         /// 提示
@@ -382,9 +382,9 @@ namespace LCChecker.Models
             ISheet sheet = OpenSheet(filePath, false, ref startRow, ref starCell, ref fault, ReportType.附表8);
             if (sheet == null)
             {
-                Error2["表格内容格式"] = "获取项目总表失败";
+               // Error2["表格内容格式"] = "获取项目总表失败";
                 //Error2.Add("表格内容格式", "获取项目总表失败");
-                //Error.Add("表格内容格式", new List<string>() { "获取项目总表失败" });
+                Error.Add("表格内容格式", new List<string>() { "获取项目总表失败" });
                 return;
             }
 
@@ -400,9 +400,9 @@ namespace LCChecker.Models
                 var CurrentData = GetCurrentData(row);
                 if (CurrentData == null)
                 {
-                    Error2[value] = "获取核对数据失败，导致无法验证";
+                    //Error2[value] = "获取核对数据失败，导致无法验证";
                    // Error2.Add(value, "获取核对数据失败，导致无法验证");
-                    //Error.Add(value, new List<string> { "获取核对数据失败，导致无法验证" });
+                    Error.Add(value, new List<string> { "获取核对数据失败，导致无法验证" });
                 }
                 else {
                     Ship[value] = CurrentData;
@@ -425,9 +425,9 @@ namespace LCChecker.Models
             ISheet sheet = OpenSheet(filePath, false, ref startRow, ref startCell, ref fault, ReportType.附表8);
             if (sheet == null)
             {
-                Error2["项目总表"] = "获取项目总表失败";
+                //Error2["项目总表"] = "获取项目总表失败";
              //   Error2.Add("项目总表", "获取项目总表失败");
-                //Error.Add("大错误", new List<string>() { "获取项目总表失败" });
+                Error.Add("大错误", new List<string>() { "获取项目总表失败" });
                 return;
             }
             RuleInfo engine = new RuleInfo()//要验证项目是存在补充耕地面积 那么第14 19 24 栏至少有一栏是有面积的 假如这个条件成立那么就是补充耕地项目编号
@@ -454,9 +454,9 @@ namespace LCChecker.Models
                 var CurrentData = GetCurrentData(row);
                 if (CurrentData == null)
                 {
-                    Error2["初始化"] = "获取核对信息失败";
+                    //Error2["初始化"] = "获取核对信息失败";
                     //Error2.Add("初始化", "获取核对信息失败");
-                    //Error.Add("初始化", new List<string> { "获取核对信息失败" });
+                    Error.Add("初始化", new List<string> { "获取核对信息失败" });
                 }
                 else {
                     Ship[value] = CurrentData;
@@ -491,6 +491,40 @@ namespace LCChecker.Models
                 var Indicator = cell.ToString();
                 double.TryParse(Indicator, out data2);
             }
+            var cell2 = row.GetCell(19, MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            double twenty;
+            if (cell2.CellType == CellType.Numeric || cell2.CellType == CellType.Formula)
+            {
+                try
+                {
+                    twenty= cell2.NumericCellValue;
+                }
+                catch
+                {
+                    twenty= .0;
+                }
+            }
+            else {
+                var val2 = cell2.ToString();
+                double.TryParse(val2, out twenty);
+            }
+            var cell3 = row.GetCell(27, MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            double TwentyEight;
+            if (cell3.CellType == CellType.Numeric || cell3.CellType == CellType.Formula)
+            {
+                try
+                {
+                    TwentyEight = cell3.NumericCellValue;
+                }
+                catch
+                {
+                    TwentyEight = .0;
+                }
+            }
+            else {
+                var val3 = cell3.ToString().Trim();
+                double.TryParse(val3, out TwentyEight);
+            }
             var val = row.GetCell(36, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
 
             Land LandData = GetLand(val);
@@ -498,7 +532,7 @@ namespace LCChecker.Models
             Index2 CurrentData = new Index2()
             {
                 Grade = grade,//质量等别
-                Indicators = data2,//  表 8  14栏
+                Indicators = data2+twenty+TwentyEight,//  表 8  14栏
                 Land = LandData//  水田  水浇地  旱地  数据
             };
             return CurrentData;
