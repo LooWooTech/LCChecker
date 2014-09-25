@@ -72,16 +72,17 @@ namespace LCChecker.Models
                 var value = row.GetCell(startCell + 3, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
                 if (string.IsNullOrEmpty(value))
                     continue;
+                if (!VerificationID(value))
+                    continue;
                 if (!JudgeLand(sheet, i, startCell))
                 {
                     Mistakes = "未找到水田  水浇地  旱地列";
                     return false;
                 }
                 string Fault="";
-                Land MineLand = new Land();
+
                 int[] Degree1 = new int[3];
                 double[] Area = new double[3];
-                
 
                 List<string> ErrorRow = new List<string>();
                 for (var j = 0; j < 3; j++)
@@ -92,7 +93,25 @@ namespace LCChecker.Models
                         ErrorRow.Add(Fault);
                     }
                 }
-                    
+                Land MineLand = new Land() { Paddy=Area[0],Irrigated=Area[1],Dry=Area[2]};
+                if (Ship.ContainsKey(value))
+                {
+                    Index2 Data = Ship[value];
+                    if (!Data.Land.Compare(MineLand))
+                    {
+                        ErrorRow.Add("水田、水浇地、旱地与自检表中数据不符");
+                    }
+                    if (Degree1[1] != 0)
+                    {
+                        ErrorRow.Add("水浇地存在问题");
+                    }
+                    double CurrentDegree;
+                    double.TryParse(Data.Grade, out CurrentDegree);
+                    if (((Degree1[0] - CurrentDegree) * (CurrentDegree - Degree1[2])) < 0)
+                    {
+                        ErrorRow.Add("耕地质量等别与自检表不符");
+                    }
+                }   
                 foreach (var item in rules)
                 {
                     if (!item.Rule.Check(row, startCell))
@@ -100,28 +119,9 @@ namespace LCChecker.Models
                         ErrorRow.Add(item.Rule.Name);
                     }
                 }
-
-                if (Ship.ContainsKey(value))
-                {
-                    Index2 Data = Ship[value];
-                    int CurrentDegree = GetDegree(Data.Grade);
-                    //Land rowData = GetExcelLand(sheet, i, Degree + startCell + 6);
-                    //if (!Data.Land.Compare(rowData)) 
-                    //{
-                    //    ErrorRow.Add(string.Format("水田：{0}；水浇地：{1}；旱地：{2}", Data.Land.Paddy, Data.Land.Irrigated, Data.Land.Dry));
-                    //}
-                }
-
                 if (ErrorRow.Count() != 0)
                 {
-                    Error.Add(value, ErrorRow);
-                    //if (Error2.ContainsKey(value))
-                    //{
-                      //  Error2[value] += ";表格中存在相同项目";
-                    //}
-                    //else {
-                     //   Error2.Add(value, "与项目复核确认总表不符");
-                   // }
+                    Error.Add(value, ErrorRow);          
                 }
                 
             }
@@ -199,7 +199,7 @@ namespace LCChecker.Models
                     continue;
                 if (Flag)
                 {
-                    Mistakes = "存在填写多个内容";
+                    Mistakes = "存在填写多个质量等别";
                     return false;
                 }
                 
@@ -218,15 +218,11 @@ namespace LCChecker.Models
                     var val = cell.ToString().Trim();
                     double.TryParse(val, out Area);
                 }
-                Degree = i;
+                Degree = i-6;
                 Flag = true;
             }
-            if (!Flag)
-            {
-                Mistakes = "未获取相关信息";
-                return false;
-            }
-            LandArea = Area;    
+            Area = Area / 15;
+            LandArea = Math.Floor(Area * 10000) / 10000;   
             return true;
         }
 

@@ -66,7 +66,7 @@ namespace LCChecker.Models
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        private bool VerificationID(string value)
+        public bool VerificationID(string value)
         {
             return Regex.IsMatch(value, @"^33[0-9]{4}20[0-9]{6}");
         }
@@ -164,7 +164,7 @@ namespace LCChecker.Models
                 }
                 else
                 {//重点复核确认总表中 没有这个项目  提交表格中存在  处理：错误
-                    //ErrorRow.Add("重点复核确认总表中不存在项目");
+                    ErrorRow.Add("重点复核确认总表中不存在项目");
                     if (!Error.ContainsKey(value))
                     {
                        Error.Add(value, ErrorRow);
