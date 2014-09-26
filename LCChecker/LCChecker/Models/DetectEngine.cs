@@ -622,7 +622,7 @@ namespace LCChecker.Models
                     {  
                         masRow = masSheet.CreateRow(MasStartRow);
                     }
-                    startRow++;
+                    MasStartRow++;
                     for (int x = startCell, y = 0; x < row.LastCellNum; x++, y++)
                     {
                         var cell = row.GetCell(x);
