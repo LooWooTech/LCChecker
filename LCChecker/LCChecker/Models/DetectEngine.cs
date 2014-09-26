@@ -584,6 +584,10 @@ namespace LCChecker.Models
             var masSheet = OpenSheet(masterPath, false, ref startRow, ref startCell, ref mistakes);
 
             if (masSheet == null) return false;
+
+            int Max = masSheet.LastRowNum - 20;
+            InsertRow(masSheet, Max, 20);
+
             Dictionary<string, int> MasRelatship = new Dictionary<string, int>();
             if (!GetSummaryLine(masSheet, ref MasRelatship))
             {
@@ -609,7 +613,7 @@ namespace LCChecker.Models
                     {
                         row1 = masSheet.CreateRow(MasRelatship[item]);
                     }
-                    //var row2 = sheet.GetRow(relatship[item]);
+
                     UpdateSummary(ref row1, ref row, startCell);
                 }
                 else {//该项目目前还有保存过，那么就更加到正确项目数据的文件的末端中去
@@ -683,14 +687,16 @@ namespace LCChecker.Models
             int Max=xoffset+43;
             for (int i = xoffset,y = 0; i < Max; i++, y++)
             {
+                var MasCell = MasRow.GetCell(y);
                 var cell = Row.GetCell(i);
                 if (cell == null)
-                    continue;
-                var MasCell = MasRow.GetCell(y);
-                if (MasCell == null)
                 {
-                    MasCell = MasRow.CreateCell(y,cell.CellType);
+                    MasCell.SetCellValue("");
+                    continue;
                 }
+              
+                
+                
                 switch (cell.CellType)
                 { 
                     case CellType.String:
@@ -702,7 +708,19 @@ namespace LCChecker.Models
                     case CellType.Boolean:
                         MasCell.SetCellValue(cell.BooleanCellValue);
                         break;
-                    default: break;
+                    case  CellType.Formula:
+                        double val;
+                        try
+                        {
+                            MasCell.SetCellValue(cell.NumericCellValue);
+                        }
+                        catch {
+                            MasCell.SetCellValue("0.0000");
+                        }
+                        break;
+                    default:
+                        MasCell.SetCellValue(cell.ToString());
+                        break;
                 }
             }
             return true;

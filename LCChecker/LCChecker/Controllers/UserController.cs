@@ -110,7 +110,7 @@ namespace LCChecker.Controllers
             }
 
             var masterfile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/", CurrentUser.City.ToString() + ".xls");
-            //string Masterfile = @"D:\Work\浙江省土地整治项目核查平台\0914\trunk\LCChecker\LCChecker\App_Data\湖州市.xls";
+
             var list = db.Projects.Where(x => x.City == CurrentUser.City).ToList();
 
             if (!detectEngine.SaveCurrent(filePath, masterfile, ref fault, errors, ships, list))
