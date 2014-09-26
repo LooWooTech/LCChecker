@@ -582,7 +582,14 @@ namespace LCChecker.Models
             int MasStartRow = 1;
 
             var masSheet = OpenSheet(masterPath, false, ref startRow, ref startCell, ref mistakes);
+
             if (masSheet == null) return false;
+            Dictionary<string, int> MasRelatship = new Dictionary<string, int>();
+            if (!GetSummaryLine(masSheet, ref MasRelatship))
+            {
+                mistakes = "获取核对数据失败";
+                return false;
+            }
 
             GetProject(masSheet, ship, ref MasStartRow);
 
@@ -590,56 +597,59 @@ namespace LCChecker.Models
             
             foreach (var item in relatship.Keys)
             {
-                if (errorMessage.ContainsKey(item))
+                if (errorMessage.ContainsKey(item))//假如该项目错误，跳过
                     continue;
-                if (ship.ContainsKey(item))
+                if (!List.Exists(x => x.ID == item))//假如该项目的数据填写正确了，但是数据库里面没有该项目跳过
                     continue;
-                if (!List.Exists(x => x.ID == item))
-                    continue;
-                var row = sheet.GetRow(relatship[item]);
-                var masRow = masSheet.GetRow(MasStartRow);
-                if (masRow == null)
+                var row = sheet.GetRow(relatship[item]);//获取项目的行
+                if (MasRelatship.ContainsKey(item))//假如保存正确项目数据的文件中已经存在项目了，那么就更新项目
                 {
-                    masRow= masSheet.CreateRow(MasStartRow);
-                    if (row.RowStyle != null)
+                    var row1 = masSheet.GetRow(MasRelatship[item]);
+                    if (row1 == null)
                     {
-                        masRow.RowStyle = row.RowStyle;
+                        row1 = masSheet.CreateRow(MasRelatship[item]);
                     }
+                    //var row2 = sheet.GetRow(relatship[item]);
+                    UpdateSummary(ref row1, ref row, startCell);
                 }
-                    
-                startRow++;
-                
-
-                for (int x = startCell, y = 0; x < row.LastCellNum; x++, y++)
-                {
-                    var cell = row.GetCell(x);
-                    if (cell == null)
-                        continue;
-
-                    var masCell = masRow.GetCell(y);
-                    if (masCell == null)
+                else {//该项目目前还有保存过，那么就更加到正确项目数据的文件的末端中去
+                    var masRow = masSheet.GetRow(MasStartRow);
+                    if (masRow == null)
+                    {  
+                        masRow = masSheet.CreateRow(MasStartRow);
+                    }
+                    startRow++;
+                    for (int x = startCell, y = 0; x < row.LastCellNum; x++, y++)
                     {
-                        masCell = masRow.CreateCell(y,cell.CellType);
-                        if (cell.CellStyle != null)
+                        var cell = row.GetCell(x);
+                        if (cell == null)
+                            continue;
+                        var masCell = masRow.GetCell(y);
+                        if (masCell == null)
                         {
-                            masCell.CellStyle = cell.CellStyle;
+                            masCell = masRow.CreateCell(y, cell.CellType);
+                        }
+                        switch (cell.CellType)
+                        {
+                            case CellType.Boolean:
+                                masCell.SetCellValue(cell.BooleanCellValue);
+                                break;
+                            case CellType.Numeric:
+                                masCell.SetCellValue(cell.NumericCellValue);
+                                break;
+                            case CellType.String:
+                                masCell.SetCellValue(cell.StringCellValue);
+                                break;
                         }
                     }
-                        
-
-                    switch (cell.CellType)
-                    {
-                        case CellType.Boolean:
-                            masCell.SetCellValue(cell.BooleanCellValue);
-                            break;
-                        case CellType.Numeric:
-                            masCell.SetCellValue(cell.NumericCellValue);
-                            break;
-                        case CellType.String:
-                            masCell.SetCellValue(cell.StringCellValue);
-                            break;
-                    }
                 }
+                
+                
+                    
+                
+                
+
+               
             }
             using (var fs = new FileStream(masterPath, FileMode.Open, FileAccess.Write))
             {
@@ -648,6 +658,55 @@ namespace LCChecker.Models
             return true;
         }
 
+
+        public bool GetSummaryLine(NPOI.SS.UserModel.ISheet sheet, ref Dictionary<string, int> Relatship)
+        {
+            int Max = sheet.LastRowNum;
+            for (var i = 1; i < Max; i++)
+            {
+                var row = sheet.GetRow(i);
+                if (row == null)
+                    break;
+                var value = row.GetCell(2, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+                if (!value.VerificationID())
+                    continue;
+                if (Relatship.ContainsKey(value))
+                    continue;
+                Relatship.Add(value, i);
+            }
+                return true;
+        }
+
+
+        public bool UpdateSummary(ref NPOI.SS.UserModel.IRow MasRow,ref NPOI.SS.UserModel.IRow Row, int xoffset = 0)
+        {
+            int Max=xoffset+43;
+            for (int i = xoffset,y = 0; i < Max; i++, y++)
+            {
+                var cell = Row.GetCell(i);
+                if (cell == null)
+                    continue;
+                var MasCell = MasRow.GetCell(y);
+                if (MasCell == null)
+                {
+                    MasCell = MasRow.CreateCell(y,cell.CellType);
+                }
+                switch (cell.CellType)
+                { 
+                    case CellType.String:
+                        MasCell.SetCellValue(cell.StringCellValue);
+                        break;
+                    case CellType.Numeric:
+                        MasCell.SetCellValue(cell.NumericCellValue);
+                        break;
+                    case CellType.Boolean:
+                        MasCell.SetCellValue(cell.BooleanCellValue);
+                        break;
+                    default: break;
+                }
+            }
+            return true;
+        }
 
 
 
