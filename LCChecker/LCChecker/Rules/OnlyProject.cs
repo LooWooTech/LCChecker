@@ -46,7 +46,9 @@ namespace LCChecker.Rules
                         break;
                     case "项目名称":
                         value = row.GetCell(ColumnIndex + xoffset + 1, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
-                        if (value != project.Name)
+                        value = value.Replace(" ", "");
+                        var str = project.Name.Replace(" ", "");
+                        if (value != str)
                             return false;
                         break;
                     case "市":
