@@ -27,6 +27,22 @@
             </div>
         </div>
     </form>
+    <form class="form form-inline" style="float: right;">
+        <div class="input-group">
+            <span class="input-group-addon">过滤项目</span>
+            <div class="input-group-btn">
+                <select name="result" class="form-control">
+                    <option value="0">全部</option>
+                    <option value="3" @(Request.QueryString["result"] == "3" ? "selected=selected" : "")>未上传</option>
+                    <option value="1" @(Request.QueryString["result"] == "1" ? "selected=selected" : "")>无误</option>
+                    <option value="2" @(Request.QueryString["result"] == "2" ? "selected=selected" : "")>存疑</option>
+                </select>
+            </div>
+            <div class="input-group-btn">
+                <button type="submit" class="btn btn-primary">过滤</button>
+            </div>
+        </div>
+    </form>
 </div>
 <table class="table table-bordered">
     <tr>
