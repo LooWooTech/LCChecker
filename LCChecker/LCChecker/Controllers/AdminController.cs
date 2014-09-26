@@ -204,11 +204,11 @@ namespace LCChecker.Controllers
             return RedirectToAction("Projects", "Admin");
         }
 
-        public ActionResult CoordProjects(NullableFilter result = NullableFilter.All, int page = 1)
+        public ActionResult CoordProjects(City? city, NullableFilter result = NullableFilter.All, int page = 1)
         {
             var filter = new ProjectFileter
             {
-                City = CurrentUser.City,
+                City = city,
                 Result = result,
                 Visible = true,
                 Page = new Page(page)

@@ -55,7 +55,7 @@ namespace LCChecker.Models
         public bool IsApplyDelete { get; set; }
 
         /// <summary>
-        /// 是否确认无误
+        /// 是否存在疑问
         /// </summary>
         public bool IsHasError { get; set; }
 
