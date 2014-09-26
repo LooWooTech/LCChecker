@@ -41,6 +41,7 @@ namespace LCChecker.Rules
                     case "行政区":
                         var division = "浙江省," + project.City.ToString() + "," + project.County;
                         value = row.GetCell(ColumnIndex + xoffset - 1, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+                        value = value.Replace(" ", "").Replace("，",",");
                         if (value != division)
                             return false;
                         break;
@@ -53,11 +54,13 @@ namespace LCChecker.Rules
                         break;
                     case "市":
                         value = row.GetCell(ColumnIndex + xoffset - 2, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+                        value = value.Replace(" ","");
                         if (value != project.City.ToString())
                             return false;
                         break;
                     case "县":
                         value = row.GetCell(ColumnIndex + xoffset - 1, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+                        value = value.Replace(" ", "");
                         if (value != project.County)
                             return false;
                         break;
