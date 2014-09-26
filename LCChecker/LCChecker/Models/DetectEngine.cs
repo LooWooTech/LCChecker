@@ -522,7 +522,7 @@ namespace LCChecker.Models
                 {
                     var cellTemplate = templateRow.Cells[cellIndex];
                     var cell = row.CreateCell(cellIndex, cellTemplate.CellType);
-                    cell.SetCellValue(cellTemplate.StringCellValue);
+                    //cell.SetCellValue(cellTemplate.StringCellValue);
                     if (cellTemplate.CellStyle != null)
                     {
                         cell.CellStyle = cellTemplate.CellStyle;
