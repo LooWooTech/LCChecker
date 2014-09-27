@@ -163,7 +163,7 @@ namespace LCChecker.Models
             {
                 if (!Ship[item].IsApplyDelete)
                 {
-                    Warning.Add(item, "自查表中第10栏填‘否’或者不填，但是你没有在表中填写该项目");
+                    Warning.Add(item, "规则0005：项目与自查表不符，该项目应该包括在本表中。");
                 }
             }
             
