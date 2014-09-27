@@ -13,11 +13,11 @@ namespace LCChecker.Models
 
     public class CheckReport9:CheckEngine ,ICheck
     {
-      
+        public Dictionary<string, Project> Team = new Dictionary<string, Project>();
+
         public CheckReport9(string filePath,List<Project> projects)
         {
             GetMessage(filePath);
-            Dictionary<string, Project> Team = new Dictionary<string, Project>();
             foreach (var item in projects)
             {
                 Team.Add(item.ID, item);
@@ -79,6 +79,20 @@ namespace LCChecker.Models
                     Mistakes = "规则2907：未找到水田  水浇地  旱地列";
                     return false;
                 }
+                if (IDS.Contains(value))
+                {
+                    if (Error.ContainsKey(value))
+                    {
+                        Error[value].Add("存在相同项目");
+                        continue;
+                    }
+                    else {
+                        Error.Add(value, new List<string>(){"存在相同项目"});
+                    }
+                }
+                else {
+                    IDS.Add(value);
+                }
                 string Fault="";
 
                 int[] Degree1 = new int[3];
@@ -93,13 +107,27 @@ namespace LCChecker.Models
                         ErrorRow.Add(Fault);
                     }
                 }
-                Land MineLand = new Land() { Paddy=Area[0],Irrigated=Area[1],Dry=Area[2]};
+                //Land MineLand = new Land() { Paddy=Area[0],Irrigated=Area[1],Dry=Area[2]};
                 if (Ship.ContainsKey(value))
                 {
-                    Index2 Data = Ship[value];
-                    if (!Data.Land.Compare(MineLand))
+                    if (Team.ContainsKey(value))
                     {
-                        ErrorRow.Add("规则2905：水田、水浇地、旱地与自检表中一致");
+                        var CurrentProject = Team[value];
+                        var sum = Area[0] + Area[2];
+                        if (Math.Abs(CurrentProject.NewArea.Value - sum) > 0.0001)
+                        {
+                            ErrorRow.Add("水田、旱地的面积之和与自查表新增耕地面积不符");
+                        }
+                    }
+
+                    Index2 Data = Ship[value];
+                    //if (!Data.Land.Compare(MineLand))
+                    //{
+                    //    ErrorRow.Add("规则2905：水田、水浇地、旱地与自检表中一致");
+                    //}
+                    if (!Data.IsApplyDelete)
+                    {
+                        Warning.Add(value, "与自查表不符");
                     }
                     if (Degree1[1] != 0)
                     {
@@ -109,7 +137,7 @@ namespace LCChecker.Models
                     double.TryParse(Data.Grade, out CurrentDegree);
                     if (((Degree1[0] - CurrentDegree) * (CurrentDegree - Degree1[2])) < 0)
                     {
-                        ErrorRow.Add("规则2906：自检表耕地质量等别在水田旱地等别之间，可以与其中一个等别相等");
+                        ErrorRow.Add("规则2906：自查表耕地质量等别在水田旱地等别之间，可以与其中一个等别相等");
                     }
                 }   
                 foreach (var item in rules)

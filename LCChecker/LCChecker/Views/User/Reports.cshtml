@@ -63,13 +63,13 @@
             <td>
                 @if (Flag)
                 { 
-                    if (item.Result != true)
-                    {
+                    /*if (item.Result != true)
+                    {*/
                     <form method="post" action="/user/uploadreport?type=@(typeValue)" class="form-inline" enctype="multipart/form-data">
                         <input type="file" name="file" class="form-control input-sm" style="width: 100px;" />
                         <button type="submit" class="btn btn-sm btn-success">上传</button>
                     </form>
-                    }
+                    /*}*/
                 }
 
             </td>

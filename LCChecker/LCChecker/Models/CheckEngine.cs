@@ -34,7 +34,7 @@ namespace LCChecker.Models
         /// <summary>
         /// 检查表格中的项目编号们
         /// </summary>
-        List<string> IDS = new List<string>();
+        public List<string> IDS = new List<string>();
 
 
         /// <summary>
@@ -400,13 +400,10 @@ namespace LCChecker.Models
                 var CurrentData = GetCurrentData(row);
                 if (CurrentData == null)
                 {
-                    //Error2[value] = "获取核对数据失败，导致无法验证";
-                   // Error2.Add(value, "获取核对数据失败，导致无法验证");
                     Error.Add(value, new List<string> { "获取核对数据失败，导致无法验证" });
                 }
                 else {
-                    Ship[value] = CurrentData;
-                    //Ship.Add(value, CurrentData);        
+                    Ship[value] = CurrentData;     
                 }
                 
             }
@@ -469,7 +466,16 @@ namespace LCChecker.Models
 
 
         public Index2 GetCurrentData(NPOI.SS.UserModel.IRow row)
-        {     
+        {
+            bool Flag = false;
+            var YesOrNo = row.GetCell(9, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+            if (string.IsNullOrEmpty(YesOrNo) || YesOrNo == "否")
+            {
+                Flag = false;
+            }
+            else {
+                Flag = true;
+            }
             //等别
             var grade = row.GetCell(35, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
 
@@ -531,6 +537,7 @@ namespace LCChecker.Models
 
             Index2 CurrentData = new Index2()
             {
+                IsApplyDelete=Flag,
                 Grade = grade,//质量等别
                 Indicators = data2+twenty+TwentyEight,//  表 8  14栏
                 Land = LandData//  水田  水浇地  旱地  数据

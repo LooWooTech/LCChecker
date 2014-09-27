@@ -13,6 +13,7 @@ namespace LCChecker.Models
         //public string Name { get; set; }
 
         //public double AddArea { get; set; }
+        public bool IsApplyDelete { get; set; }
 
         public double Indicators { get; set; }
 
