@@ -107,27 +107,29 @@ namespace LCChecker.Models
                         ErrorRow.Add(Fault);
                     }
                 }
-                //Land MineLand = new Land() { Paddy=Area[0],Irrigated=Area[1],Dry=Area[2]};
-                if (Ship.ContainsKey(value))
+                if (Ship.ContainsKey(value))//ship字典中包含了自查表中所有项目  与项目耕地质量等别、第10栏 填‘是’‘否’的关系
                 {
                     if (Team.ContainsKey(value))
                     {
                         var CurrentProject = Team[value];
                         var sum = Area[0] + Area[2];
-                        if (Math.Abs(CurrentProject.NewArea.Value - sum) > 0.0001)
+                        if (CurrentProject.NewArea.HasValue)
                         {
-                            ErrorRow.Add("水田、旱地的面积之和与自查表新增耕地面积不符");
+                            if (Math.Abs(CurrentProject.NewArea.Value - sum) > 0.0001)
+                            {
+                                ErrorRow.Add("水田、旱地的面积之和与自查表新增耕地面积不符");
+                            }
                         }
+                        else {
+                            ErrorRow.Add("数据库中没有新增耕地面积的值，无法进行水田、旱地面积核对");
+                        }
+                        
                     }
 
                     Index2 Data = Ship[value];
-                    //if (!Data.Land.Compare(MineLand))
-                    //{
-                    //    ErrorRow.Add("规则2905：水田、水浇地、旱地与自检表中一致");
-                    //}
-                    if (!Data.IsApplyDelete)
+                    if (!Data.IsApplyDelete)//该项目在自查表中填写 ‘否’或者不填  同时也在附表9中出现，那么就remove该项目编号key
                     {
-                        Warning.Add(value, "与自查表不符");
+                        Ship.Remove(value);
                     }
                     if (Degree1[1] != 0)
                     {
@@ -139,7 +141,11 @@ namespace LCChecker.Models
                     {
                         ErrorRow.Add("规则2906：自查表耕地质量等别在水田旱地等别之间，可以与其中一个等别相等");
                     }
-                }   
+                }
+                else {
+                    Error.Add(value, new List<string>() {"自查表中不存在该项目，请核对" });
+                    continue;
+                }
                 foreach (var item in rules)
                 {
                     if (!item.Rule.Check(row, startCell))
@@ -153,7 +159,13 @@ namespace LCChecker.Models
                 }
                 
             }
-
+            foreach (var item in Ship.Keys)
+            {
+                if (!Ship[item].IsApplyDelete)
+                {
+                    Warning.Add(item, "自查表中第10栏填‘否’或者不填，但是你没有在表中填写该项目");
+                }
+            }
             
             return true;
         }
