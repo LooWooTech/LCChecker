@@ -143,7 +143,14 @@ namespace LCChecker.Models
                     }
                 }
                 else {
-                    Error.Add(value, new List<string>() {"自查表中不存在该项目，请核对" });
+                    if (Error.ContainsKey(value))
+                    {
+                        Error[value].Add("自查表中不存在该项目，请核对");
+                    }
+                    else {
+                        Error.Add(value, new List<string>() { "自查表中不存在该项目，请核对" });
+                    }
+                    
                     continue;
                 }
                 foreach (var item in rules)

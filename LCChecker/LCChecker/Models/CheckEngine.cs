@@ -1,5 +1,6 @@
 ﻿using LCChecker.Rules;
 using NPOI.SS.UserModel;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -332,8 +333,9 @@ namespace LCChecker.Models
                     workbook = WorkbookFactory.Create(fs);
                 }
             }
-            catch
+            catch(Exception er)
             {
+                string str = er.ToString();
                 errMsg = "打开Excel表格失败：";// +filePath;
                 return null;
             }
