@@ -135,9 +135,9 @@ namespace LCChecker.Models
                     {
                         ErrorRow.Add("水浇地存在问题");
                     }
-                    double CurrentDegree;
-                    double.TryParse(Data.Grade, out CurrentDegree);
-                    if (((Degree1[0] - CurrentDegree) * (CurrentDegree - Degree1[2])) < 0)
+                    //double CurrentDegree;
+                    //double.TryParse(Data.Grade, out CurrentDegree);
+                    if (((Degree1[0] - Data.Grade) * (Data.Grade - Degree1[2])) < 0)
                     {
                         ErrorRow.Add("规则2906：自查表耕地质量等别在水田旱地等别之间，可以与其中一个等别相等");
                     }
@@ -261,8 +261,9 @@ namespace LCChecker.Models
                 Degree = i-6;
                 Flag = true;
             }
-            Area = Area / 15;
-            LandArea = Math.Floor(Area * 10000) / 10000;   
+            LandArea = Area;
+            //Area = Area / 15;
+            //LandArea = Math.Floor(Area * 10000) / 10000;   
             return true;
         }
 

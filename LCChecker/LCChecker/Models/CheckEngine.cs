@@ -473,11 +473,28 @@ namespace LCChecker.Models
             {
                 Flag = false;
             }
-            else {
+            else
+            {
                 Flag = true;
             }
             //等别
-            var grade = row.GetCell(35, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+            var CellGrade = row.GetCell(35, MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            double grade;
+            if (CellGrade.CellType == CellType.Numeric || CellGrade.CellType == CellType.Formula)
+            {
+                try
+                {
+                    grade = CellGrade.NumericCellValue;
+                }
+                catch
+                {
+                    grade = .0;
+                }
+            }
+            else {
+                var valGrade = CellGrade.ToString().Trim();
+                double.TryParse(valGrade, out grade);
+            }
 
             //表8  14栏
             var cell = row.GetCell(13, MissingCellPolicy.CREATE_NULL_AS_BLANK);
@@ -488,12 +505,14 @@ namespace LCChecker.Models
                 {
                     data2 = cell.NumericCellValue;
                 }
-                catch {
+                catch
+                {
                     data2 = .0;
                 }
-                
+
             }
-            else {
+            else
+            {
                 var Indicator = cell.ToString();
                 double.TryParse(Indicator, out data2);
             }
@@ -503,14 +522,15 @@ namespace LCChecker.Models
             {
                 try
                 {
-                    twenty= cell2.NumericCellValue;
+                    twenty = cell2.NumericCellValue;
                 }
                 catch
                 {
-                    twenty= .0;
+                    twenty = .0;
                 }
             }
-            else {
+            else
+            {
                 var val2 = cell2.ToString();
                 double.TryParse(val2, out twenty);
             }
@@ -527,7 +547,8 @@ namespace LCChecker.Models
                     TwentyEight = .0;
                 }
             }
-            else {
+            else
+            {
                 var val3 = cell3.ToString().Trim();
                 double.TryParse(val3, out TwentyEight);
             }
@@ -537,9 +558,9 @@ namespace LCChecker.Models
 
             Index2 CurrentData = new Index2()
             {
-                IsApplyDelete=Flag,
+                IsApplyDelete = Flag,
                 Grade = grade,//质量等别
-                Indicators = data2+twenty+TwentyEight,//  表 8  14栏
+                Indicators = data2 + twenty + TwentyEight,//  表 8  14栏
                 Land = LandData//  水田  水浇地  旱地  数据
             };
             return CurrentData;

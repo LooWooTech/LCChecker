@@ -35,11 +35,11 @@ namespace LCChecker.Rules
             {
                 case "耕地质量等别":
                     value = cell.ToString().Trim();
-                    double Current;
-                    double.TryParse(item.Grade, out Current);
+                   // double Current;
+                    //double.TryParse(item.Grade, out Current);
                     double data;
                     double.TryParse(value, out data);
-                    if(Math.Abs(Current-data)>0.1)
+                    if(Math.Abs(item.Grade-data)>0.1)
                         return false;
                     break;
                 case "已与建设项目预挂钩应核销占补平衡指标":

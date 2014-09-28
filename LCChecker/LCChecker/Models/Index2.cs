@@ -17,7 +17,7 @@ namespace LCChecker.Models
 
         public double Indicators { get; set; }
 
-        public string Grade { get; set; }
+        public double Grade { get; set; }
 
         public Land Land { get; set; }
     }
