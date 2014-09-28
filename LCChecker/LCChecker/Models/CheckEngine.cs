@@ -68,7 +68,7 @@ namespace LCChecker.Models
         /// <returns></returns>
         public bool VerificationID(string value)
         {
-            return Regex.IsMatch(value, @"^33[0-9]{4}20[0-9]{6}");
+            return Regex.IsMatch(value, @"^33[0-9]{12}");
         }
         public bool Check(string filePath, ref string mistakes, ReportType Type, List<Project> Data, bool flag)
         {
