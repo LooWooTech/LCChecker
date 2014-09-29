@@ -76,7 +76,9 @@ namespace LCChecker.Models
                     continue;
                 if (!JudgeLand(sheet, i, startCell))
                 {
-                    Mistakes = "规则2907：未找到水田  水浇地  旱地列";
+                    Mistakes = value+"规则2907：未找到水田  水浇地  旱地列";
+                    //Error.Add(value, new List<string>() { "水田、水浇地、旱地" });
+                    //continue;
                     return false;
                 }
                 if (IDS.Contains(value))
@@ -162,7 +164,14 @@ namespace LCChecker.Models
                 }
                 if (ErrorRow.Count() != 0)
                 {
-                    Error.Add(value, ErrorRow);          
+                    if (Error.ContainsKey(value))
+                    {
+                        Error[value].Add("表格中存在相同的项目");
+                    }
+                    else {
+                        Error.Add(value, ErrorRow); 
+                    }
+                             
                 }
                 
             }
