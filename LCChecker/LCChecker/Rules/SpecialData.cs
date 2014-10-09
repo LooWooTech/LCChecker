@@ -34,11 +34,22 @@ namespace LCChecker.Rules
             switch (Value)
             {
                 case "耕地质量等别":
-                    value = cell.ToString().Trim();
-                   // double Current;
-                    //double.TryParse(item.Grade, out Current);
                     double data;
-                    double.TryParse(value, out data);
+                    if (cell.CellType == CellType.Numeric || cell.CellType == CellType.Formula)
+                    {
+                        try
+                        {
+                            data = cell.NumericCellValue;
+                        }
+                        catch
+                        {
+                            data = .0;
+                        }
+                    }
+                    else {
+                        value = cell.ToString().Trim();
+                        double.TryParse(value, out data);
+                    }              
                     if(Math.Abs(item.Grade-data)>0.1)
                         return false;
                     break;
