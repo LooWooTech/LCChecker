@@ -11,10 +11,12 @@
     <li class="active"><a href="#tab1" data-toggle="tab">自检表统计</a></li>
     <li class=""><a href="#tab2" data-toggle="tab">报部表统计</a></li>
     <li class=""><a href="#tab3" data-toggle="tab">坐标点存疑统计</a></li>
+   
 </ul>
 
 <div class="tab-content">
     <div class="tab-pane fade active in" id="tab1">
+        <p>@Html.ActionLink("下载统计表格", "DownLoadExcel", "Admin", new { id=1}, new { @class="btn btn-sm btn-primary"})</p>
         <table class="table table-bordered">
             <tr>
                 <th>市</th>
@@ -37,6 +39,7 @@
         </table>
     </div>
     <div class="tab-pane fade" id="tab2">
+        <p>@Html.ActionLink("下载统计表格", "DownLoadExcel", "Admin", new { id=2}, new { @class="btn btn-sm btn-primary"})</p>
         <table class="table table-bordered">
             <tr>
                 <th>市</th>
@@ -59,6 +62,7 @@
         </table>
     </div>
     <div class="tab-pane fade" id="tab3">
+        <p>@Html.ActionLink("下载统计表格", "DownLoadExcel", "Admin", new { id=3}, new { @class="btn btn-sm btn-primary"})</p>
         <table class="table table-bordered">
             <tr>
                 <th>市</th>

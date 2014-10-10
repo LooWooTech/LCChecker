@@ -1,4 +1,5 @@
-﻿using LCChecker.Models;
+﻿using LCChecker.Helpers;
+using LCChecker.Models;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
@@ -141,6 +142,215 @@ namespace LCChecker.Controllers
                 City = g.Key
             });
             return View();
+        }
+
+        public ActionResult DownLoadExcel(int id)
+        {
+            string[] Header = { "行政区", "项目总数", "通过总数", "失败总数", "未上传数" };
+            int[] He = new int[4];
+            Dictionary<City, Summary> Data;
+            string ExcelName = "";
+            string HeaderName = "";
+            if (id == 1)
+            {
+                ExcelName = "自检表统计表格.xls";
+                HeaderName = "浙江省土地整治项目核查自检情况统计表";
+                Data = db.Projects.GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
+                {
+                    TotalCount = g.Count(),
+                    ErrorCount = g.Count(e => e.Result == false),
+                    SuccessCount = g.Count(e => e.Result == true),
+                    City = g.Key
+                });
+            }
+            else if (id == 2)
+            {
+                ExcelName = "报部表格统计.xls";
+                HeaderName = "浙江省土地整治项目核查报部情况统计表";
+                Data = db.Reports.GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
+                {
+                    TotalCount = g.Count(),
+                    ErrorCount = g.Count(e => e.Result == false),
+                    SuccessCount = g.Count(e => e.Result == true),
+                    City = g.Key
+                });
+            }
+            else if (id == 3)
+            {
+                ExcelName = "坐标点存疑统计.xls";
+                HeaderName = "浙江省土地整治项目坐标点存疑情况统计表";
+                Data = db.CoordProjects.Where(e => e.Visible == true).GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
+                {
+                    TotalCount = g.Count(),
+                    ErrorCount = g.Count(e => e.Result == false),
+                    SuccessCount = g.Count(e => e.Result == true),
+                    City = g.Key
+                });
+            }
+            else {
+                ExcelName = "报部表格统计.xls";
+                Data = db.Reports.GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
+                {
+                    TotalCount = g.Count(),
+                    ErrorCount = g.Count(e => e.Result == false),
+                    SuccessCount = g.Count(e => e.Result == true),
+                    City = g.Key
+                });
+            }
+            HSSFWorkbook workbook = new HSSFWorkbook();
+            ISheet sheet = workbook.CreateSheet("sheet1");
+            for (var j = 0; j < 5; j++)
+            {
+                sheet.SetColumnWidth(j, 15 * 256);
+            }
+                
+
+            if (id == 4)
+            {
+                Dictionary<string, Dictionary<string, Dictionary<string, int>>> Message = new Dictionary<string, Dictionary<string, Dictionary<string, int>>>();
+                summ(ref Message);
+                IRow row = sheet.CreateRow(0);
+                row.CreateCell(0).SetCellValue("市");
+                row.CreateCell(1).SetCellValue("项目总数");
+                row.CreateCell(2).SetCellValue("通过总数");
+                row.CreateCell(3).SetCellValue("失败总数");
+                sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 3, 5));
+                sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 1, 0, 0));
+                sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 1, 1, 1));
+                sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 1, 2, 2));
+                sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 1, 6, 6));
+                row.CreateCell(6).SetCellValue("未上传数");
+                row = sheet.CreateRow(1);
+                row.CreateCell(3).SetCellValue("总数");
+                row.CreateCell(4).SetCellValue("提示");
+                row.CreateCell(5).SetCellValue("错误");
+                int i = 2;
+                foreach (var item in Data)
+                {
+                    var summary = item.Value;
+                    row = sheet.CreateRow(i++);
+                    row.CreateCell(0).SetCellValue(summary.City.ToString());
+                    row.CreateCell(1).SetCellValue(summary.TotalCount);
+                    row.CreateCell(2).SetCellValue(summary.SuccessCount);
+                    row.CreateCell(3).SetCellValue(summary.ErrorCount);
+                    int all = 0;
+                    if (Message.ContainsKey(summary.City.ToString()))
+                    { 
+                        foreach(var it in Message[summary.City.ToString()].Keys)
+                        {
+                            if (Message[summary.City.ToString()][it].ContainsKey("错误"))
+                            {
+                                all++;
+                            }
+                        }
+                        
+                    }
+                    row.CreateCell(4).SetCellValue(summary.ErrorCount - all);
+                    row.CreateCell(5).SetCellValue(all);
+                    row.CreateCell(6).SetCellValue(summary.UnCheckCount);
+                }
+
+            }
+            else {
+                IRow row = sheet.CreateRow(0);
+                var cell = row.CreateCell(0);
+                cell.CellStyle = workbook.GetCellStyle(XslHeaderStyle.大头);
+                cell.SetCellValue(HeaderName);
+                sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, 4));
+                row = sheet.CreateRow(1);
+                int i = 0;
+                foreach (var item in Header)
+                {
+                    cell = row.CreateCell(i++);
+                    cell.CellStyle = workbook.GetCellStyle(XslHeaderStyle.小头);
+                    cell.SetCellValue(item);
+                }
+                i = 2;
+                foreach (var item in Data)
+                {
+                    var summary = item.Value;
+                    row = sheet.CreateRow(i++);
+                    for (var j = 0; j < 5; j++)
+                    {
+                        cell = row.CreateCell(j);
+                        cell.CellStyle = workbook.GetCellStyle(XslHeaderStyle.默认);
+                    }
+                    row.GetCell(0).SetCellValue(summary.City.ToString());
+                    row.GetCell(1).SetCellValue(summary.TotalCount);
+                    He[0] += summary.TotalCount;
+                    row.GetCell(2).SetCellValue(summary.SuccessCount);
+                    He[1] += summary.SuccessCount;
+                    row.GetCell(3).SetCellValue(summary.ErrorCount);
+                    He[2] += summary.ErrorCount;
+                    row.GetCell(4).SetCellValue(summary.UnCheckCount);
+                    He[3] += summary.UnCheckCount;
+                }
+                row = sheet.CreateRow(i++);
+                for (var j = 0; j < 5; j++)
+                {
+                    cell = row.CreateCell(j);
+                    cell.CellStyle = workbook.GetCellStyle(XslHeaderStyle.默认);
+                    if(j!=0)
+                    {
+                        cell.SetCellValue(He[j-1]);
+                    }
+                }
+                row.GetCell(0).SetCellValue("合计");
+
+            }
+            
+            MemoryStream ms = new MemoryStream();
+            workbook.Write(ms);
+            byte[] fileContents = ms.ToArray();
+            return File(fileContents, "application/ms-excel", ExcelName);
+        }
+
+        public void summ(ref Dictionary<string,Dictionary<string,Dictionary<string,int>>> Error)
+        {
+           // Dictionary<string, Dictionary<string, Dictionary<string, int>>> Error = new Dictionary<string, Dictionary<string, Dictionary<string, int>>>();
+            foreach (City item in Enum.GetValues(typeof(City)))
+            {
+                string chengshi = item.ToString();
+                Dictionary<string, Dictionary<string, int>> Baobu = new Dictionary<string, Dictionary<string, int>>();
+                var Records = db.Records.Where(x => x.City == item).ToList();
+                foreach (var cord in Records)
+                {
+                    if (!string.IsNullOrEmpty(cord.Note))
+                    {
+                        string Type = cord.Type.ToString();
+                        string Message = "";
+                        if (cord.IsError == false)
+                        {
+                            Message = "提示";
+                        }
+                        else
+                        {
+                            Message = "错误";
+                        }
+                        if (Baobu.ContainsKey(Type))
+                        {
+                            if (Baobu[Type].ContainsKey(Message))
+                            {
+                                Baobu[Type][Message]++;
+                            }
+                            else
+                            {
+                                Baobu[Type].Add(Message, 1);
+                            }
+                        }
+                        else
+                        {
+                            Dictionary<string, int> Fault = new Dictionary<string, int>();
+                            Fault.Add(Message, 1);
+                            Baobu.Add(Type, Fault);
+                        }
+                    }
+                }
+                if (!Error.ContainsKey(chengshi) && Baobu.Count != 0)
+                {
+                    Error.Add(chengshi, Baobu);
+                }
+            }
         }
 
         /// <summary>
