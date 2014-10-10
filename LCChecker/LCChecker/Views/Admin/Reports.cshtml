@@ -1,0 +1,40 @@
+﻿@using LCChecker
+@using LCChecker.Models
+@{
+
+    Layout = "_Layout.cshtml";
+    ViewBag.Title = "项目列表";
+
+    List<Report> list = ViewBag.List;
+}
+
+<table class="table table-bordered">
+    <tr>
+        <th>表名</th>
+        <th>状态</th>
+        <th>下载</th>
+    </tr>
+    @foreach (var item in list)
+    {
+        <tr>
+            <td>@(item.Type.ToString())</td>
+            <td>
+                @switch (item.Result)
+                {
+                    case null:
+                        <span class="label label-default">未检查</span>
+                        break;
+                    case true:
+                    <span class="label label-success">无误</span>
+                        break;
+                    case false:
+                    <span class="label label-warning">存疑</span>
+                        break;
+                }
+            </td>
+            <td>
+                <a href="/admin/downloadreport?type=@((int)item.Type)&city=@((int)item.City)">下载</a>
+            </td>
+        </tr>
+    }
+</table>

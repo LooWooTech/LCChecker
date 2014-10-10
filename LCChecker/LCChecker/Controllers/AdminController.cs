@@ -115,6 +115,23 @@ namespace LCChecker.Controllers
             return View();
         }
 
+        public ActionResult Reports(City city)
+        {
+            ViewBag.List = db.Reports.Where(e => e.City == city).ToList();
+            return View();
+        }
+
+        public ActionResult DownloadReport(City city, ReportType type)
+        {
+            var uploadFileType = (int)type;
+            var file = db.Files.Where(e => e.City == city && e.Type == (UploadFileType)uploadFileType && e.State == UploadFileProceedState.Proceeded).OrderByDescending(e => e.CreateTime).FirstOrDefault();
+            if (file == null)
+            {
+                throw new Exception("没有找到符合条件的文件");
+            }
+            return File(Request.MapPath(file.SavePath), "application/ms-excel", city.ToString() + "-" + type.ToString() + ".xls");
+        }
+
         [HttpGet]
         public ActionResult Statistics()
         {
@@ -187,7 +204,8 @@ namespace LCChecker.Controllers
                     City = g.Key
                 });
             }
-            else {
+            else
+            {
                 ExcelName = "报部表格统计.xls";
                 Data = db.Reports.GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
                 {
@@ -203,7 +221,7 @@ namespace LCChecker.Controllers
             {
                 sheet.SetColumnWidth(j, 15 * 256);
             }
-                
+
 
             if (id == 4)
             {
@@ -235,15 +253,15 @@ namespace LCChecker.Controllers
                     row.CreateCell(3).SetCellValue(summary.ErrorCount);
                     int all = 0;
                     if (Message.ContainsKey(summary.City.ToString()))
-                    { 
-                        foreach(var it in Message[summary.City.ToString()].Keys)
+                    {
+                        foreach (var it in Message[summary.City.ToString()].Keys)
                         {
                             if (Message[summary.City.ToString()][it].ContainsKey("错误"))
                             {
                                 all++;
                             }
                         }
-                        
+
                     }
                     row.CreateCell(4).SetCellValue(summary.ErrorCount - all);
                     row.CreateCell(5).SetCellValue(all);
@@ -251,7 +269,8 @@ namespace LCChecker.Controllers
                 }
 
             }
-            else {
+            else
+            {
                 IRow row = sheet.CreateRow(0);
                 var cell = row.CreateCell(0);
                 cell.CellStyle = workbook.GetCellStyle(XslHeaderStyle.大头);
@@ -290,24 +309,24 @@ namespace LCChecker.Controllers
                 {
                     cell = row.CreateCell(j);
                     cell.CellStyle = workbook.GetCellStyle(XslHeaderStyle.默认);
-                    if(j!=0)
+                    if (j != 0)
                     {
-                        cell.SetCellValue(He[j-1]);
+                        cell.SetCellValue(He[j - 1]);
                     }
                 }
                 row.GetCell(0).SetCellValue("合计");
 
             }
-            
+
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
             byte[] fileContents = ms.ToArray();
             return File(fileContents, "application/ms-excel", ExcelName);
         }
 
-        public void summ(ref Dictionary<string,Dictionary<string,Dictionary<string,int>>> Error)
+        public void summ(ref Dictionary<string, Dictionary<string, Dictionary<string, int>>> Error)
         {
-           // Dictionary<string, Dictionary<string, Dictionary<string, int>>> Error = new Dictionary<string, Dictionary<string, Dictionary<string, int>>>();
+            // Dictionary<string, Dictionary<string, Dictionary<string, int>>> Error = new Dictionary<string, Dictionary<string, Dictionary<string, int>>>();
             foreach (City item in Enum.GetValues(typeof(City)))
             {
                 string chengshi = item.ToString();
