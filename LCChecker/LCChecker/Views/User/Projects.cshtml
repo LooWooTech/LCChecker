@@ -71,6 +71,8 @@
             <td>
                 @if (!string.IsNullOrEmpty(project.Note))
                 {
+                     <span>@project.Note</span>@*
+                    
                     if (project.Note.Length > 25)
                     { 
                     <a href="#@(project.ID)" class="btn-details" data="@(project.ID)">点击查看详细错误</a>
@@ -83,7 +85,7 @@
                     else
                     {
                     <span>@project.Note</span>
-                    }
+                    }*@
                 }
             </td>
         </tr>

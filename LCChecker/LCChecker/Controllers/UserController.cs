@@ -58,10 +58,10 @@ namespace LCChecker.Controllers
         [HttpPost]
         public ActionResult UploadProjects(/*ProjectType type*/)
         {
-            if (!CurrentUser.Flag)
-            {
-                throw new ArgumentException("已经超出上传时间");
-            }
+            //if (!CurrentUser.Flag)
+            //{
+            //    throw new ArgumentException("已经超出上传时间");
+            //}
             
             var file = UploadHelper.GetPostedFile(HttpContext);
 
