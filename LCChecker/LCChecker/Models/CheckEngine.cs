@@ -499,25 +499,25 @@ namespace LCChecker.Models
             }
 
             //表8  14栏
-            var cell = row.GetCell(13, MissingCellPolicy.CREATE_NULL_AS_BLANK);
-            double data2;
-            if (cell.CellType == CellType.Numeric || cell.CellType == CellType.Formula)
-            {
-                try
-                {
-                    data2 = cell.NumericCellValue;
-                }
-                catch
-                {
-                    data2 = .0;
-                }
+            //var cell = row.GetCell(13, MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            //double data2;
+            //if (cell.CellType == CellType.Numeric || cell.CellType == CellType.Formula)
+            //{
+            //    try
+            //    {
+            //        data2 = cell.NumericCellValue;
+            //    }
+            //    catch
+            //    {
+            //        data2 = .0;
+            //    }
 
-            }
-            else
-            {
-                var Indicator = cell.ToString();
-                double.TryParse(Indicator, out data2);
-            }
+            //}
+            //else
+            //{
+            //    var Indicator = cell.ToString();
+            //    double.TryParse(Indicator, out data2);
+            //}
             var cell2 = row.GetCell(19, MissingCellPolicy.CREATE_NULL_AS_BLANK);
             double twenty;
             if (cell2.CellType == CellType.Numeric || cell2.CellType == CellType.Formula)
@@ -562,7 +562,7 @@ namespace LCChecker.Models
             {
                 IsApplyDelete = Flag,
                 Grade = grade,//质量等别
-                Indicators = data2 + twenty + TwentyEight,//  表 8  14栏
+                Indicators = twenty + TwentyEight,//  表 8  20栏+28栏
                 Land = LandData//  水田  水浇地  旱地  数据
             };
             return CurrentData;
