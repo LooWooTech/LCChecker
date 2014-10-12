@@ -644,6 +644,18 @@ namespace LCChecker.Models
                             case CellType.String:
                                 masCell.SetCellValue(cell.StringCellValue);
                                 break;
+                            case CellType.Formula:
+                                double data = .0;
+                                try
+                                {
+                                    data = cell.NumericCellValue;
+                                }
+                                catch {
+                                    data = .0;
+                                }
+                                masCell.SetCellValue(data);
+                                break;
+                            default: masCell.SetCellValue(cell.ToString().Trim()); break;
                         }
                     }
                 }

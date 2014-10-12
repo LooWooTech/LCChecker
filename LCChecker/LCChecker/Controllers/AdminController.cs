@@ -129,7 +129,261 @@ namespace LCChecker.Controllers
             {
                 throw new Exception("没有找到符合条件的文件");
             }
-            return File(Request.MapPath(file.SavePath), "application/ms-excel", city.ToString() + "-" + type.ToString() + ".xls");
+            var filePath=Path.Combine(AppDomain.CurrentDomain.BaseDirectory,file.SavePath);
+
+            return File(new FileStream(filePath, FileMode.Open), "application/ms-excel", city.ToString() + "-" + type.ToString() + ".xls");
+           // return File(Request.MapPath(file.SavePath), "application/ms-excel", city.ToString() + "-" + type.ToString() + ".xls");
+        }
+
+        public ActionResult DownloadSummaryReport(ReportType type)
+        {
+            var workbook = XslHelper.GetWorkbook("Templates/" + type.ToString() + ".xls");
+            var sheet = workbook.GetSheetAt(0);
+            sheet.GetRow(1).Cells[0].SetCellValue(CurrentUser.City.ToString() + type.GetDescription());
+            int SumCell = 0;
+            int StartRow=0;
+            int offset = 0;
+            int AddLine = 1;
+            switch (type)
+            {
+                case ReportType.附表4: SumCell = 7; StartRow = 6; offset = 3; break;
+                case ReportType.附表8: offset = 2; SumCell = 9; StartRow = 5; break;
+                case ReportType.附表5: SumCell = 9; StartRow = 5; offset = 3; break;
+                case ReportType.附表7: SumCell = 9; StartRow = 5; offset=4; break;
+                case ReportType.附表9: SumCell = 23; StartRow = 6; offset = 3; AddLine = 3; break;
+            }
+            int[] Merge = { 0,1,2,3,4,5,22};
+            IRow[] TemplateRows = new IRow[AddLine];
+            for (var k = 0; k < AddLine; k++)
+            {
+                TemplateRows[k] = sheet.GetRow(StartRow + k);
+            }
+            string[] FilePath = GetReports(type);      
+            foreach (var item in FilePath)
+            {
+                if (item == null)
+                    continue;
+                IWorkbook workbook2 = XslHelper.GetWorkbook(item);
+                var sheet2 = workbook2.GetSheetAt(0);
+                int Max = sheet2.LastRowNum;
+                for (var i = 0; i <= Max; i=i+AddLine)
+                {
+                    var row2 = sheet2.GetRow(i);
+                    if (row2 == null)
+                        break;
+                    var value = row2.GetCell(3, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+                    if (!value.VerificationID())
+                        continue;
+                    sheet.ShiftRows(sheet.LastRowNum - offset, sheet.LastRowNum, AddLine, true, false);
+                    if (type == ReportType.附表9)
+                    {
+                        //先创建单元格 之后合并单元格
+                        foreach (var Trow in TemplateRows)
+                        {
+                            IRow row = sheet.GetRow(StartRow);
+                            if (row == null)
+                            {
+                                row = sheet.CreateRow(StartRow);
+                                row.RowStyle = Trow.RowStyle;
+                            }
+                            StartRow++;
+                            for (var n = 0; n < 23; n++)
+                            {
+                                var cell2 = Trow.GetCell(n);
+                                var cell = row.GetCell(n);
+                                if (cell == null)
+                                {
+                                    cell = row.CreateCell(n,cell2.CellType);
+                                    cell.CellStyle = cell2.CellStyle;
+                                }
+                            }
+                        }
+                        foreach (var Mcell in Merge)
+                        {
+                            sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(StartRow - 3, StartRow - 1, Mcell, Mcell));
+                        }
+                        
+                        IRow rowOne = sheet.GetRow(StartRow - 3);
+                        for (var j = 0; j < SumCell; j++)
+                        {
+                            var cell2 = row2.GetCell(j);
+                            if (cell2 == null)
+                                continue;
+                            var cell = rowOne.GetCell(j);
+                            switch (cell2.CellType)
+                            {
+                                case CellType.Numeric: cell.SetCellValue(cell2.NumericCellValue); break;
+                                case CellType.String: cell.SetCellValue(cell2.StringCellValue); break;
+                                case CellType.Boolean: cell.SetCellValue(cell2.BooleanCellValue); break;
+                                case CellType.Formula:
+                                    double data = .0;
+                                    try
+                                    {
+                                        data = cell2.NumericCellValue;
+                                    }
+                                    catch {
+                                        data = .0;
+                                    }
+                                    cell.SetCellValue(data);break;
+                                case CellType.Blank: cell.SetCellValue(""); break;
+                                default: cell.SetCellValue(cell2.ToString().Trim()); break;
+                            }
+                        }
+                        int m=1;
+                        for (var j = StartRow - 2; j < StartRow; j++)
+                        {
+                            rowOne = sheet.GetRow(j);
+                            row2 = sheet2.GetRow(i+m);
+                            m++;
+                            for (var k = 6; k < SumCell; k++)
+                            {
+                                var cell2 = row2.GetCell(k);
+                                if (cell2 == null)
+                                    continue;
+                                var cell = rowOne.GetCell(k);
+                                switch (cell2.CellType)
+                                {
+                                    case CellType.Numeric: cell.SetCellValue(cell2.NumericCellValue); break;
+                                    case CellType.String: cell.SetCellValue(cell2.StringCellValue); break;
+                                    case CellType.Boolean: cell.SetCellValue(cell2.BooleanCellValue); break;
+                                    case CellType.Formula:
+                                        double data = .0;
+                                        try
+                                        {
+                                            data = cell2.NumericCellValue;
+                                        }
+                                        catch
+                                        {
+                                            data = .0;
+                                        }
+                                        cell.SetCellValue(data); break;
+                                    case CellType.Blank: cell.SetCellValue(""); break;
+                                    case CellType.Unknown: cell.SetCellValue(""); break;
+                                    case CellType.Error: cell.SetCellValue(""); break;
+                                    default: cell.SetCellValue(cell2.ToString().Trim()); break;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        IRow row = sheet.GetRow(StartRow);
+                        if (row == null)
+                        {
+                            row = sheet.CreateRow(StartRow);
+                            row.RowStyle = TemplateRows[0].RowStyle;
+                        }
+                        StartRow++;
+                        for (var j = 0; j < SumCell; j++)
+                        {
+                            var cell2 = row2.GetCell(j);
+                            if (cell2 == null)
+                                break;
+                            var cell = row.GetCell(j);
+                            if (cell == null)
+                            {
+                                cell = row.CreateCell(j, cell2.CellType);
+                                cell.CellStyle = TemplateRows[0].GetCell(j).CellStyle;
+                            }
+                            switch (cell2.CellType)
+                            {
+                                case CellType.Numeric:
+                                    cell.SetCellValue(cell2.NumericCellValue); break;
+                                case CellType.String:
+                                    cell.SetCellValue(cell2.StringCellValue); break;
+                                case CellType.Boolean:
+                                    cell.SetCellValue(cell2.BooleanCellValue); break;
+                                case CellType.Formula:
+                                    double data = .0;
+                                    try
+                                    {
+                                        data = cell2.NumericCellValue;
+                                    }
+                                    catch
+                                    {
+                                        data = .0;
+                                    }
+                                    cell.SetCellValue(data); break;
+                                default:
+                                    cell.SetCellValue(cell2.ToString().Trim());
+                                    break;
+                            }
+                        }
+                    }
+
+                    //IRow row=sheet.GetRow(StartRow);
+                    //if(row==null)
+                    //{
+                    //    row=sheet.CreateRow(StartRow);
+                    //    row.RowStyle = TemplateRow.RowStyle;
+                    //}
+                    //StartRow++;
+                    //for(var j=0;j<SumCell;j++)
+                    //{
+                    //    var cell2=row2.GetCell(j);
+                    //    if (cell2 == null)
+                    //        break;
+                    //    var cell=row.GetCell(j);
+                    //    if(cell==null)
+                    //    {
+                    //        cell=row.CreateCell(j,cell2.CellType);
+                    //        cell.CellStyle = TemplateRow.GetCell(j).CellStyle;
+                    //    }
+                    //    switch(cell2.CellType)
+                    //    {
+                    //        case CellType.Numeric:
+                    //            cell.SetCellValue(cell2.NumericCellValue);break;
+                    //        case CellType.String:
+                    //            cell.SetCellValue(cell2.StringCellValue);break;
+                    //        case CellType.Boolean:
+                    //            cell.SetCellValue(cell2.BooleanCellValue);break;
+                    //        case CellType.Formula:
+                    //            double data = .0;
+                    //            try
+                    //            {
+                    //                data = cell2.NumericCellValue;
+                    //            }
+                    //            catch {
+                    //                data = .0;
+                    //            }
+                    //            cell.SetCellValue(data);break;
+                    //        default:
+                    //            cell.SetCellValue(cell2.ToString().Trim());
+                    //        break;
+                    //    }
+                    //}
+
+                }
+            }
+
+           
+
+            using (var ms = new MemoryStream())
+            {
+                workbook.Write(ms);
+                return File(ms.ToArray(), "application/ms-excel", type.ToString() + ".xls");
+            }
+        }
+
+        private string[] GetReports(ReportType type)
+        {
+            string[] FilePath = new string[11];
+            var FileType = (int)type;
+            int i = 0;
+            foreach (City item in Enum.GetValues(typeof(City)))
+            {
+                if (item == City.浙江省)
+                    continue;
+                var file = db.Files.Where(x => x.City == item && x.Type == (UploadFileType)FileType && x.State == UploadFileProceedState.Proceeded).OrderByDescending(x => x.CreateTime).FirstOrDefault();
+                if (file == null)
+                {
+                    i++;
+                    continue;
+                }
+                FilePath[i] = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, file.SavePath);
+                i++;
+            }
+            return FilePath;
         }
 
         [HttpGet]
