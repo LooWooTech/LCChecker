@@ -210,10 +210,13 @@ namespace LCChecker.Controllers
                         IRow rowOne = sheet.GetRow(StartRow - 3);
                         for (var j = 0; j < SumCell; j++)
                         {
+                            var cell = rowOne.GetCell(j);
                             var cell2 = row2.GetCell(j);
                             if (cell2 == null)
+                            {
+                                cell.SetCellValue("");
                                 continue;
-                            var cell = rowOne.GetCell(j);
+                            }
                             switch (cell2.CellType)
                             {
                                 case CellType.Numeric: cell.SetCellValue(cell2.NumericCellValue); break;
@@ -241,10 +244,13 @@ namespace LCChecker.Controllers
                             m++;
                             for (var k = 6; k < SumCell; k++)
                             {
+                                var cell = rowOne.GetCell(k);
                                 var cell2 = row2.GetCell(k);
                                 if (cell2 == null)
+                                {
+                                    cell.SetCellValue("");
                                     continue;
-                                var cell = rowOne.GetCell(k);
+                                }
                                 switch (cell2.CellType)
                                 {
                                     case CellType.Numeric: cell.SetCellValue(cell2.NumericCellValue); break;
