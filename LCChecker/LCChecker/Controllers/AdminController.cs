@@ -134,7 +134,11 @@ namespace LCChecker.Controllers
             return File(new FileStream(filePath, FileMode.Open), "application/ms-excel", city.ToString() + "-" + type.ToString() + ".xls");
            // return File(Request.MapPath(file.SavePath), "application/ms-excel", city.ToString() + "-" + type.ToString() + ".xls");
         }
-
+        /// <summary>
+        /// 下载报部总表
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public ActionResult DownloadSummaryReport(ReportType type)
         {
             var workbook = XslHelper.GetWorkbook("Templates/" + type.ToString() + ".xls");
@@ -321,7 +325,11 @@ namespace LCChecker.Controllers
                 return File(ms.ToArray(), "application/ms-excel", type.ToString() + ".xls");
             }
         }
-
+        /// <summary>
+        /// 获取各个市相应的报部表格
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         private string[] GetReports(ReportType type)
         {
             string[] FilePath = new string[11];
