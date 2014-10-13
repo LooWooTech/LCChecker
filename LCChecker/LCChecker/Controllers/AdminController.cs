@@ -310,49 +310,6 @@ namespace LCChecker.Controllers
                             }
                         }
                     }
-
-                    //IRow row=sheet.GetRow(StartRow);
-                    //if(row==null)
-                    //{
-                    //    row=sheet.CreateRow(StartRow);
-                    //    row.RowStyle = TemplateRow.RowStyle;
-                    //}
-                    //StartRow++;
-                    //for(var j=0;j<SumCell;j++)
-                    //{
-                    //    var cell2=row2.GetCell(j);
-                    //    if (cell2 == null)
-                    //        break;
-                    //    var cell=row.GetCell(j);
-                    //    if(cell==null)
-                    //    {
-                    //        cell=row.CreateCell(j,cell2.CellType);
-                    //        cell.CellStyle = TemplateRow.GetCell(j).CellStyle;
-                    //    }
-                    //    switch(cell2.CellType)
-                    //    {
-                    //        case CellType.Numeric:
-                    //            cell.SetCellValue(cell2.NumericCellValue);break;
-                    //        case CellType.String:
-                    //            cell.SetCellValue(cell2.StringCellValue);break;
-                    //        case CellType.Boolean:
-                    //            cell.SetCellValue(cell2.BooleanCellValue);break;
-                    //        case CellType.Formula:
-                    //            double data = .0;
-                    //            try
-                    //            {
-                    //                data = cell2.NumericCellValue;
-                    //            }
-                    //            catch {
-                    //                data = .0;
-                    //            }
-                    //            cell.SetCellValue(data);break;
-                    //        default:
-                    //            cell.SetCellValue(cell2.ToString().Trim());
-                    //        break;
-                    //    }
-                    //}
-
                 }
             }
 
