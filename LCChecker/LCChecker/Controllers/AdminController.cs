@@ -162,7 +162,8 @@ namespace LCChecker.Controllers
             {
                 TemplateRows[k] = sheet.GetRow(StartRow + k);
             }
-            string[] FilePath = GetReports(type);      
+            string[] FilePath = GetReports(type);
+            int SerialNumber = 1;
             foreach (var item in FilePath)
             {
                 if (item == null)
@@ -208,7 +209,8 @@ namespace LCChecker.Controllers
                         }
                         
                         IRow rowOne = sheet.GetRow(StartRow - 3);
-                        for (var j = 0; j < SumCell; j++)
+                        rowOne.GetCell(0).SetCellValue(SerialNumber++);
+                        for (var j = 1; j < SumCell; j++)
                         {
                             var cell = rowOne.GetCell(j);
                             var cell2 = row2.GetCell(j);
@@ -284,7 +286,14 @@ namespace LCChecker.Controllers
                             row.RowStyle = TemplateRows[0].RowStyle;
                         }
                         StartRow++;
-                        for (var j = 0; j < SumCell; j++)
+                        var SerialCell = row.GetCell(0);
+                        if (SerialCell == null)
+                        {
+                            SerialCell = row.CreateCell(0);
+                            SerialCell.CellStyle = TemplateRows[0].GetCell(0).CellStyle;
+                        }
+                        SerialCell.SetCellValue(SerialNumber++);
+                        for (var j = 1; j < SumCell; j++)
                         {
                             var cell2 = row2.GetCell(j);
                             if (cell2 == null)
