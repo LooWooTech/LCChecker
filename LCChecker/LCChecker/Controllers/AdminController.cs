@@ -219,11 +219,6 @@ namespace LCChecker.Controllers
                                 cell.SetCellValue("");
                                 continue;
                             }
-                            if (j == 3)
-                            {
-                                cell.SetCellValue(cell2.ToString().Trim());
-                                continue;
-                            }
                             switch (cell2.CellType)
                             {
                                 case CellType.Numeric: cell.SetCellValue(cell2.NumericCellValue); break;
@@ -308,11 +303,6 @@ namespace LCChecker.Controllers
                             {
                                 cell = row.CreateCell(j, cell2.CellType);
                                 cell.CellStyle = TemplateRows[0].GetCell(j).CellStyle;
-                            }
-                            if (j == 3)
-                            {
-                                cell.SetCellValue(cell2.ToString().Trim());
-                                continue;
                             }
                             switch (cell2.CellType)
                             {
