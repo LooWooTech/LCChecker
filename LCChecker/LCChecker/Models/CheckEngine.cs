@@ -135,31 +135,28 @@ namespace LCChecker.Models
                 IDS.Add(value);
                 if (Whether.ContainsKey(value))//在表3中存在
                 {
-                    if (Whether[value])//重点复核确认总表中 填：是  提交表格存在这个项目  检查这个项目填写数据与格式
+                    if (!Whether[value])//重点复核确认总表中 填：否  提交表格中存在   处理：提示
                     {
-                        foreach (var item in rules)
+                        Warning[value] = "规则0006： 与重点项目复核确认总表中项目类型不符";
+                    }
+                    foreach (var item in rules)
+                    {
+                        if (!item.Rule.Check(row, startCell))
                         {
-                            if (!item.Rule.Check(row, startCell))
-                            {
-                                ErrorRow.Add(item.Rule.Name);
-                            }
-                        }
-                        if (ErrorRow.Count() != 0)
-                        {
-                            if (Error.ContainsKey(value))
-                            {
-                                Error[value] = ErrorRow;
-                            }
-                            else {
-                                Error.Add(value, ErrorRow);
-                            }
-                            
+                            ErrorRow.Add(item.Rule.Name);
                         }
                     }
-                    else
-                    {//重点复核确认总表中 填：否  提交表格中存在   处理：提示
-                        Warning[value] = "规则0006： 与重点项目复核确认总表中项目类型不符";
-                        //Warning.Add(value, "与重点项目复核确认总表中项目类型不符");
+                    if (ErrorRow.Count() != 0)
+                    {
+                        if (Error.ContainsKey(value))
+                        {
+                            Error[value] = ErrorRow;
+                        }
+                        else
+                        {
+                            Error.Add(value, ErrorRow);
+                        }
+
                     }
                     Whether.Remove(value);
                 }

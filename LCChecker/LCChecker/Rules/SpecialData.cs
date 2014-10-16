@@ -53,7 +53,7 @@ namespace LCChecker.Rules
                     if(Math.Abs(item.Grade-data)>0.1)
                         return false;
                     break;
-                case "已与建设项目预挂钩应核销占补平衡指标":
+                case "应核销占补平衡指标":
                     var cell2 = row.GetCell(ColumnIndex2 + xoffset, MissingCellPolicy.CREATE_NULL_AS_BLANK);
                     double val=.0;
                     if (cell.CellType == CellType.Numeric || cell.CellType == CellType.Formula)
