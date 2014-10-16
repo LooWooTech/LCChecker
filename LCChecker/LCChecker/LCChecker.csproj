@@ -281,6 +281,24 @@
   <ItemGroup>
     <Content Include="Views\Admin\Reports.cshtml" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Templates\自检表.xls" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Templates\附表9.xls" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Templates\附表8.xls" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Templates\附表7.xls" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Templates\附表5.xls" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Templates\附表4.xls" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
