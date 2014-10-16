@@ -366,6 +366,85 @@ namespace LCChecker.Controllers
             return FilePath;
         }
 
+        public ActionResult DownloadSummary()
+        {
+            string loadPath="App_Data";
+            string TemplatePath = "Templates/自检表.xls";
+            IWorkbook workbook = XslHelper.GetWorkbook(TemplatePath);
+            ISheet sheet = workbook.GetSheetAt(0);
+            int SerialNumber = 1;
+            int StartRow = 9;
+            IRow TemplateRow = sheet.GetRow(StartRow);
+            foreach (City item in Enum.GetValues(typeof(City)))
+            {
+                if (item == City.浙江省)
+                    continue;
+                string FilePath = loadPath+"/"+item.ToString()+".xls";
+                var workbook2 = XslHelper.GetWorkbook(FilePath);
+                var sheet2 = workbook2.GetSheetAt(0);
+                int Max = sheet2.LastRowNum;
+                for (var i = 1; i <= Max; i++)
+                { 
+                    var row2=sheet2.GetRow(i);
+                    if(row2==null)
+                        break;
+                    var value = row2.GetCell(2, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+                    if (!value.VerificationID())
+                        break;
+                    sheet.ShiftRows(sheet.LastRowNum - 10, sheet.LastRowNum, 1);
+                    var row = sheet.GetRow(StartRow);
+                    if (row == null)
+                    {
+                        row = sheet.CreateRow(StartRow);
+                        row.RowStyle = TemplateRow.RowStyle;
+                    }
+                    StartRow++;
+                    var cell = row.GetCell(0);
+                    if (cell == null)
+                    {
+                        cell = row.CreateCell(0,TemplateRow.GetCell(0).CellType);
+                        cell.CellStyle = TemplateRow.GetCell(0).CellStyle;
+                    }
+                    cell.SetCellValue(SerialNumber++);
+                    for (var j = 1; j < 42; j++)
+                    {
+                        var cell2 = row2.GetCell(j);
+                        if (cell2 == null)
+                            continue;
+                        cell = row.GetCell(j);
+                        if (cell == null)
+                        {
+                            cell = row.CreateCell(j,TemplateRow.GetCell(j).CellType);
+                            cell.CellStyle = TemplateRow.GetCell(j).CellStyle;
+                        }
+                        switch (cell2.CellType)
+                        {
+                            case CellType.String: cell.SetCellValue(cell2.StringCellValue); break;
+                            case CellType.Numeric: cell.SetCellValue(cell2.NumericCellValue); break;
+                            case CellType.Formula:
+                                double data = .0;
+                                try
+                                {
+                                    data = cell2.NumericCellValue;
+                                }
+                                catch {
+                                    data = .0;
+                                }
+                                cell.SetCellValue(data);break;
+                            default: cell.SetCellValue(cell2.ToString().Trim()); break;
+                        }
+                    }
+                }
+            }
+
+            using (var ms = new MemoryStream())
+            {
+                workbook.Write(ms);
+                return File(ms.ToArray(), "application/ms-excel",   "浙江省自检表.xls");
+            }
+            //return View();
+        }
+
         [HttpGet]
         public ActionResult Statistics()
         {

@@ -16,7 +16,7 @@
 
 <div class="tab-content">
     <div class="tab-pane fade active in" id="tab1">
-        <p>@Html.ActionLink("下载统计表格", "DownLoadExcel", "Admin", new { id=1}, new { @class="btn btn-sm btn-primary"})</p>
+        <p>@Html.ActionLink("下载统计表格", "DownLoadExcel", "Admin", new { id=1}, new { @class="btn btn-sm btn-primary"}) @Html.ActionLink("自检表汇总", "DownloadSummary", "Admin", new { }, new { @class="btn btn-sm btn-primary"})</p>
         <table class="table table-bordered">
             <tr>
                 <th>市</th>
