@@ -172,7 +172,7 @@ namespace LCChecker.Controllers
 
             var record = db.Reports.FirstOrDefault(e => e.City == CurrentUser.City && e.Type == type);
             //当提交的表格没有错误并且没有提示的时候 设置标志位为true 有可能没有错误 但是有提示，那个时候可以让用户上传
-            record.Result = ((errors.Count == 0) && (warning.Count == 0)&&(ids.Count!=0));
+            record.Result = ((errors.Count == 0) &&(ids.Count!=0));
             if (errors.Count > 0)
             {
                 file.State = UploadFileProceedState.Error;
