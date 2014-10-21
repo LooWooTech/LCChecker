@@ -585,8 +585,10 @@ namespace LCChecker.Models
 
             if (masSheet == null) return false;
 
-            int Max = masSheet.LastRowNum - 20;
-            InsertRow(masSheet, Max, 20);
+            //int Max = masSheet.LastRowNum - 20;
+            //InsertRow(masSheet, Max, 20);
+
+            var TemplateRow = masSheet.GetRow(1);
 
             Dictionary<string, int> MasRelatship = new Dictionary<string, int>();
             if (!GetSummaryLine(masSheet, ref MasRelatship))
@@ -612,6 +614,7 @@ namespace LCChecker.Models
                     if (row1 == null)
                     {
                         row1 = masSheet.CreateRow(MasRelatship[item]);
+                        row1.RowStyle = TemplateRow.RowStyle;
                     }
 
                     UpdateSummary(ref row1, ref row, startCell);
@@ -621,18 +624,21 @@ namespace LCChecker.Models
                     if (masRow == null)
                     {  
                         masRow = masSheet.CreateRow(MasStartRow);
+                        masRow.RowStyle = TemplateRow.RowStyle;
                     }
                     MasStartRow++;
-                    for (int x = startCell, y = 0; x < row.LastCellNum; x++, y++)
+                    int xMax = startCell + 43;
+                    for (int x = startCell, y = 0; x < xMax; x++, y++)
                     {
-                        var cell = row.GetCell(x);
-                        if (cell == null)
-                            continue;
                         var masCell = masRow.GetCell(y);
                         if (masCell == null)
                         {
-                            masCell = masRow.CreateCell(y, cell.CellType);
+                            masCell = masRow.CreateCell(y, TemplateRow.GetCell(y).CellType);
+                            masCell.CellStyle = TemplateRow.GetCell(y).CellStyle;
                         }
+                        var cell = row.GetCell(x);
+                        if (cell == null)
+                            continue;
                         switch (cell.CellType)
                         {
                             case CellType.Boolean:
