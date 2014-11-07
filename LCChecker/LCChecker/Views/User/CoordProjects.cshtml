@@ -24,6 +24,7 @@
             <div class="input-group-btn">
                 <button type="submit" class="btn btn-primary">上传坐标点</button>
                 <a href="/User/CoordProjectUploadResult" class="btn btn-default">查看上传历史</a>
+                <a href="/User/DownloadCoord?id=ALL" class="btn btn-primary" target="_blank">下载坐标文件</a> 
             </div>
         </div>
     </form>
@@ -51,6 +52,7 @@
         <th>项目名称</th>
         <th style="width: 100px">检验结果</th>
         <th style="width: 300px;">备注</th>
+        @*<th style="width:100px">下载</th>*@
     </tr>
     @foreach (var project in list)
     {
@@ -63,7 +65,10 @@
                 {
                     if (project.Result.Value)
                     {
+                    @*<span class="label label-success">无误<a href="/User/DownloadCoord?id=@(project.ID)" target="_blank" >下载</a></span>*@
+                    @*<a href="/User/DownloadCoord?id=@(project.ID)" target="_blank"><span class="label label-success">无误下载</span> </a>*@ 
                     <span class="label label-success">无误</span>
+                    <a href="/User/DownloadCoord?id=@(project.ID)" target="_blank"><span class="label label-success">下载</span></a> 
                     }
                     else
                     {
@@ -81,6 +86,14 @@
                     @Html.Raw(project.Note.Replace(";", "<br />"))
                 }
             </td>
+            @*<td>
+                @if (project.Result.HasValue) {
+                    if (project.Result.Value) { 
+                       <a href="/User/DownloadCoord?id=@(project.ID)" class="btn btn-primary" target="_blank">下载</a>  
+                    }
+                }
+                
+            </td>*@
         </tr>
     }
     <tr>

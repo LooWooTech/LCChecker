@@ -197,5 +197,44 @@ namespace LCChecker.Controllers
             return File(fileContents, "application/ms-excel", "自检表.xlsx");
         }
 
+        public ActionResult DownloadCoord(string id) {
+            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/CoordProject");
+            if (!Directory.Exists(path)) {
+                Directory.CreateDirectory(path);
+            }
+            string filePath = "" ;
+            string fileName = "";
+            if (id == "ALL")
+            {
+                filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/CoordProject", CurrentUser.City.ToString() + "坐标.zip");
+                fileName = CurrentUser.City.ToString() + "坐标.zip";
+            }
+            else {
+                filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/CoordProject", id + ".txt");
+                fileName = id + ".txt";
+            }
+            
+            if (!System.IO.File.Exists(filePath)) {
+                throw new ArgumentException("正确坐标文件不存在");
+            }
+            
+            FileStream fs = new FileStream(filePath, FileMode.Open);
+            byte[] bytes = new byte[(int)fs.Length];
+            fs.Read(bytes,0,bytes.Length);
+            fs.Close();
+
+
+            Response.Charset = "UTF-8";
+            Response.ContentEncoding = System.Text.Encoding.GetEncoding("UTF-8");
+            Response.ContentType = "applicaion/octet-stream";
+
+            Response.AddHeader("Content-Disposition", "attachment;filename=" + Server.UrlEncode(fileName));
+            Response.BinaryWrite(bytes);
+            Response.Flush();
+            Response.End();
+
+            return new EmptyResult();;
+        }
+
     }
 }
