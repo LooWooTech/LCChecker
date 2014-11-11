@@ -1,4 +1,5 @@
-﻿using LCChecker.Models;
+﻿using ICSharpCode.SharpZipLib.Zip;
+using LCChecker.Models;
 using NPOI.HSSF.UserModel;
 using NPOI.HSSF.Util;
 using NPOI.SS.UserModel;
@@ -206,11 +207,16 @@ namespace LCChecker.Controllers
             string fileName = "";
             if (id == "ALL")
             {
+                string files = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/CoordProject", ((int)CurrentUser.City).ToString());
+                
                 filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/CoordProject", CurrentUser.City.ToString() + "坐标.zip");
+                if (!Fastziping(files, filePath)) {
+                    throw new ArgumentException("压缩文件失败");
+                }
                 fileName = CurrentUser.City.ToString() + "坐标.zip";
             }
             else {
-                filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/CoordProject", id + ".txt");
+                filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/CoordProject", ((int)CurrentUser.City).ToString(),id + ".txt");
                 fileName = id + ".txt";
             }
             
@@ -234,6 +240,18 @@ namespace LCChecker.Controllers
             Response.End();
 
             return new EmptyResult();;
+        }
+
+
+        public bool Fastziping(string files, string FilePath) {
+            try { 
+                FastZip zip = new FastZip();
+                zip.CreateZip(FilePath,files,true,".txt");
+            }catch(Exception er){
+                throw new ArgumentException(er.Message);
+            }
+            return true;
+            
         }
 
     }
