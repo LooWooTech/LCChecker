@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LCChecker.Areas.Second.Models;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -21,5 +22,8 @@ namespace LCChecker.Models
         public DbSet<Report> Reports { get; set; }
 
         public DbSet<Record> Records { get; set; }
+        public DbSet<SecondProject> SecondProjects { get; set; }
+        public DbSet<SecondRecord> SecondRecords { get; set; }
+        public DbSet<SecondReport> SecondReports { get; set; }
     }
 }

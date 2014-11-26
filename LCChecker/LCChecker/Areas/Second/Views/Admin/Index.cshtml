@@ -1,0 +1,67 @@
+﻿@using LCChecker.Models
+@{
+    List<LCChecker.Areas.Second.Models.SecondProject> list = ViewBag.List;
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Admin/_Layout.cshtml";
+}
+
+
+<div class="alert alert-warning">
+    导入文件格式为附表1格式
+</div>
+<div style="clear:both;overflow:hidden;margin-bottom:10px;">
+    <form class="form form-inline" method="post" enctype="multipart/form-data" action="/Second/Admin/UploadProjects" style="float:left;">
+        <div class="input-group">
+            <div class="input-group-btn">
+                <input type="file" name="file1" class="form-control" />
+            </div>
+            <div class="input-group-btn">
+                <button type="submit" class="btn btn-primary">上传项目</button> 
+            </div>
+        </div>
+    </form> 
+    <form class="form form-inline" style="float:right;">
+        <div class="input-group">
+            <span class="input-group-addon">过滤项目</span>
+            <select name="city" class="form-control">
+                @foreach (City city in Enum.GetValues(typeof(City))) {
+                    var value = (int)city;
+                    <option value="@value" @(Request.QueryString["city"]==value.ToString()?"selected=selected":"")>@(city.ToString())</option>
+                }
+            </select>
+            <div class="input-group-btn">
+                <select name="result" class="form-control">
+                    <option value="0">全部</option>
+                    <option value="3"></option>
+                </select>
+            </div>
+            <div class="input-group-btn">
+                <button type="submit" class="btn btn-primary">过滤</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<table class="table table-bordered">
+    <tr>
+        <th style="width:120px;">所在地</th>
+        <th style="width:150px;">项目编号</th>
+        <th>项目名称</th>
+        <th style="width:100px;">检查结果</th>
+        <th style="width:300px;">备注</th>
+    </tr>
+    @foreach (var project in list) { 
+        <tr>
+            <td>@(project.City.ToString())-@(project.County)</td>
+            <td>@(project.ID)</td>
+            <td>@(project.Name)</td>
+            <td></td>
+            <td></td>
+        </tr>
+    }
+    <tr>
+        <td colspan="9">
+            @Html.Partial("_pagination",ViewBag.Page as object)
+        </td>
+    </tr>
+</table> 

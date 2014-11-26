@@ -60,7 +60,15 @@ namespace LCChecker.Models
         附表八 = 8,
         附表九 = 9,
         项目坐标 = 10,
-        新增耕地坐标 = 11
+        新增耕地坐标 = 11,
+        附表1=21,
+        附表2=22,
+        附表3=23,
+        附表4=24,
+        附表6=26,
+        附表7=27,
+        附表8=28,
+        附表9=29
     }
 
     public enum UploadFileProceedState

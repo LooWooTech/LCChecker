@@ -85,6 +85,9 @@
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Optimization">
+      <HintPath>..\..\..\..\System.Web.Optimization.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.Routing" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
@@ -129,6 +132,20 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Areas\Second\Check\CheckOne.cs" />
+    <Compile Include="Areas\Second\Check\CheckTwo.cs" />
+    <Compile Include="Areas\Second\Check\SecondCheckEngine.cs" />
+    <Compile Include="Areas\Second\Controllers\AdminController.cs" />
+    <Compile Include="Areas\Second\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Second\Controllers\UserController.cs" />
+    <Compile Include="Areas\Second\Helper\SecondProjectHelper.cs" />
+    <Compile Include="Areas\Second\Models\SecondProject.cs" />
+    <Compile Include="Areas\Second\Models\SecondRecord.cs" />
+    <Compile Include="Areas\Second\Models\SecondReport.cs" />
+    <Compile Include="Areas\Second\Models\SecondReportType.cs" />
+    <Compile Include="Areas\Second\Rules\OnlySecondProject.cs" />
+    <Compile Include="Areas\Second\SecondAreaRegistration.cs" />
+    <Compile Include="Areas\Second\SecondController.cs" />
     <Compile Include="Controllers\CoordController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Helpers\AuthUtility.cs" />
@@ -251,6 +268,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Areas\Second\Views\Shared\" />
     <Folder Include="Uploads\" />
   </ItemGroup>
   <ItemGroup>
@@ -298,6 +316,18 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Templates\附表4.xls" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Second\Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Second\Views\Admin\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Second\Views\User\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Second\Views\User\Report.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

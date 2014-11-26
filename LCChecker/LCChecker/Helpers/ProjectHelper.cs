@@ -1,4 +1,5 @@
-﻿using LCChecker.Models;
+﻿using LCChecker.Areas.Second.Models;
+using LCChecker.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,6 +42,8 @@ namespace LCChecker
                 db.SaveChanges();
             }
         }
+
+       
 
         public static void AddCoordProjects(List<CoordProject> list)
         {
@@ -119,6 +122,7 @@ namespace LCChecker
                 return query.ToList();
             }
         }
+
 
         public static List<CoordProject> GetCoordProjects(ProjectFileter filter)
         {

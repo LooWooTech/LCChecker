@@ -1,0 +1,59 @@
+﻿@using LCChecker.Areas.Second.Models
+@using LCChecker
+@{
+    List<LCChecker.Areas.Second.Models.SecondReport> list = ViewBag.List;
+    ViewBag.Title = "报部表格";
+    Layout = "~/Views/User/_Layout.cshtml";
+}
+
+<div class="alert alert-warning">
+    1.请严格按照样表填写报部表格。<br />
+    2.请注意<b>表2</b>，<b>表3</b>，<b>表4</b>，<b>表6</b>，<b>表7</b>，<b>表8</b>，<b>表9</b>的项目与<b>表1</b>项目的对应关系，系统检查后会若提示不一致，请与省国土厅联系并进行说明。<br />
+    3.<b>表5</b>请提供纸质表。<br />
+</div>
+
+<table class="table table-bordered">
+    <tr>
+        <th>表单名称</th>
+        <th>检查状态</th>
+        <th>检查结果</th>
+        <th>样表下载</th>
+        <th style="width:200px;">上传验证</th>
+    </tr>
+
+    @foreach (var item in list) { 
+        var typevalue=(int)item.Type;
+        <tr>
+            <td>@(item.Type+":"+ item.Type.GetDescription())</td>
+            @switch (item.Result) { 
+                case null:
+                    <td>
+                        <span class="label label-default">未检查</span> 
+                    </td>
+                    <td>---</td>
+                    break;
+                    case true:
+                    <td>
+                        <span class="label label-success">无误</span>
+                    </td>
+                    <td><a href="" class="btn btn-sm btn-default">查看</a>  </td>
+                    break;
+                    case false:
+                    <td>
+                        <span class="label label-success">存疑</span>
+                    </td>
+                    <td><a href="" class="btn btn-sm btn-default">查看</a>  </td>
+                    break;
+            }
+            <td>
+                <a href=""class="btn btn-sm btn-primary">下载</a>
+            </td>
+            <td>
+                <form method="post" action="" class="form-inline" enctype="multipart/form-data">
+                    <input type="file" name="file" class="form-control input-sm" style="width:100px" />
+                    <button type="submit" class="btn btn-sm btn-success">上传</button> 
+                </form>
+            </td>
+        </tr>
+    }
+</table> 

@@ -1,4 +1,5 @@
-﻿using LCChecker.Helpers;
+﻿using LCChecker.Areas.Second.Models;
+using LCChecker.Helpers;
 using LCChecker.Models;
 using NPOI.HSSF.UserModel;
 using NPOI.HSSF.Util;
@@ -61,7 +62,48 @@ namespace LCChecker
             }
         }
 
-        public static bool FindHeader(this ISheet sheet, ref int startRow, ref int startCell, ReportType Type)
+
+        public static ISheet OpenSheet(string filePath, bool findHeader, ref int startRow, ref int startCol, ref string errMsg, SecondReportType Type)
+        {
+            IWorkbook workbook = null;
+            try
+            {
+                using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                {
+                    workbook = WorkbookFactory.Create(fs);
+                }
+            }
+            catch (Exception er)
+            {
+                string str = er.ToString();
+                errMsg = "打开Excel表格失败：";// +filePath;
+                return null;
+            }
+
+            if (workbook == null)
+            {
+                errMsg = "打开Excel表格失败：";// +filePath;
+                return null;
+            }
+
+            if (workbook.NumberOfSheets == 0)
+            {
+                errMsg = "Excel文件中没有表格。";
+                return null;
+            }
+
+            var sheet = workbook.GetSheetAt(0);
+
+            if (findHeader == false) return sheet;
+
+            if (FindHeader(sheet, ref startRow, ref startCol, Type) == false)
+            {
+                errMsg = "未找到附表文件的表头";
+                return null;
+            }
+            return sheet;
+        }
+        public static bool FindHeader(this ISheet sheet, ref int startRow, ref int startCell, SecondReportType Type)
         {
             var Name = @"([\w\W])" + Type.GetDescription();
             string[] Header = { "编号", "市", "县" };
