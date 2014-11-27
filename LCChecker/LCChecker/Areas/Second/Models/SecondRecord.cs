@@ -24,5 +24,32 @@ namespace LCChecker.Areas.Second.Models
         public bool IsError { get; set; }
         [MaxLength(1023)]
         public string Note { get; set; }
+
+
+
+        public static void Clear(List<SecondRecord> List) {
+            using (var db = new LCDbContext()) {
+                foreach (var item in List) {
+                    db.SecondRecords.Attach(item);
+                    db.SecondRecords.Remove(item);
+                }
+                db.SaveChanges();
+            }
+        }
+
+        public static void AddRecords(List<SecondRecord> List) {
+            using (var db = new LCDbContext()) {
+                foreach (var item in List) {
+                    db.SecondRecords.Add(item);
+                }
+                try
+                {
+                    db.SaveChanges();
+                }
+                catch { 
+                
+                }
+            }
+        }
     }
 }

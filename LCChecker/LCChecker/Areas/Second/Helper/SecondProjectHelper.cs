@@ -20,6 +20,15 @@ namespace LCChecker.Areas.Second
         public bool? IsRelieve { get; set; }
     }
 
+
+    public class SeProject {
+        public bool IsHasDoubt { get; set; }
+        public bool IsApplyDelete { get; set; }
+        public bool IsHasError { get; set; }
+        public bool IsDescrease { get; set; }
+        public bool IsRelieve { get; set; }
+    }
+
     public class SecondProjectHelper{
         public static void AddSecondProjects(List<SecondProject> list)
         {

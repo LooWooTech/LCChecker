@@ -12,9 +12,23 @@ namespace LCChecker.Areas.Second
     {
         public List<RuleInfo> rules = new List<RuleInfo>();
         public Dictionary<string, List<string>> Error = new Dictionary<string, List<string>>();
+        public Dictionary<string, string> Warning = new Dictionary<string, string>();
         public List<string> IDS = new List<string>();
         public Dictionary<string, bool> Whether = new Dictionary<string, bool>();
-        public bool Check(string FilePath, ref string Mistakes, SecondReportType Type, List<SecondProject> Data) {
+
+
+        public Dictionary<string, List<string>> GetError() {
+            return Error;
+        }
+        public List<string> GetIDS() {
+            return IDS;
+        }
+
+        public bool Check(string FilePath, ref string Mistakes, SecondReportType Type) {
+            return CheckEngine(FilePath, ref Mistakes, Type);
+        }
+       
+        public bool CheckEngine(string FilePath, ref string Mistakes, SecondReportType Type) {
             int StartRow = 0, StartCell = 0;
             ISheet sheet = XslHelper.OpenSheet(FilePath, true, ref StartRow, ref StartCell, ref Mistakes, Type);
             if (sheet == null) {
@@ -52,10 +66,58 @@ namespace LCChecker.Areas.Second
                     continue;
                 }
                 IDS.Add(value);
+                if (Whether.ContainsKey(value))
+                {
+                    if (!Whether[value]) {
+                        ErrorRow.Add("规则000：与重点复核确认项目以外所有报部备案项目复核确认总表不符");
+                        //Warning[value] = "规则000：与重点复核确认项目以外所有报部备案项目复核确认总表不符";
+                    }
+                    foreach (var item in rules) {
+                        if (!item.Rule.Check(row, StartCell)) {
+                            ErrorRow.Add(item.Rule.Name);
+                        }
+                    }
+                    if (ErrorRow.Count() != 0) {
+                        if (Error.ContainsKey(value))
+                        {
+                            Error[value] = ErrorRow;
+                        }
+                        else {
+                            Error.Add(value, ErrorRow);
+                        }
+                    }
 
+                    Whether.Remove(value);
+                }
+                else {
+                    ErrorRow.Add("规则000：重点复核确认总表中不包括该项目");
+                    if (!Error.ContainsKey(value))
+                    {
+                        Error.Add(value, ErrorRow);
+                    }
+                }
 
             }
-                return true;
+            foreach (var item in Whether.Keys) {
+                if (Whether[item]) {
+                    if (Error.ContainsKey(item))
+                    {
+                        Error[item].Add("规则000：项目存在复核确认验收清单中，但是不存在本表中");
+                    }
+                    else {
+                        Error.Add(item, new List<string> { "规则000：项目存在复核确认验收清单中，但是不存在本表中" });
+                    }
+                    
+                    //if (Warning.ContainsKey(item))
+                    //{
+                    //    Warning[item] += "规则000：项目存在复核确认验收清单中，但是不存在本表中";
+                    //}
+                    //else {
+                    //    Warning.Add(item, "规则000：项目存在复核确认验收清单中，但是不存在本表中");
+                    //}
+                }
+            }   
+            return true;
         }
 
         

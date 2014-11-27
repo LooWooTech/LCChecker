@@ -10,8 +10,9 @@ namespace LCChecker.Rules
     {
         public int Column1Index { get; set; }
         public int Column2Index { get; set; }
+        public string ID { get; set; }
         public string Name {
-            get { return string.Format("第{0}栏大于等于第{1}栏", Column1Index + 1, Column2Index + 1); }
+            get { return string.Format("规则{0}：第{1}栏大于等于第{2}栏",ID, Column1Index + 1, Column2Index + 1); }
         }
 
         public bool Check(NPOI.SS.UserModel.IRow row, int xoffset = 0)

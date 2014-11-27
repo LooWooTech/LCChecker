@@ -3,10 +3,10 @@
     var action =  Request.RequestContext.RouteData.Values["action"].ToString().ToLower();
 }
 @section nav{
-    <li class="@(action == "index" ? "active" : null)"><a href="/user/"><i class="glyphicon glyphicon-home"></i>&nbsp;首页</a></li>
-    <li class="@(action == "projects" ? "active" : null)"><a href="/user/projects"><i class="glyphicon glyphicon-check"></i>&nbsp;自检表管理</a></li>
-    <li class="@(action.Contains("report") ? "active" : null)"><a href="/user/reports"><i class="glyphicon glyphicon-paperclip"></i>&nbsp;报部表管理</a></li>
-    <li class="@(action.Contains("coord") ? "active" : null)"><a href="/user/CoordProjects"><i class="glyphicon glyphicon-map-marker"></i>&nbsp;坐标点上传</a></li>
+    <li class=""><a href="/user/"><i class="glyphicon glyphicon-home"></i>&nbsp;首页</a></li>
+    <li class=""><a href="/user/projects"><i class="glyphicon glyphicon-check"></i>&nbsp;自检表管理</a></li>
+    <li class=""><a href="/user/reports"><i class="glyphicon glyphicon-paperclip"></i>&nbsp;报部表管理</a></li>
+    <li class=""><a href="/user/CoordProjects"><i class="glyphicon glyphicon-map-marker"></i>&nbsp;坐标点上传</a></li>
     <li class=""><a href="/Second/User/Report"><i class="glyphicon glyphicon-barcode"></i>&nbsp; 第二批</a></li>
 }
 @RenderBody()

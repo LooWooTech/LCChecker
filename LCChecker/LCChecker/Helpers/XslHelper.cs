@@ -4,6 +4,7 @@ using LCChecker.Models;
 using NPOI.HSSF.UserModel;
 using NPOI.HSSF.Util;
 using NPOI.SS.UserModel;
+using NPOI.SS.Util;
 using NPOI.XSSF.UserModel;
 using System;
 using System.Collections.Generic;
@@ -156,6 +157,46 @@ namespace LCChecker
             return false;
 
         }
+        /// <summary>
+        /// 获取合并单元格
+        /// </summary>
+        /// <param name="sheet"></param>
+        /// <param name="rowNum"></param>
+        /// <param name="colNum"></param>
+        /// <param name="rowSpan"></param>
+        /// <param name="colSpan"></param>
+        /// <returns></returns>
+        public static bool isMergeCell(ISheet sheet, int rowNum, int colNum, out int rowSpan, out int colSpan)
+        {
+            bool result = false;
+            rowSpan = 0;
+            colSpan = 0;
+            if ((rowNum < 1) || (colNum < 1)) return result;
+            int rowIndex = rowNum - 1;
+            int colIndex = colNum - 1;
+            int regionsCount = sheet.NumMergedRegions;
+            rowSpan = 1;
+            colSpan = 1;
+            for (int i = 0; i < regionsCount; i++)
+            {
+                CellRangeAddress range = sheet.GetMergedRegion(i);
+                sheet.IsMergedRegion(range);
+                if (range.FirstRow == rowIndex && range.FirstColumn == colIndex)
+                {
+                    rowSpan = range.LastRow - range.FirstRow + 1;
+                    colSpan = range.LastColumn - range.FirstColumn + 1;
+                    break;
+                }
+            }
+            try
+            {
+                result = sheet.GetRow(rowIndex).GetCell(colIndex).IsMergedCell;
+            }
+            catch
+            {
+            }
+            return result;
+        }
 
 
         private static Regex _projectIdRe = new Regex(@"^33[0-9]{12}", RegexOptions.Compiled);
@@ -164,7 +205,71 @@ namespace LCChecker
             return _projectIdRe.IsMatch(value);
         }
 
-       
+        public static bool JudgeLand(NPOI.SS.UserModel.ISheet sheet, int Line, int xoffset = 0)
+        {
+            string[] Lands = new string[] { "水田", "水浇地", "旱地" };
+            foreach (var item in Lands)
+            {
+                IRow row = sheet.GetRow(Line++);
+                if (row == null)
+                {
+                    return false;
+                }
+                var value = row.GetCell(6 + xoffset, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+                if (string.IsNullOrEmpty(value))
+                    return false;
+                if (value != item)
+                    return false;
+            }
+            return true;
+        }
+
+        public static bool CheckLand(NPOI.SS.UserModel.ISheet sheet, int Line, ref double LandArea, ref int Degree, ref string Mistakes, int xoffset = 7)
+        {
+            IRow row = sheet.GetRow(Line);
+            if (row == null)
+            {
+                Mistakes = "未获得相关表格行";
+                return false;
+            }
+            int Max = xoffset + 15;
+            bool Flag = false;
+            double Area = 0.0;
+            for (var i = xoffset; i < Max; i++)
+            {
+                var cell = row.GetCell(i, MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                if (string.IsNullOrEmpty(cell.ToString().Trim()))
+                    continue;
+                if (Flag)
+                {
+                    Mistakes = "规则2904：水田、水浇地、旱地中同一个分类不允许填写多个质量等别";
+                    return false;
+                }
+
+                if (cell.CellType == CellType.Numeric || cell.CellType == CellType.Formula)
+                {
+                    try
+                    {
+                        Area = cell.NumericCellValue;
+                    }
+                    catch
+                    {
+                        Area = .0;
+                    }
+                }
+                else
+                {
+                    var val = cell.ToString().Trim();
+                    double.TryParse(val, out Area);
+                }
+                Degree = i - 6;
+                Flag = true;
+            }
+            LandArea = Area;
+            //Area = Area / 15;
+            //LandArea = Math.Floor(Area * 10000) / 10000;   
+            return true;
+        }
 
         public static ICellStyle GetCellStyle(this IWorkbook workbook, XslHeaderStyle str)
         {
