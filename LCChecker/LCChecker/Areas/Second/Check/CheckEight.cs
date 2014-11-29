@@ -13,7 +13,6 @@ namespace LCChecker.Areas.Second
 {
     public class CheckEight:SecondCheckEngine,ISeCheck
     {
-       // public Dictionary<HookedProject, List<Dictionary<BuildProject, List<ReHookProject>>>> Data = new Dictionary<HookedProject, List<Dictionary<BuildProject, List<ReHookProject>>>>();
 
         IRowRule ReHookRule = new SumRowRule() { SumColumnIndex = 21, ColumnIndices = new[] { 22, 23 } };
         public CheckEight(List<SecondProject> projects) {
@@ -54,10 +53,10 @@ namespace LCChecker.Areas.Second
                 if (IDS.Contains(Key1)) {
                     if (Error.ContainsKey(Key1))
                     {
-                        Error[Key1].Add("规则000：表格中存在相同的项目");
+                        Error[Key1].Add("错误0001：表格中存在相同的项目");
                     }
                     else {
-                        Error.Add(Key1, new List<string> { "规则000：表格中存在相同的项目" });
+                        Error.Add(Key1, new List<string> { "错误0001：表格中存在相同的项目" });
                     }
                     continue;
                 }
@@ -68,8 +67,7 @@ namespace LCChecker.Areas.Second
                 {
                     if (!Whether[Key1])
                     {
-                        ErrorRow.Add("规则：与重点复核确认项目以外所有报部备案项目复核确认总表不符");
-                        //Warning[Key1] = "提示：与重点复核确认项目以外所有报部备案项目复核确认总表不符";
+                        ErrorRow.Add("规则2806：与重点复核确认项目以外所有报部备案项目复核确认总表不符");
                     }
                     
                     foreach (var item in rules) {
@@ -80,16 +78,19 @@ namespace LCChecker.Areas.Second
                     Whether.Remove(Key1);
                 }
                 else {
-                    ErrorRow.Add("规则000：与复核确认验收项目清单不符，该项目不存在");
+                    ErrorRow.Add("规则0002：与复核确认验收项目不符，该项目不存在");
                 }
                 double Nine = 0.0;
                 double.TryParse(row.Cells[StartCell + 8].GetValue().ToString(), out Nine);
+                double Sumfifteen = 0.0;
                 int spanR1 = 0,spanC1=0;
-                if (XslHelper.isMergeCell(sheet, i+1, StartCell+1, out spanR1, out spanC1)) {
+                if (XslHelper.isMergeCell(sheet, i + 1, StartCell + 1, out spanR1, out spanC1))
+                {
                     int FlagR = spanR1;
                     int Rowoffset = 0;
-                    double Sumfifteent = 0.0;
-                    while(FlagR>0){
+                    
+                    while (FlagR > 0)
+                    {
                         int spanR2 = 0, spanC2 = 0;
                         if (XslHelper.isMergeCell(sheet, i + 1 + Rowoffset, StartCell + 10, out spanR2, out spanC2))
                         {
@@ -97,12 +98,17 @@ namespace LCChecker.Areas.Second
                             var row2 = sheet.GetRow(i + Rowoffset);
                             if (row2 == null)
                             {
-                                ErrorRow.Add("未获取对应建设用地项目情况");
+                                ErrorRow.Add("错误0081：未获取对应建设用地项目情况");
                                 break;
                             }
+                            var key2 = row2.Cells[StartCell + 12].GetValue().ToString();
+                            if (string.IsNullOrEmpty(key2))
+                                continue;
+                            if (!key2.VerificationID())
+                                continue;
                             double fifteen = 0.0;
                             double.TryParse(row2.Cells[StartCell + 14].GetValue().ToString(), out fifteen);
-                            Sumfifteent += fifteen;
+                            Sumfifteen += fifteen;
 
                             double sumtwenty = 0.0;
                             for (var j = 0; j < spanR2; j++)
@@ -110,61 +116,113 @@ namespace LCChecker.Areas.Second
                                 IRow row3 = sheet.GetRow(j + i + Rowoffset);
                                 if (row3 == null)
                                 {
-                                    ErrorRow.Add("未获取重新不挂补充耕地项目情况");
+                                    ErrorRow.Add("错误0082：未获取重新不挂补充耕地项目情况");
                                     break;
                                 }
+                                var key3 = row3.Cells[StartCell + 18].GetValue().ToString();
+                                if (string.IsNullOrEmpty(key3))
+                                    continue;
+                                if (!key3.VerificationID())
+                                    continue;
                                 if (!ReHookRule.Check(row3, StartCell))
                                 {
-                                    ErrorRow.Add(ReHookRule.Name);
+                                    ErrorRow.Add("规则2803：" + key3 + "-" + ReHookRule.Name);
                                 }
                                 double Twenty = 0.0;
                                 if (double.TryParse(row3.Cells[StartCell + 22].GetValue().ToString(), out Twenty))
                                 {
                                     sumtwenty += Twenty;
                                 }
-                                else {
-                                    var key3 = row3.Cells[StartCell + 18].GetValue().ToString();
-                                    ErrorRow.Add(key3 + ":无法获取重新补挂补充耕地项目的挂钩占补平衡面积");
+                                else
+                                {
+                                    //var key3 = row3.Cells[StartCell + 18].GetValue().ToString();
+                                    ErrorRow.Add("错误0083：" + key3 + "-无法获取重新补挂补充耕地项目的挂钩占补平衡面积");
                                 }
                             }
 
-                            if (Math.Abs(sumtwenty - fifteen) > 0.0001) {
-                                ErrorRow.Add("规则000：对应建设用地项目的解挂可用于占补平衡面积等于重新补挂补充耕地项目的用于建设项目挂钩可用于占补平衡面积和");
+                            if (Math.Abs(sumtwenty - fifteen) > 0.0001)
+                            {
+                                ErrorRow.Add("规则2804：对应建设用地项目的解挂可用于占补平衡面积等于重新补挂补充耕地项目的用于建设项目挂钩可用于占补平衡面积和");
                             }
 
                             Rowoffset += spanR2;
                             FlagR -= spanR2;
                         }
-                        else {
-                            ErrorRow.Add("无法获取合并单元格信息");
-                            break;
+                        else
+                        {
+                            var row2 = sheet.GetRow(i + Rowoffset);
+                            if (row2 == null)
+                                continue;
+                            var key2 = row2.Cells[StartCell + 12].GetValue().ToString();
+                            if (string.IsNullOrEmpty(key2) || !key2.VerificationID())
+                            {
+                                ErrorRow.Add("错误0084:对应建设用地项目无法获取信息");
+                            }
+                            var key3 = row2.Cells[StartCell + 18].GetValue().ToString();
+                            if (string.IsNullOrEmpty(key3) || !key3.VerificationID())
+                            {
+                                ErrorRow.Add("错误0085：重新补挂补充耕地项目无法获取信息");
+                            }
+                            if (!ReHookRule.Check(row, StartCell)) {
+                                ErrorRow.Add("规则2803：" + key3 + "-" + ReHookRule.Name);
+                            }
+                            double fifteen=0.0,twenty=0.0;
+                            double.TryParse(row2.Cells[StartCell + 14].GetValue().ToString(), out fifteen);
+                            double.TryParse(row2.Cells[StartCell + 22].GetValue().ToString(), out twenty);
+                            if (Math.Abs(fifteen - twenty) > 0.0001) {
+                                ErrorRow.Add("规则2804：对应建设用地项目的解挂可用于占补平衡面积等于重新补挂补充耕地项目的用于建设项目挂钩可用于占补平衡面积和");
+                            }
+                            Sumfifteen += fifteen;
+                            Rowoffset++;
+                            FlagR--;
                         }
                     }
-                    if (Math.Abs(Sumfifteent - Nine) > 0.0001) {
-                        ErrorRow.Add("规则000：已挂钩补充耕地项目的需解除已挂钩使用可用于占补平衡面积等于对应建设用地项目的用于该建设项目解挂可用于占补平衡面积和");
-                    }
                     
+
+                }
+                else {
+                    var key2 = row.Cells[StartCell + 12].GetValue().ToString();
+                    if (string.IsNullOrEmpty(key2) || !key2.VerificationID())
+                    {
+                        ErrorRow.Add("错误0084:对应建设用地项目无法获取信息");
+                    }
+                    var key3 = row.Cells[StartCell + 18].GetValue().ToString();
+                    if (string.IsNullOrEmpty(key3) || !key3.VerificationID())
+                    {
+                        ErrorRow.Add("错误0085：重新补挂补充耕地项目无法获取信息");
+                    }
+                    if (!ReHookRule.Check(row, StartCell))
+                    {
+                        ErrorRow.Add("规则2803：" + key3 + "-" + ReHookRule.Name);
+                    }
+                    double twenty = 0.0;
+                    double.TryParse(row.Cells[StartCell + 14].GetValue().ToString(), out Sumfifteen);
+                    double.TryParse(row.Cells[StartCell + 22].GetValue().ToString(), out twenty);
+                    if (Math.Abs(Sumfifteen - twenty) > 0.0001)
+                    {
+                        ErrorRow.Add("规则2804：对应建设用地项目的解挂可用于占补平衡面积等于重新补挂补充耕地项目的用于建设项目挂钩可用于占补平衡面积和");
+                    }
+                
+                }
+                if (Math.Abs(Sumfifteen - Nine) > 0.0001)
+                {
+                    ErrorRow.Add("规则2802：已挂钩补充耕地项目的需解除已挂钩使用可用于占补平衡面积等于对应建设用地项目的用于该建设项目解挂可用于占补平衡面积和");
                 }
                 i = i + spanR1 - 1;
                 if (ErrorRow.Count() != 0) {
                     Error[Key1] = ErrorRow;
                 }
-                
-
-
             }
 
             foreach (var item in Whether.Keys) {
                 if (Whether[item]) {
                     if (Error.ContainsKey(item))
                     {
-                        Error[item].Add("规则000：与重点复核确认项目以外所有报部备案项目复核确认总表不符,该项目应存在与本表中");
+                        Error[item].Add("规则2806：与重点复核确认项目以外所有报部备案项目复核确认总表不符,该项目应存在与本表中");
                     }
                     else {
-                        Error.Add(item, new List<string> { "规则000：与重点复核确认项目以外所有报部备案项目复核确认总表不符,该项目应存在与本表中" });
+                        Error.Add(item, new List<string> { "规则2806：与重点复核确认项目以外所有报部备案项目复核确认总表不符,该项目应存在与本表中" });
                     }
-                    
-                   // Warning[item] = "提示：与重点复核确认项目以外所有报部备案项目复核确认总表不符,该项目应存在与本表中";
                 }
             }
                 

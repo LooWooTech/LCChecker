@@ -147,6 +147,7 @@
     <Compile Include="Areas\Second\Controllers\UserController.cs" />
     <Compile Include="Areas\Second\Helper\EightHelper.cs" />
     <Compile Include="Areas\Second\Helper\SecondProjectHelper.cs" />
+    <Compile Include="Areas\Second\Models\FarmLand.cs" />
     <Compile Include="Areas\Second\Models\SecondProject.cs" />
     <Compile Include="Areas\Second\Models\SecondRecord.cs" />
     <Compile Include="Areas\Second\Models\SecondReport.cs" />

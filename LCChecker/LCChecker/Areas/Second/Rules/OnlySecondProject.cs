@@ -26,7 +26,7 @@ namespace LCChecker.Areas.Second.Rules
                 {
                     sb.AppendFormat("、'{0}'", Values[i]);
                 }
-                sb.AppendFormat("与附表3中保持一致");
+                sb.AppendFormat("与重点复核确认项目清单中保持一致");
                 return sb.ToString();
             }
         }

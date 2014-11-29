@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.22013.1
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dbscripts", "dbscripts", "{788BD1B0-0356-4795-937A-5E3545AAA4F0}"
 	ProjectSection(SolutionItems) = preProject
@@ -11,6 +11,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LCChecker", "LCChecker\LCChecker.csproj", "{FEF714AB-89EC-41CE-97C0-2DAA51D02E3E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoordAnalyseService", "CoordAnalyseService\CoordAnalyseService.csproj", "{8AF34291-26DB-4E27-B5E4-0FC39CF0B6C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TidyExcelService", "TidyExcelService\TidyExcelService.csproj", "{22E01276-8AD9-439F-8891-2466EB4EF264}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FEF714AB-89EC-41CE-97C0-2DAA51D02E3E} = {FEF714AB-89EC-41CE-97C0-2DAA51D02E3E}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +31,10 @@ Global
 		{8AF34291-26DB-4E27-B5E4-0FC39CF0B6C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8AF34291-26DB-4E27-B5E4-0FC39CF0B6C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8AF34291-26DB-4E27-B5E4-0FC39CF0B6C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22E01276-8AD9-439F-8891-2466EB4EF264}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22E01276-8AD9-439F-8891-2466EB4EF264}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22E01276-8AD9-439F-8891-2466EB4EF264}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22E01276-8AD9-439F-8891-2466EB4EF264}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

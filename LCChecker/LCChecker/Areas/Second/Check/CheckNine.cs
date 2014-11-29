@@ -12,6 +12,8 @@ namespace LCChecker.Areas.Second
 {
     public class CheckNine:SecondCheckEngine,ISeCheck
     {
+
+        
         public Dictionary<string, SecondProject> Team;
         public CheckNine(List<SecondProject> projects) {
             Team= projects.ToDictionary(e => e.ID, e => e);
@@ -39,7 +41,7 @@ namespace LCChecker.Areas.Second
             }
             StartRow++;
             int Max = sheet.LastRowNum;
-            for (var i = StartRow; i <= Max; i=i+3) {
+            for (var i = StartRow+1; i <= Max; i=i+3) {
                 IRow row = sheet.GetRow(i);
                 if (row == null)
                     break;
@@ -56,11 +58,11 @@ namespace LCChecker.Areas.Second
                 {
                     if (Error.ContainsKey(value))
                     {
-                        Error[value].Add("规则000：存在相同项目");
+                        Error[value].Add("规则0001：表格中存在相同项目");
                     }
                     else
                     {
-                        Error.Add(value, new List<string> { "规则000：存在相同项目" });
+                        Error.Add(value, new List<string> { "规则0001：表格中存在相同项目" });
                     }
                     continue;
                 }
@@ -84,16 +86,16 @@ namespace LCChecker.Areas.Second
                     {
                         if (Math.Abs(currentProject.NewArea.Value - sum) > 0.0001)
                         {
-                            ErrorRow.Add("水田、旱地的面积之和与复核确认验收项目清单新增耕地面积不符");
+                            ErrorRow.Add("规则2902：水田、旱地的面积之和与复核确认验收项目清单新增耕地面积不符");
                         }
                     }
                     else
                     {
-                        ErrorRow.Add("数据库中没有新增耕地面积值，无法进行水田、旱地面积核对");
+                        ErrorRow.Add("错误0000：数据库中没有新增耕地面积值，无法进行水田、旱地面积核对");
                     }
                     if (Area[1] != 0 && Degree1[1] != 0)
                     {
-                        ErrorRow.Add("水浇地栏错误");
+                        ErrorRow.Add("错误0091：水浇地栏错误");
                     }
 
                     foreach (var item in rules) {
@@ -103,16 +105,33 @@ namespace LCChecker.Areas.Second
                     }
                 }
                 else {
-                    ErrorRow.Add("复核确认验收项目清单中不存在该项目，请核对");
+                    ErrorRow.Add("规则0002：复核确认验收项目清单中不存在该项目，请核对");
                 }
 
-                if (ErrorRow.Count() != 0) {
+                if (ErrorRow.Count() != 0)
+                {
                     if (Error.ContainsKey(value))
                     {
                         Error[value].Add("表格中存在相同项目");
                     }
-                    else {
+                    else
+                    {
                         Error.Add(value, ErrorRow);
+                    }
+                }
+                else
+                {
+                    if (Degree1[0] != 0 && (Math.Abs(Area[0]-0) > 0.0001))
+                    {
+                        if (!DicPaddy.ContainsKey(value))
+                        {
+                            DicPaddy.Add(value, new SeLand() { Degree = (Degree)Degree1[0], Area = Area[0] });
+                        }
+                    }
+                    if (Degree1[2] != 0 && (Math.Abs(Area[2]-0) > 0.0001)) {
+                        if(!DicDry.ContainsKey(value)){
+                            DicDry.Add(value, new SeLand() { Degree = (Degree)Degree1[2], Area = Area[2] });
+                        }
                     }
                 }
 

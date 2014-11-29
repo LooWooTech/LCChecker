@@ -128,7 +128,14 @@ namespace LCChecker
                                 return false;
                             if (!Regex.IsMatch(value, Name))
                                 return false;
-                            i = i + 4;
+                            if (Type == SecondReportType.附表8)
+                            {
+                                i = i + 5;
+                            }
+                            else {
+                                i = i + 4;
+                            }
+                            
                             row = sheet.GetRow(i);
                             if (row == null)
                                 return false;

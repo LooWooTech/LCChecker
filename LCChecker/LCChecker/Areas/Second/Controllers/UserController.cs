@@ -124,9 +124,54 @@ namespace LCChecker.Areas.Second.Controllers
                 db.SaveChanges();
                 throw new ArgumentException("检索表格失败"+Fault);
             }
+           
+
+
+
             var errors = engine.GetError();
             var ids = engine.GetIDS();
             var list = db.SecondRecords.Where(e => e.City == CurrentUser.City && e.Type == type).ToList();
+            if (type == SecondReportType.附表1)
+            {
+                var Seproject=engine.GetSeProject();
+                foreach (var item in projects) {
+                    if (!errors.ContainsKey(item.ID) && Seproject.ContainsKey(item.ID)) {
+                        item.IsHasDoubt = Seproject[item.ID].IsHasDoubt;
+                        item.IsApplyDelete = Seproject[item.ID].IsApplyDelete;
+                        item.IsHasError = Seproject[item.ID].IsHasError;
+                        item.IsDescrease = Seproject[item.ID].IsDescrease;
+                        item.IsRelieve = Seproject[item.ID].IsRelieve;
+                        db.SaveChanges();
+                    }
+                }
+            }
+            if (type == SecondReportType.附表9) {
+                var paddys = engine.GetPaddy();
+                var drys = engine.GetDry();
+                var farmland = db.FarmLands.ToList();
+                foreach (var item in farmland) {
+                    if (paddys.ContainsKey(item.ProjectID) && item.Type == LandType.Paddy) {
+                        item.Area = paddys[item.ProjectID].Area;
+                        item.Degree = paddys[item.ProjectID].Degree;
+                        paddys.Remove(item.ProjectID);
+                    }
+                    if (drys.ContainsKey(item.ProjectID)&&item.Type==LandType.Dry) {
+                        item.Area = drys[item.ProjectID].Area;
+                        item.Degree = drys[item.ProjectID].Degree;
+                        drys.Remove(item.ProjectID);
+                    }
+                }
+                db.SaveChanges();
+                foreach (var item in paddys.Keys) {
+                    db.FarmLands.Add(new FarmLand() { ProjectID = item, Type = LandType.Paddy, Area = paddys[item].Area, Degree = paddys[item].Degree });
+                }
+                db.SaveChanges();
+                foreach (var item in drys.Keys) {
+                    db.FarmLands.Add(new FarmLand() { ProjectID = item, Type = LandType.Dry, Area = drys[item].Area, Degree = drys[item].Degree });
+                }
+                db.SaveChanges();
+            }
+
             SecondRecord.Clear(list);
             List<SecondRecord> records = new List<SecondRecord>();
             foreach (var item in errors.Keys) {

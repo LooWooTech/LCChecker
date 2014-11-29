@@ -10,7 +10,7 @@ namespace LCChecker.Areas.Second
 {
     public class CheckOne:SecondCheckEngine,ISeCheck
     {
-        public Dictionary<string, SeProject> Data = new Dictionary<string, SeProject>();
+       
 
         public CheckOne(List<SecondProject> projects) {
             Whether = projects.ToDictionary(e => e.ID, e => true);
@@ -64,7 +64,7 @@ namespace LCChecker.Areas.Second
                 if (row == null)
                     break;
                 var value = row.GetCell(StartCell + 3, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
-                if (!string.IsNullOrEmpty(value))
+                if (string.IsNullOrEmpty(value))
                     continue;
                 if (!value.VerificationID())
                     continue;

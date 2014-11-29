@@ -15,6 +15,9 @@ namespace LCChecker.Areas.Second
         public Dictionary<string, string> Warning = new Dictionary<string, string>();
         public List<string> IDS = new List<string>();
         public Dictionary<string, bool> Whether = new Dictionary<string, bool>();
+        public Dictionary<string, SeProject> Data = new Dictionary<string, SeProject>();
+        public Dictionary<string, SeLand> DicPaddy = new Dictionary<string, SeLand>();
+        public Dictionary<string, SeLand> DicDry = new Dictionary<string, SeLand>();
 
 
         public Dictionary<string, List<string>> GetError() {
@@ -22,6 +25,16 @@ namespace LCChecker.Areas.Second
         }
         public List<string> GetIDS() {
             return IDS;
+        }
+
+        public Dictionary<string, SeProject> GetSeProject() {
+            return Data;
+        }
+        public Dictionary<string, SeLand> GetPaddy() {
+            return DicPaddy;
+        }
+        public Dictionary<string, SeLand> GetDry() {
+            return DicDry;
         }
 
         public bool Check(string FilePath, ref string Mistakes, SecondReportType Type) {
@@ -34,10 +47,10 @@ namespace LCChecker.Areas.Second
             if (sheet == null) {
                 if (Error.ContainsKey("表格格式内容"))
                 {
-                    Error["表格格式内容"].Add("提交的表格无法检索，请核对格式");
+                    Error["表格格式内容"].Add("错误000:0：提交的表格无法检索，请核对格式");
                 }
                 else {
-                    Error.Add("表格格式内容", new List<string> { "提交的表格无法检索，请核对格式" });
+                    Error.Add("表格格式内容", new List<string> { "错误0000：提交的表格无法检索，请核对格式" });
                 }
                 return false;
             }
@@ -58,10 +71,10 @@ namespace LCChecker.Areas.Second
                 {
                     if (Error.ContainsKey(value))
                     {
-                        Error[value].Add("表格中存在相同项目编号");
+                        Error[value].Add("错误0001：表格中存在相同项目编号");
                     }
                     else {
-                        Error.Add(value, new List<string> { "表格中存在相同项目编号" });
+                        Error.Add(value, new List<string> { "错误0001：表格中存在相同项目编号" });
                     }
                     continue;
                 }
@@ -90,7 +103,7 @@ namespace LCChecker.Areas.Second
                     Whether.Remove(value);
                 }
                 else {
-                    ErrorRow.Add("规则000：重点复核确认总表中不包括该项目");
+                    ErrorRow.Add("规则0002：复核确认验收项目清单不存在该项目，请核对");
                     if (!Error.ContainsKey(value))
                     {
                         Error.Add(value, ErrorRow);
@@ -102,10 +115,10 @@ namespace LCChecker.Areas.Second
                 if (Whether[item]) {
                     if (Error.ContainsKey(item))
                     {
-                        Error[item].Add("规则000：项目存在复核确认验收清单中，但是不存在本表中");
+                        Error[item].Add("规则0003：项目存在复核确认验收清单中，但是不存在本表中");
                     }
                     else {
-                        Error.Add(item, new List<string> { "规则000：项目存在复核确认验收清单中，但是不存在本表中" });
+                        Error.Add(item, new List<string> { "规则0003：项目存在复核确认验收清单中，但是不存在本表中" });
                     }
                     
                     //if (Warning.ContainsKey(item))
