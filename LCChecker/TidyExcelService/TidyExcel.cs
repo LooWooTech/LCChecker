@@ -60,6 +60,14 @@ namespace TidyExcelService
                     }
 
 
+                    Tidy(FilesPath, (SecondReportType)Type);
+
+
+                    using (var cmd2 = coon.CreateCommand()) {
+                        cmd2.CommandText = string.Format("UPDATE uploadfiles SET Census=1 WHERE ID={0}", id);
+                        cmd2.ExecuteNonQuery();
+                    }
+
 
 
 
@@ -99,7 +107,9 @@ namespace TidyExcelService
                 case SecondReportType.附表4: StartNumber = 6; Lines = 9; xoffset=4;break;
                 case SecondReportType.附表6: StartNumber = 5; Lines = 9; xoffset=5;break;
                 case SecondReportType.附表7: StartNumber = 5; Lines = 11; xoffset=4;break;
-                case SecondReportType.附表8: StartNumber = 6; Lines = 25; xoffset=4;break;
+
+                case SecondReportType.附表8: StartNumber = 6; Lines = 25; xoffset = 4; return;
+                
                 case SecondReportType.附表9: StartNumber = 6; Lines = 23; xoffset = 3; AddLine = 3; break;
                 default: break;
             }
@@ -166,62 +176,70 @@ namespace TidyExcelService
                         }
                         IRow rowOne=sheet.GetRow(StartNumber-3);
                         rowOne.GetCell(0).SetCellValue(id++);
-                        for(var j=1;j<Lines;j++){
-                            var cell=rowOne.GetCell(j);
-                            var maccell=MacRow.GetCell(j);
-                            if(maccell==null){
-                                cell.SetCellValue("");
-                                continue;
-                            }
-                            switch(maccell.CellType){
-                                case CellType.Boolean:cell.SetCellValue(maccell.BooleanCellValue);break;
-                                case CellType.Numeric:cell.SetCellValue(maccell.NumericCellValue);break;
-                                case CellType.String:cell.SetCellValue(maccell.StringCellValue);break;
-                                case CellType.Formula:
-                                    double data=.0;
-                                    try{
-                                        data=maccell.NumericCellValue;
-                                    }catch{
-                                        data=.0;
-                                    }
-                                    cell.SetCellValue(data);break;
-                                case CellType.Blank:cell.SetCellValue("");break;
-                                default:cell.SetCellValue(maccell.ToString().Trim());break;
-                            }
-                           
-                         }
-                         int m=1;
+                        Copy(ref rowOne, ref MacRow, 1, StartCell + 1, Lines - 1);
+
+                        #region
+                        //for (var j=1;j<Lines;j++){
+                        //    var cell=rowOne.GetCell(j);
+                        //    var maccell=MacRow.GetCell(j);
+                        //    if(maccell==null){
+                        //        cell.SetCellValue("");
+                        //        continue;
+                        //    }
+                        //    switch(maccell.CellType){
+                        //        case CellType.Boolean:cell.SetCellValue(maccell.BooleanCellValue);break;
+                        //        case CellType.Numeric:cell.SetCellValue(maccell.NumericCellValue);break;
+                        //        case CellType.String:cell.SetCellValue(maccell.StringCellValue);break;
+                        //        case CellType.Formula:
+                        //            double data=.0;
+                        //            try{
+                        //                data=maccell.NumericCellValue;
+                        //            }catch{
+                        //                data=.0;
+                        //            }
+                        //            cell.SetCellValue(data);break;
+                        //        case CellType.Blank:cell.SetCellValue("");break;
+                        //        default:cell.SetCellValue(maccell.ToString().Trim());break;
+                        //    }
+
+                        //}
+                        #endregion
+                        
+                        int m=1;
                          for(var j=StartNumber-2;j<StartNumber;j++){
                              rowOne=sheet.GetRow(j);
                              MacRow=MacSheet.GetRow(i+m);
                              m++;
-                             for(var k=6;k<Lines;k++){
-                                var cell=rowOne.GetCell(k);
-                                 var maccell=MacRow.GetCell(k);
-                                 if(maccell==null)
-                                 {
-                                     cell.SetCellValue("");
-                                     continue;
-                                 }
-                                 switch(maccell.CellType){
-                                     case CellType.Numeric:cell.SetCellValue(maccell.NumericCellValue);break;
-                                     case CellType.String:cell.SetCellValue(maccell.StringCellValue);break;
-                                     case CellType.Boolean:cell.SetCellValue(maccell.BooleanCellValue);break;
-                                     case CellType.Formula:
-                                         double data=0.0;
-                                         try{
-                                            data=maccell.NumericCellValue;
-                                         }catch{
-                                            data=0.0;
-                                         }
-                                         cell.SetCellValue(data);break;
-                                    case CellType.Blank: cell.SetCellValue(""); break;
-                                    case CellType.Unknown: cell.SetCellValue(""); break;
-                                    case CellType.Error: cell.SetCellValue(""); break;
-                                    default: cell.SetCellValue(maccell.ToString().Trim()); break;
-                                 }
-                             }
-                        }
+                             Copy(ref rowOne, ref MacRow, 6, StartCell + 6, Lines - 6);
+                             #region
+                             //for (var k=6;k<Lines;k++){
+                             //   var cell=rowOne.GetCell(k);
+                             //    var maccell=MacRow.GetCell(k);
+                             //    if(maccell==null)
+                             //    {
+                             //        cell.SetCellValue("");
+                             //        continue;
+                             //    }
+                             //    switch(maccell.CellType){
+                             //        case CellType.Numeric:cell.SetCellValue(maccell.NumericCellValue);break;
+                             //        case CellType.String:cell.SetCellValue(maccell.StringCellValue);break;
+                             //        case CellType.Boolean:cell.SetCellValue(maccell.BooleanCellValue);break;
+                             //        case CellType.Formula:
+                             //            double data=0.0;
+                             //            try{
+                             //               data=maccell.NumericCellValue;
+                             //            }catch{
+                             //               data=0.0;
+                             //            }
+                             //            cell.SetCellValue(data);break;
+                             //       case CellType.Blank: cell.SetCellValue(""); break;
+                             //       case CellType.Unknown: cell.SetCellValue(""); break;
+                             //       case CellType.Error: cell.SetCellValue(""); break;
+                             //       default: cell.SetCellValue(maccell.ToString().Trim()); break;
+                             //    }
+                             //}
+                             #endregion
+                         }
                     }
                     else {
                         IRow row = sheet.GetRow(StartNumber);
@@ -279,7 +297,10 @@ namespace TidyExcelService
         }
 
 
-        public static void TidyEight(List<string> FilePaths) {
+        public static void TidyEight(List<string> FilePaths)
+        {
+            //打开模板文件
+            #region
             string TemplatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../LCChecker/Templates/Second/附表8.xls");
             IWorkbook workbook = null;
             try
@@ -297,10 +318,17 @@ namespace TidyExcelService
             ISheet Sheet = workbook.GetSheetAt(0);
             if (Sheet == null)
                 return;
+            #endregion
             int StartNumber = 6;
+            int SerialNumber = 1;
             IRow TemplateRow=Sheet.GetRow(StartNumber);
+            //遍历所有市的附表8
+            #region
             foreach (var file in FilePaths) {
+                
                 IWorkbook Macbook = null;
+                //打开某个市上传的附表8
+                #region
                 try
                 {
                     using (var fs = new FileStream(file, FileMode.Open, FileAccess.Read))
@@ -320,6 +348,8 @@ namespace TidyExcelService
                 if (!XslHelper.FindHeader(macsheet, ref StartRow, ref StartCell, SecondReportType.附表8)) {
                     continue;
                 }
+                #endregion
+
                 StartRow++;
                 int Max=macsheet.LastRowNum;
                 for (var i = StartRow; i <= Max; i++) {
@@ -331,12 +361,169 @@ namespace TidyExcelService
                         continue;
                     if (!value.VerificationID())
                         continue;
-                    int SpanR = 0,SpanC=0;
-                    if (XslHelper.isMergeCell(macsheet, i, StartCell + 3, out SpanR, out SpanC)) { 
-                        
+                    int SpanR1 = 0,SpanC1=0;
+                    //
+                    #region
+                    if (XslHelper.isMergeCell(macsheet, i + 1, StartCell + 3, out SpanR1, out SpanC1))
+                    {
+
+                        //当读取到的表格一个项目占据了SpanR1行的单元格，那么表格往下移动SpanR1行，
+                        //保存数据的表格 创建从StartNumber行开始一共创建SpanR1行25列  
+                        //合并前9列单元格  一个单元格占据SpanR1行
+                        #region
+                        Sheet.ShiftRows(Sheet.LastRowNum - 4, Sheet.LastRowNum, SpanR1, true, false);
+
+                        for (var j = StartNumber; j < (StartNumber + SpanR1); j++)
+                        {
+                            var Bufferrow1 = Sheet.GetRow(j);
+                            if (Bufferrow1 == null)
+                            {
+                                Bufferrow1 = Sheet.CreateRow(j);
+                                if (TemplateRow.RowStyle != null)
+                                {
+                                    Bufferrow1.RowStyle = TemplateRow.RowStyle;
+                                }
+                            }
+                            for (var k = 0; k < 25; k++)
+                            {
+                                var cell = Bufferrow1.GetCell(k);
+                                if (cell == null)
+                                {
+                                    cell = Bufferrow1.CreateCell(k, TemplateRow.GetCell(k).CellType);
+                                    cell.CellStyle = TemplateRow.GetCell(k).CellStyle;
+                                }
+                            }
+                        }
+                        for (var j = 0; j < 9; j++)
+                        {
+                            Sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(StartNumber, StartNumber + SpanR1 - 1, j, j));
+                        }
+                        #endregion
+
+
+                        //拷贝填写已挂钩补充耕地项目
+                        //读取源文件前9列的数据 macrow  从startCell列到startCell+9列获取
+                        #region
+                        IRow row = Sheet.GetRow(StartNumber);
+                        row.GetCell(0).SetCellValue(SerialNumber++);
+
+                        //拷贝数据
+                        Copy(ref row, ref macrow, 1, StartCell + 1, 8);
+
+                        #endregion
+
+
+                        //对应建设用地项目情况
+                        //开始从对应建设用地项目遍历
+                        //判断从i+offset行 startCell+12列单元格  是否合并
+                        #region
+                        int FlagR = SpanR1;
+                        int Offset = 0;
+                        int Serial1 = 1;
+                        while (FlagR > 0)
+                        {
+                            int SpanR2 = 0, SpanC2 = 0;
+
+                            if (XslHelper.isMergeCell(macsheet, i + Offset + 1, StartCell + 12, out SpanR2, out SpanC2))
+                            {
+                                macrow = macsheet.GetRow(i + Offset);
+
+                                //获取对应建设用地项目的项目编号并且判断
+                                //合并对应建设用地项目单元格
+                                #region
+                                var key2 = macrow.GetCell(StartCell + 12, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
+                                if (string.IsNullOrEmpty(key2))
+                                    continue;
+                                if (!key2.VerificationID())
+                                {
+                                    continue;
+                                }
+
+                                //
+                                for (var j = 9; j < 15; j++)
+                                {
+                                    Sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(StartNumber + Offset, StartNumber + SpanR2 - 1 + Offset, j, j));
+                                }
+                                //将源文件中的数据拷贝到总表中
+                                var Bufferrow2 = Sheet.GetRow(StartNumber + Offset);
+                                Bufferrow2.GetCell(Serial1++);
+                                Copy(ref Bufferrow2, ref macrow, 10, StartCell + 10, 5);
+
+                                #endregion
+
+                                int serial2 = 1;
+                                for (var j = 0; j < SpanR2; j++)
+                                {
+                                    macrow = macsheet.GetRow(j + i + Offset);
+                                    if (macrow == null)
+                                        continue;
+                                    row = Sheet.GetRow(StartNumber + Offset + j);
+                                    row.GetCell(15).SetCellValue(serial2++);
+                                    //
+                                    Copy(ref row, ref macrow, 16, StartCell + 16, 9);
+                                }
+                            }
+                            else
+                            {
+                                row = Sheet.GetRow(StartNumber + Offset);
+                                macrow = macsheet.GetRow(i + Offset);
+                                Copy(ref row, ref macrow, 9, StartCell + 9, 16);
+                            }
+                            FlagR -= SpanR2;
+                            Offset += SpanR2;
+                        }
+                        #endregion
+
+
+
                     }
+                    else {
+                        var row = Sheet.GetRow(StartNumber);
+                        Copy(ref row, ref macrow, 0, StartCell, 25);
+                        row.GetCell(0).SetCellValue(SerialNumber++);
+                    }
+                    #endregion
+
+                    i = i + SpanR1 - 1;
                 }
 
+            }
+            #endregion
+        }
+
+        /// <summary>
+        /// 拷贝数据
+        /// </summary>
+        /// <param name="Row">拷贝的行</param>
+        /// <param name="SourceRow">被拷贝的行</param>
+        /// <param name="StartCell1">拷贝行开始的位置</param>
+        /// <param name="StartCell2">被拷贝行开始的位置</param>
+        /// <param name="Rank">拷贝多少列</param>
+
+        public static void Copy(ref IRow Row, ref IRow SourceRow,int StartCell1,int StartCell2,int Rank) {
+            for (var i = 0; i < Rank; i++) {
+                var cell = Row.GetCell(StartCell1+i);
+                var SourceCell = SourceRow.GetCell(StartCell2+i);
+                if (SourceCell == null) {
+                    cell.SetCellValue("");
+                    continue;
+                }
+                switch (SourceCell.CellType) {
+                    case CellType.Boolean: cell.SetCellValue(SourceCell.BooleanCellValue); break;
+                    case CellType.Numeric: cell.SetCellValue(SourceCell.NumericCellValue); break;
+                    case CellType.String: cell.SetCellValue(SourceCell.StringCellValue); break;
+                    case CellType.Formula:
+                        double data = 0.0;
+                        try
+                        {
+                            data = SourceCell.NumericCellValue;
+                        }
+                        catch { 
+                        
+                        }
+                        cell.SetCellValue(data);break;
+                    default: cell.SetCellValue(SourceCell.ToString().Trim()); break;
+                }
             }
         }
 

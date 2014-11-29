@@ -55,6 +55,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
+    <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -73,6 +74,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TidyExcel.cs" />
+    <Compile Include="TidyInstall.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="TidyService.cs" />
   </ItemGroup>
   <ItemGroup>
