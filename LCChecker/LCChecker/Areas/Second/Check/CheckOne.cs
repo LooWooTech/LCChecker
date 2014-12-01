@@ -28,6 +28,11 @@ namespace LCChecker.Areas.Second
                 Condition = new CellRangeRowRule() { ColumnIndex = 6, Values = new[] { "是" } },
                 Rule = new CellRangeRowRule() { ColumnIndex = 7, Values = new[] { "否" } }
             });
+            list.Add(new ConditionalRowRule()
+            {
+                Condition = new CellRangeRowRule() { ColumnIndex = 5, Values = new[] { "是" } },
+                Rule = new Less() { ColumnIndex = new[] { 6, 7, 8, 9, 10 }, Value = "是", ID = "2109" }
+            });
             foreach (var item in list) {
                 rules.Add(new RuleInfo() { Rule = item });
             }
@@ -78,6 +83,7 @@ namespace LCChecker.Areas.Second
                         IsHasDoubt = row.Cells[StartCell + 5].GetValue() == "是",
                         IsApplyDelete = row.Cells[StartCell + 6].GetValue() == "是",
                         IsHasError = row.Cells[StartCell + 7].GetValue() == "是",
+                        IsPacket=row.Cells[StartCell+8].GetValue()=="是",
                         IsDescrease = row.Cells[StartCell + 9].GetValue() == "是",
                         IsRelieve = row.Cells[StartCell + 10].GetValue() == "是"
                     });

@@ -40,6 +40,10 @@ namespace LCChecker.Areas.Second.Models
         /// </summary>
         public bool IsHasError { get; set; }
         /// <summary>
+        /// 假借利用二调新增耕地政策包装项目
+        /// </summary>
+        public bool IsPacket { get; set; }
+        /// <summary>
         /// 属于可用于占补平衡面积核减
         /// </summary>
         public bool IsDescrease { get; set; }

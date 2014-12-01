@@ -130,6 +130,16 @@ namespace LCChecker.Areas.Second.Controllers
 
             var errors = engine.GetError();
             var ids = engine.GetIDS();
+            foreach (var item in projects) {
+                if (ids.Contains(item.ID)) {
+                    if (errors.ContainsKey(item.ID))
+                        item.Result = false;
+                    else {
+                        item.Result = true;
+                    }
+                }
+            }
+            db.SaveChanges();
             var list = db.SecondRecords.Where(e => e.City == CurrentUser.City && e.Type == type).ToList();
             if (type == SecondReportType.附表1)
             {
@@ -139,6 +149,7 @@ namespace LCChecker.Areas.Second.Controllers
                         item.IsHasDoubt = Seproject[item.ID].IsHasDoubt;
                         item.IsApplyDelete = Seproject[item.ID].IsApplyDelete;
                         item.IsHasError = Seproject[item.ID].IsHasError;
+                        item.IsPacket = Seproject[item.ID].IsPacket;
                         item.IsDescrease = Seproject[item.ID].IsDescrease;
                         item.IsRelieve = Seproject[item.ID].IsRelieve;
                         db.SaveChanges();
