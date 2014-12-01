@@ -44,6 +44,10 @@ namespace LCChecker.Models
         /// </summary>
         [Column("Type", TypeName = "INT")]
         public UploadFileType Type { get; set; }
+        /// <summary>
+        /// 用于整理表格的标志位
+        /// </summary>
+        public bool Census { get; set; }
 
 
     }

@@ -16,6 +16,12 @@
                 }
             </select>
             <div class="input-group-btn">
+                <select name="rule" class="form-control">
+                    <option value="0">全部</option>
+                    <option value=""></option>
+                </select>
+            </div>
+            <div class="input-group-btn">
                 <select name="isError" class="form-control">
                     <option value="">全部</option>
                     <option value="true" @(Request.QueryString["isError"] == "true" ? "selected=selected" : "")>错误</option>

@@ -27,7 +27,7 @@ namespace TidyExcelService
                     int Type = 0;
                     using (var cmd = coon.CreateCommand())
                     {
-                        cmd.CommandText = "SELECT ID,CityID,SavePath,Type FROM `uploadfiles` WHERE Type BETWEEN 4 And 9  AND State=1 AND Census=0 ORDER BY ID";
+                        cmd.CommandText = "SELECT ID,CityID,SavePath,Type FROM `uploadfiles` WHERE Type BETWEEN 20 And 30  AND State=1 AND Census=0 ORDER BY ID";
                         using (var reader = cmd.ExecuteReader())
                         {
                             if (reader.Read() == false) return;
@@ -58,9 +58,16 @@ namespace TidyExcelService
                             }
                         }
                     }
+                    SecondReportType NewType = (SecondReportType)(Type - 20);
+                    if (NewType == SecondReportType.附表8)
+                    {
+                        TidyEight(FilesPath);
+                    }
+                    else {
+                        Tidy(FilesPath, NewType);
+                    }
 
-
-                    Tidy(FilesPath, (SecondReportType)Type);
+                    
 
 
                     using (var cmd2 = coon.CreateCommand()) {
@@ -446,7 +453,8 @@ namespace TidyExcelService
                                 }
                                 //将源文件中的数据拷贝到总表中
                                 var Bufferrow2 = Sheet.GetRow(StartNumber + Offset);
-                                Bufferrow2.GetCell(Serial1++);
+                                //Bufferrow2.GetCell(Serial1++);
+                                Bufferrow2.GetCell(9).SetCellValue(Serial1++);
                                 Copy(ref Bufferrow2, ref macrow, 10, StartCell + 10, 5);
 
                                 #endregion
@@ -467,7 +475,8 @@ namespace TidyExcelService
                             {
                                 row = Sheet.GetRow(StartNumber + Offset);
                                 macrow = macsheet.GetRow(i + Offset);
-                                Copy(ref row, ref macrow, 9, StartCell + 9, 16);
+                                row.GetCell(9).SetCellValue(Serial1++);
+                                Copy(ref row, ref macrow, 10, StartCell + 10, 15);
                             }
                             FlagR -= SpanR2;
                             Offset += SpanR2;
@@ -485,10 +494,19 @@ namespace TidyExcelService
                     #endregion
 
                     i = i + SpanR1 - 1;
+                    StartNumber += SpanR1;
                 }
 
             }
             #endregion
+
+            TemplatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../LCChecker/App_Data", SecondReportType.附表8.ToString() + "-总表.xls");
+            using (var fs = new FileStream(TemplatePath, FileMode.OpenOrCreate, FileAccess.Write)) {
+                workbook.Write(fs);
+                fs.Flush();
+            }
+
+
         }
 
         /// <summary>

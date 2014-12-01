@@ -24,7 +24,7 @@ namespace TidyExcelService
         public void MainLoop() {
             var loopInterval = int.Parse(ConfigurationManager.AppSettings["LoopInterval"]);
             while (Signal) {
-
+                TidyExcel.Process();
                 Thread.Sleep(loopInterval);
             }
         }

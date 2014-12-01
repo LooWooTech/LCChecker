@@ -35,9 +35,11 @@ namespace LCChecker.Areas.Second
 
 
         public new bool Check(string FilePath, ref string Mistakes, SecondReportType Type) {
+            //检查上传的报部表格   附表一主要检查 市、县、名称、  市级自查是否存在疑问   属于申请删除  等几栏填写  是  否
             if (!CheckEngine(FilePath, ref Mistakes, Type)) {
                 return false; 
             }
+            //获取用户上传的附表1中的正确数据
             if (!GetProject(FilePath, ref Mistakes, Type)) {
                 return false;
             }
@@ -67,6 +69,8 @@ namespace LCChecker.Areas.Second
                 if (string.IsNullOrEmpty(value))
                     continue;
                 if (!value.VerificationID())
+                    continue;
+                if (Error.ContainsKey(value))
                     continue;
                 if (!Data.ContainsKey(value)) {
                     Data.Add(value, new SeProject
