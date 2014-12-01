@@ -10,8 +10,9 @@ namespace LCChecker.Rules
         public IRowRule Condition { get; set; }
         public IRowRule Rule { get; set; }
 
+        public string ID { get; set; }
         public string Name {
-            get { return string.Format("{0} 时，{1}",Condition.Name,Rule.Name);}
+            get { return string.Format("规则{0}：{1} 时，{2}",ID,Condition.Name,Rule.Name);}
         }
 
         public bool Check(NPOI.SS.UserModel.IRow row, int xoffset = 0)

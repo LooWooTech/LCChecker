@@ -152,6 +152,7 @@
     <Compile Include="Areas\Second\Models\SecondRecord.cs" />
     <Compile Include="Areas\Second\Models\SecondReport.cs" />
     <Compile Include="Areas\Second\Models\SecondReportType.cs" />
+    <Compile Include="Areas\Second\Rules\Less.cs" />
     <Compile Include="Areas\Second\Rules\OnlySecondProject.cs" />
     <Compile Include="Areas\Second\SecondAreaRegistration.cs" />
     <Compile Include="Areas\Second\SecondController.cs" />

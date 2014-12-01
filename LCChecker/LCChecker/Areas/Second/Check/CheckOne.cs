@@ -25,6 +25,7 @@ namespace LCChecker.Areas.Second
             list.Add(new CellRangeRowRule() { ColumnIndex = 10, Values = new[] { "是", "否" }, ID = "2107" });
             list.Add(new ConditionalRowRule()
             {
+                ID="2108",
                 Condition = new CellRangeRowRule() { ColumnIndex = 6, Values = new[] { "是" } },
                 Rule = new CellRangeRowRule() { ColumnIndex = 7, Values = new[] { "否" } }
             });

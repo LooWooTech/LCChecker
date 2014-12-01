@@ -1,7 +1,11 @@
 ﻿using LCChecker.Areas.Second.Models;
+using LCChecker.Helpers;
 using LCChecker.Models;
+using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -73,5 +77,66 @@ namespace LCChecker.Areas.Second.Controllers
             return RedirectToAction("Index");
         }
 
+
+        public ActionResult Statistics() {
+            ViewBag.ReportSummary = db.SecondReports.GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
+            {
+                TotalCount = g.Count(),
+                ErrorCount = g.Count(e => e.Result == false),
+                SuccessCount = g.Count(e => e.Result == true),
+                City = g.Key
+            });
+            ViewBag.CoordSummary = db.CoordProjects.Where(e => e.Visible == true).GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
+            {
+                TotalCount = g.Count(),
+                ErrorCount = g.Count(e => e.Result == false),
+                SuccessCount = g.Count(e => e.Result == true),
+                City = g.Key
+            });
+            return View();
+        }
+
+        /// <summary>
+        /// 下载统计表格
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
+        public ActionResult Download(int ID) {
+
+            Dictionary<City, Summary> Data;
+            string ExcelName = "";
+            string HeaderName = "";
+            if (ID == 1) {
+                ExcelName = "报部表格统计.xls";
+                HeaderName = "浙江土地整治项目核查报部表格情况统计表";
+                Data = db.SecondReports.GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
+                {
+                    TotalCount = g.Count(),
+                    ErrorCount = g.Count(e => e.Result == false),
+                    SuccessCount = g.Count(e => e.Result == true),
+                    City = g.Key
+                });
+            }
+            else if (ID == 2)
+            {
+                ExcelName = "坐标点存疑统计.xls";
+                HeaderName = "浙江省土地整治项目坐标点存疑情况统计表";
+                Data = db.CoordProjects.Where(e => e.Visible == true).GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
+                {
+                    TotalCount = g.Count(),
+                    ErrorCount = g.Count(e => e.Result == false),
+                    SuccessCount = g.Count(e => e.Result == true),
+                    City = g.Key
+                });
+            }
+            else {
+                return View();
+            }
+            IWorkbook workbook = XslHelper.CreateExcel(Data, HeaderName);
+            MemoryStream ms = new MemoryStream();
+            workbook.Write(ms);
+            byte[] fileContents = ms.ToArray();
+            return File(fileContents, "application/ms-excel", ExcelName);
+        }
     }
 }

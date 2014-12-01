@@ -11,9 +11,10 @@ namespace LCChecker.Rules
     {
         public int SumColumnIndex { get; set; }
         public int[] ColumnIndices { get; set; }
+        public string ID { get; set; }
         public string Name {
             get {
-                var sb = new StringBuilder(string.Format("第{0}栏等于{1}栏", SumColumnIndex + 1, ColumnIndices[0] + 1));
+                var sb = new StringBuilder(string.Format("规则{0}：第{1}栏等于{2}栏",ID, SumColumnIndex + 1, ColumnIndices[0] + 1));
                 for (var i = 1; i < ColumnIndices.Length; i++)
                 {
                     sb.AppendFormat("+{0}栏", ColumnIndices[i] + 1);
