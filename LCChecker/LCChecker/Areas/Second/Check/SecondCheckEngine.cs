@@ -82,7 +82,7 @@ namespace LCChecker.Areas.Second
                 if (Whether.ContainsKey(value))
                 {
                     if (!Whether[value]) {
-                        ErrorRow.Add("规则000：与重点复核确认项目以外所有报部备案项目复核确认总表不符");
+                        ErrorRow.Add("规则000（一致性）：与重点复核确认项目以外所有报部备案项目复核确认总表不符");
                         //Warning[value] = "规则000：与重点复核确认项目以外所有报部备案项目复核确认总表不符";
                     }
                     foreach (var item in rules) {
@@ -103,7 +103,7 @@ namespace LCChecker.Areas.Second
                     Whether.Remove(value);
                 }
                 else {
-                    ErrorRow.Add("规则0002：复核确认验收项目清单不存在该项目，请核对");
+                    ErrorRow.Add("规则0002（一致性）：复核确认验收项目清单不存在该项目，请核对");
                     if (!Error.ContainsKey(value))
                     {
                         Error.Add(value, ErrorRow);
@@ -115,10 +115,10 @@ namespace LCChecker.Areas.Second
                 if (Whether[item]) {
                     if (Error.ContainsKey(item))
                     {
-                        Error[item].Add("规则0003：项目存在复核确认验收清单中，但是不存在本表中");
+                        Error[item].Add("规则0003（一致性）：项目存在复核确认验收清单中，但是不存在本表中");
                     }
                     else {
-                        Error.Add(item, new List<string> { "规则0003：项目存在复核确认验收清单中，但是不存在本表中" });
+                        Error.Add(item, new List<string> { "规则0003（一致性）：项目存在复核确认验收清单中，但是不存在本表中" });
                     }
                     
                     //if (Warning.ContainsKey(item))

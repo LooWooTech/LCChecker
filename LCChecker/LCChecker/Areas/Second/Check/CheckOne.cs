@@ -16,23 +16,24 @@ namespace LCChecker.Areas.Second
             Whether = projects.ToDictionary(e => e.ID, e => true);
             Dictionary<string,SecondProject> Team=projects.ToDictionary(e=>e.ID,e=>e);
             var list = new List<IRowRule>();
-            list.Add(new OnlySecondProject() { ColumnIndex = 3, AreaIndex = 0, NewAreaIndex = 0, Projects = Team,ID="2101", Values = new[] { "项目名称", "市", "县" } });
-            list.Add(new CellRangeRowRule() { ColumnIndex = 5, Values = new[] { "是", "否" }, ID = "2102" });
-            list.Add(new CellRangeRowRule() { ColumnIndex = 6, Values = new[] { "是", "否" }, ID = "2103" });
-            list.Add(new CellRangeRowRule() { ColumnIndex = 7, Values = new[] { "是", "否" }, ID = "2104" });
-            list.Add(new CellRangeRowRule() { ColumnIndex = 8, Values = new[] { "是", "否" }, ID = "2105" });
-            list.Add(new CellRangeRowRule() { ColumnIndex = 9, Values = new[] { "是", "否" }, ID = "2106" });
-            list.Add(new CellRangeRowRule() { ColumnIndex = 10, Values = new[] { "是", "否" }, ID = "2107" });
+            list.Add(new OnlySecondProject() { ColumnIndex = 3, AreaIndex = 0, NewAreaIndex = 0, Projects = Team,ID="2101(基本规则)", Values = new[] { "项目名称", "市", "县" } });
+            list.Add(new CellRangeRowRule() { ColumnIndex = 5, Values = new[] { "是", "否" }, ID = "2102（填写规则）" });
+            list.Add(new CellRangeRowRule() { ColumnIndex = 6, Values = new[] { "是", "否" }, ID = "2103（填写规则）" });
+            list.Add(new CellRangeRowRule() { ColumnIndex = 7, Values = new[] { "是", "否" }, ID = "2104（填写规则）" });
+            list.Add(new CellRangeRowRule() { ColumnIndex = 8, Values = new[] { "是", "否" }, ID = "2105（填写规则）" });
+            list.Add(new CellRangeRowRule() { ColumnIndex = 9, Values = new[] { "是", "否" }, ID = "2106（填写规则）" });
+            list.Add(new CellRangeRowRule() { ColumnIndex = 10, Values = new[] { "是", "否" }, ID = "2107（填写规则）" });
             list.Add(new ConditionalRowRule()
             {
-                ID="2108",
+                ID = "2108（填写规则）",
                 Condition = new CellRangeRowRule() { ColumnIndex = 6, Values = new[] { "是" } },
                 Rule = new CellRangeRowRule() { ColumnIndex = 7, Values = new[] { "否" } }
             });
             list.Add(new ConditionalRowRule()
             {
+                ID="2109（填写规则）",
                 Condition = new CellRangeRowRule() { ColumnIndex = 5, Values = new[] { "是" } },
-                Rule = new Less() { ColumnIndex = new[] { 6, 7, 8, 9, 10 }, Value = "是", ID = "2109" }
+                Rule = new Less() { ColumnIndex = new[] { 6, 7, 8, 9, 10 }, Value = "是" }
             });
             foreach (var item in list) {
                 rules.Add(new RuleInfo() { Rule = item });

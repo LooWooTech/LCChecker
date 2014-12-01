@@ -13,8 +13,8 @@ namespace LCChecker.Areas.Second
             Whether = projects.ToDictionary(e => e.ID, e => e.IsDescrease);
             Dictionary<string, SecondProject> Team = projects.ToDictionary(e => e.ID, e => e);
             var list = new List<IRowRule>();
-            list.Add(new OnlySecondProject() { ColumnIndex = 3, NewAreaIndex = 2, Projects = Team, ID = "2701", Values = new[] { "市", "县", "项目名称", "新增耕地面积" } });
-            list.Add(new SumRowRule() { SumColumnIndex = 6, ColumnIndices = new[] { 7, 8 } ,ID="2702"});
+            list.Add(new OnlySecondProject() { ColumnIndex = 3, NewAreaIndex = 2, Projects = Team, ID = "2701（基本规则）", Values = new[] { "市", "县", "项目名称", "新增耕地面积" } });
+            list.Add(new SumRowRule() { SumColumnIndex = 6, ColumnIndices = new[] { 7, 8 } ,ID="2702（填写规则）"});
 
             foreach (var item in list) {
                 rules.Add(new RuleInfo() { Rule = item });

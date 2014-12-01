@@ -213,13 +213,33 @@ namespace LCChecker.Areas.Second.Controllers
         }
 
 
-        public ActionResult ReportResult(SecondReportType Type=0,bool? IsError=null,int page=1) {
+        public ActionResult ReportResult(SecondReportType Type=0,RuleKind rule=RuleKind.All,bool? IsError=null,int page=1) {
             if (Type == 0) {
                 throw new ArgumentException("参数错误，没有选择具体报部表格");
             }
             var query = db.SecondRecords.Where(e => e.City == CurrentUser.City && e.Type == Type);
             if (IsError != null) {
                 query = query.Where(e => e.IsError == IsError.Value);
+            }
+            string str = string.Empty;
+            switch (rule) {
+                    
+                case RuleKind.Basic:
+                case RuleKind.Consistency:
+                case RuleKind.Data:
+                case RuleKind.Write:
+                    str = rule.GetDescription();
+                    query = query.Where(e => e.Note.Contains(str));
+                    break;
+                case RuleKind.Other:
+                    str = RuleKind.Basic.GetDescription();
+                    string one = RuleKind.Consistency.GetDescription();
+                    string two = RuleKind.Data.GetDescription();
+                    string three = RuleKind.Write.GetDescription();
+                    query = query.Where(e => !(e.Note.Contains(str) || e.Note.Contains(one) || e.Note.Contains(two) || e.Note.Contains(three)));
+                    break;
+                case RuleKind.All:
+                default: break;
             }
             var paging = new Page(page) { RecordCount = query.Count() };
             var list = query.OrderBy(e => e.ID).Skip(paging.PageSize * (paging.PageIndex - 1)).Take(paging.PageSize);

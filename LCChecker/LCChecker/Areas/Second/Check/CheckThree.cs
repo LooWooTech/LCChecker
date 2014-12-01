@@ -13,9 +13,9 @@ namespace LCChecker.Areas.Second
             Whether = projects.ToDictionary(e => e.ID, e => e.IsApplyDelete);
             Dictionary<string, SecondProject> Team = projects.ToDictionary(e => e.ID, e => e);
             var list = new List<IRowRule>();
-            list.Add(new OnlySecondProject() { ColumnIndex = 3, AreaIndex = 2, NewAreaIndex = 3, Projects = Team, Values = new[] { "市", "县", "项目名称", "项目规模", "新增耕地面积" }, ID = "2301" });
-            list.Add(new CellRangeRowRule() { ColumnIndex = 8, Values = new[] { "是", "否" }, ID = "2302" });
-            list.Add(new CellRangeRowRule() { ColumnIndex = 9, Values = new[] { "是", "否" }, ID = "2303" });
+            list.Add(new OnlySecondProject() { ColumnIndex = 3, AreaIndex = 2, NewAreaIndex = 3, Projects = Team, Values = new[] { "市", "县", "项目名称", "项目规模", "新增耕地面积" }, ID = "2301（基本规则）" });
+            list.Add(new CellRangeRowRule() { ColumnIndex = 8, Values = new[] { "是", "否" }, ID = "2302（填写规则）" });
+            list.Add(new CellRangeRowRule() { ColumnIndex = 9, Values = new[] { "是", "否" }, ID = "2303（填写规则）" });
 
             foreach (var item in list) {
                 rules.Add(new RuleInfo() { Rule = item });

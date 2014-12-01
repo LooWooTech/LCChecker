@@ -18,8 +18,8 @@ namespace LCChecker.Areas.Second
         public CheckNine(List<SecondProject> projects) {
             Team= projects.ToDictionary(e => e.ID, e => e);
             var list = new List<IRowRule>();
-            list.Add(new OnlySecondProject() { ColumnIndex = 3, NewAreaIndex = 2, Projects = Team, ID = "2901", Values = new[] { "市", "县", "项目名称", "新增耕地面积" } });
-            list.Add(new CellRangeRowRule() { ColumnIndex = 22, Values = new[] { "是", "否" } ,ID="2902"});
+            list.Add(new OnlySecondProject() { ColumnIndex = 3, NewAreaIndex = 2, Projects = Team, ID = "2901（基本规则）", Values = new[] { "市", "县", "项目名称", "新增耕地面积" } });
+            list.Add(new CellRangeRowRule() { ColumnIndex = 22, Values = new[] { "是", "否" } ,ID="2902（填写规则）"});
 
             foreach (var item in list) {
                 rules.Add(new RuleInfo() { Rule = item });
@@ -86,7 +86,7 @@ namespace LCChecker.Areas.Second
                     {
                         if (Math.Abs(currentProject.NewArea.Value - sum) > 0.0001)
                         {
-                            ErrorRow.Add("规则2902：水田、旱地的面积之和与复核确认验收项目清单新增耕地面积不符");
+                            ErrorRow.Add("规则2902（数据规则）：水田、旱地的面积之和与复核确认验收项目清单新增耕地面积不符");
                         }
                     }
                     else
@@ -105,7 +105,7 @@ namespace LCChecker.Areas.Second
                     }
                 }
                 else {
-                    ErrorRow.Add("规则0002：复核确认验收项目清单中不存在该项目，请核对");
+                    ErrorRow.Add("规则0002（一致性）：复核确认验收项目清单中不存在该项目，请核对");
                 }
 
                 if (ErrorRow.Count() != 0)
