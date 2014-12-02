@@ -6,7 +6,7 @@
     Summary reportSummary = ViewBag.ReportSummary;
 }
 <div class="row">
-    <div class="col-lg-6">
+    @*<div class="col-lg-6">
         <blockquote>
             <p><i class="glyphicon glyphicon-check"></i>&nbsp;<a href="/user/projects/">自检表管理</a></p>
             <li class="small">项目总数：
@@ -16,11 +16,11 @@
             <li class="small">存疑总数：
         @(projectSummary.ErrorCount)</li>
             <li class="small">未上传总数：
-        @(projectSummary.UnCheckCount)</li>
+        @(projectSummary.UnCheckCount)</li>*@
 @*            <p><small><span class="badge badge-success">下载</span>&nbsp;<a href="/@(HttpUtility.UrlEncode("重点项目复核确认总表")).xls">重点项目复核确认总表下载</a></small></p>*@
-        </blockquote>
-    </div>
-    <div class="col-lg-6">
+        @*</blockquote>
+    </div>*@
+    @*<div class="col-lg-6">
         <blockquote>
             <p><i class="glyphicon glyphicon-paperclip"></i>&nbsp;<a href="/user/reports/">报部表管理</a></p>
             <li class="small">项目总数：
@@ -30,7 +30,7 @@
             <li class="small">存疑总数：
         @(reportSummary.ErrorCount)</li>
             <li class="small">未上传总数：
-        @(reportSummary.UnCheckCount)</li>
+        @(reportSummary.UnCheckCount)</li>*@
 @*            <li class="small"><span class="badge badge-success">样表</span>&nbsp;
                 @foreach (var name in Enum.GetNames(typeof(ReportType)))
                 {
@@ -38,17 +38,17 @@
                 }
 
             </li>*@
-        </blockquote>
-    </div>
+        @*</blockquote>
+    </div>*@
 </div>
 <div class="row">
-    <div class="col-lg-6">
+    @*<div class="col-lg-6">
         <blockquote>
             <p><i class="glyphicon glyphicon-map-marker"></i>&nbsp;<a href="/user/coordprojects">项目坐标点上传</a></p>
             <small>请提交坐标点文件至系统中。
-            </small>
+            </small>*@
 @*            <p><small><span class="badge badge-success">下载</span>&nbsp;<a href="/@(HttpUtility.UrlEncode("坐标存疑项目列表")).xlsx">坐标存疑项目列表下载</a></small></p>*@
-        </blockquote>
+        @*</blockquote>
     </div>
     <div class="col-lg-6">
         <blockquote>
@@ -56,5 +56,5 @@
             <small>注意：新增耕地的坐标上传功能稍后提供。
             </small>
         </blockquote>
-    </div>
+    </div>*@
 </div>
