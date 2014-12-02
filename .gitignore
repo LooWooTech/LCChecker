@@ -16,3 +16,4 @@ LCChecker/CoordAnalyseService/Fakes/ESRI.ArcGIS.System.fakes
 LCChecker/LCChecker/App_Data
 /LCChecker/LCChecker.sln.ide
 /LCChecker/UpgradeLog.htm
+/LCChecker/TidyExcelService/obj/Release
