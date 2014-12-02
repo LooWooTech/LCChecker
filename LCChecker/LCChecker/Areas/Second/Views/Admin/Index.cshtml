@@ -32,7 +32,9 @@
             <div class="input-group-btn">
                 <select name="result" class="form-control">
                     <option value="0">全部</option>
-                    <option value="3"></option>
+                    <option value="3" @(Request.QueryString["result"] == "3" ? "selected=selected" : "")>未上传</option>
+                    <option value="1" @(Request.QueryString["result"] == "1" ? "selected=selected" : "")>无误</option>
+                    <option value="2" @(Request.QueryString["result"] == "2" ? "selected=selected" : "")>存疑</option>
                 </select>
             </div>
             <div class="input-group-btn">
@@ -55,7 +57,23 @@
             <td>@(project.City.ToString())-@(project.County)</td>
             <td>@(project.ID)</td>
             <td>@(project.Name)</td>
-            <td></td>
+            <td>
+                @if (project.Result.HasValue)
+                {
+                    if (project.Result.Value)
+                    {
+                        <span class="label label-success">无误</span>
+                    }
+                    else
+                    {
+                        <span class="label label-warning">存疑</span>
+                    }
+                }
+                else
+                {
+                    <span class="label label-default">未上传</span>
+                }
+            </td>
             <td></td>
         </tr>
     }
