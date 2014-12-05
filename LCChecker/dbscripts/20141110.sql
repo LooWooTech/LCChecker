@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50173
 File Encoding         : 65001
 
-Date: 2014-12-02 09:23:50
+Date: 2014-12-05 16:14:13
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -118,6 +118,8 @@ CREATE TABLE `seprojects` (
   `IsRelieve` bit(1) NOT NULL,
   `Area` float(10,4) DEFAULT NULL,
   `NewArea` float(10,4) DEFAULT NULL,
+  `SurplusHookArea` float(10,4) DEFAULT NULL,
+  `TrueHookArea` float(10,4) DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -133,7 +135,7 @@ CREATE TABLE `serecords` (
   `IsError` bit(1) NOT NULL,
   `Note` varchar(1023) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=3106 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=14705 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for sereports
@@ -165,7 +167,7 @@ CREATE TABLE `uploadfiles` (
   PRIMARY KEY (`ID`),
   UNIQUE KEY `PK_FILE_ID` (`ID`) USING BTREE,
   KEY `IX_FILE_CITY` (`CityID`)
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for users
