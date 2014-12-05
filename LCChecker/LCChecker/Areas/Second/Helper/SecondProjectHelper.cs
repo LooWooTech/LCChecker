@@ -11,6 +11,8 @@ namespace LCChecker.Areas.Second
     {
         public City? City { get; set; }
         public NullableFilter Result { get; set; }
+        public string ID { get; set; }
+        public string Country { get; set; }
         public Page Page { get; set; }
         public bool? Vieible { get; set; }
         public bool? IsHasDoubt { get; set; }
@@ -89,6 +91,12 @@ namespace LCChecker.Areas.Second
                 if (filter.IsRelieve.HasValue) {
                     query = query.Where(e => e.IsRelieve == filter.IsRelieve.Value);
                 }
+                if (filter.ID!=null) {
+                    query = query.Where(e => e.ID.Contains(filter.ID));
+                }
+                if (filter.Country != null) {
+                    query = query.Where(e => e.County.ToLower() == filter.Country.ToLower());
+                }
                 if (filter.Page != null) {
                     filter.Page.RecordCount = query.Count();
                     query = query.OrderBy(e => e.ID).Skip(filter.Page.PageSize * (filter.Page.PageIndex - 1)).Take(filter.Page.PageSize);
@@ -96,6 +104,20 @@ namespace LCChecker.Areas.Second
 
 
                 return query.ToList();
+            }
+        }
+
+        public static List<string> GetCountry(City city) {
+            List<string> Country=new List<string>();
+            using (var db = new LCDbContext()) {
+                var list = db.SecondProjects.Where(e => e.City == city).ToList();
+                foreach (var item in list) {
+                    if (!Country.Contains(item.County)) {
+                        Country.Add(item.County);
+                    }
+                    
+                }
+                return Country;
             }
         }
     

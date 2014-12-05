@@ -3,6 +3,7 @@
 @{
     List<LCChecker.Areas.Second.Models.SecondReport> list = ViewBag.List;
     List<LCChecker.Areas.Second.Models.SecondProject> projects = ViewBag.Projects;
+    List<string> Country = ViewBag.Country;
     ViewBag.Title = "报部表格";
     Layout = "~/Views/User/_Layout.cshtml";
 }
@@ -62,10 +63,26 @@
 
 
 <div style="clear: both; overflow: hidden; margin-bottom: 10px;">
+    <form class="form form-inline" style="float:left;">
+        <div class="input-group">
+            <span class="input-group-addon">搜索项目编号</span>
+            <div class="input-group-btn">
+                <input type="text" name="PID" class="form-control" />
+            </div>
+            <div class="input-group-btn">
+                <button type="submit" class="btn btn-success">搜索</button>
+            </div>
+        </div>
+    </form>
     <form class="form form-inline" style="float: right;">
         <div class="input-group">
             <span class="input-group-addon">过滤项目</span>
             <div class="input-group-btn">
+                <select name="country" class="form-control">
+                    @foreach (var item in Country) { 
+                        <option value="@item" @(Request.QueryString["country"]==item?"selected=selected":"")>@item</option>
+                    }
+                </select>
                 <select name="result" class="form-control">
                     <option value="0">全部</option>
                     <option value="3" @(Request.QueryString["result"] == "3" ? "selected=selected" : "")>未上传</option>

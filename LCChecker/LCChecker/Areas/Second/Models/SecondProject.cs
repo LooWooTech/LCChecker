@@ -59,5 +59,7 @@ namespace LCChecker.Areas.Second.Models
         /// 新增耕地面积
         /// </summary>
         public double? NewArea { get; set; }
+        public double? SurplusHookArea { get; set; }
+        public double? TrueHookArea { get; set; }
     }
 }

@@ -108,7 +108,44 @@ namespace LCChecker.Areas.Second.Rules
                         if (Math.Abs(vals - CurrentVals) > 0.0001)
                             return false;
                         break;
-
+                    case "剩余可用于占补平衡面积":
+                        var surpluecell = row.GetCell(ColumnIndex + xoffset + 5, MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                        double sval = 0.0;
+                        if (surpluecell.CellType == CellType.Numeric || surpluecell.CellType == CellType.Formula) {
+                            try
+                            {
+                                sval = surpluecell.NumericCellValue;
+                            }
+                            catch {
+                                sval = 0.0;
+                            }
+                        }
+                        var SurCurrentVal = 0.0;
+                        if (project.SurplusHookArea.HasValue) {
+                            SurCurrentVal = project.SurplusHookArea.Value;
+                        }
+                        if (Math.Abs(sval - SurCurrentVal) > 0.0001)
+                            return false;
+                        break;
+                    case "实际可用于占补平衡面积":
+                        var hookCell = row.GetCell(ColumnIndex + xoffset + 4, MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                        double hookval = 0.0;
+                        if (hookCell.CellType == CellType.Numeric || hookCell.CellType == CellType.Formula) {
+                            try
+                            {
+                                hookval = hookCell.NumericCellValue;
+                            }
+                            catch {
+                                hookval=0.0;
+                            }
+                        }
+                         var hookCurrent = 0.0;
+                         if (project.TrueHookArea.HasValue) {
+                             hookCurrent = project.TrueHookArea.Value;
+                         }
+                         if (Math.Abs(hookval - hookCurrent) > 0.0001)
+                             return false;
+                         break;
                     default: break;
                 }
             }

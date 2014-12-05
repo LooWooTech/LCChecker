@@ -20,7 +20,7 @@ namespace LCChecker.Areas.Second.Controllers
         }
 
 
-        public ActionResult Report(NullableFilter result=NullableFilter.All,int page=1) {
+        public ActionResult Report(NullableFilter result=NullableFilter.All,int page=1,string PID=null,string country=null) {
             if (!db.SecondReports.Any(e => e.City == CurrentUser.City))
             {
                 InitSecondReports();
@@ -31,9 +31,12 @@ namespace LCChecker.Areas.Second.Controllers
                 City = CurrentUser.City,
                 Result = result,
                 Page = new Page(page),
+                ID=PID,
+                Country=country
             };
             ViewBag.Projects = SecondProjectHelper.GetProjects(filter);
             ViewBag.Page = filter.Page;
+            ViewBag.Country = SecondProjectHelper.GetCountry(CurrentUser.City);
             return View();
         }
 

@@ -54,9 +54,12 @@ namespace LCChecker.Areas.Second.Controllers
                 var id = row.Cells[CellIndex + 4].GetValue().Trim();
                 double area = .0;
                 double newarea = .0;
+                double SurplusHookArea = .0;
+                double TrueHookArea = 0.0;
                 double.TryParse(row.Cells[CellIndex + 12].GetValue().ToString(), out area);
                 double.TryParse(row.Cells[CellIndex+20].GetValue().ToString(),out newarea);
-
+                double.TryParse(row.Cells[CellIndex + 5].GetValue().ToString(), out SurplusHookArea);
+                double.TryParse(row.Cells[CellIndex + 21].GetValue().ToString(), out TrueHookArea);
 
                 City city = 0;
                 var address=row.Cells[CellIndex+3].GetValue().ToString().Replace(',','.').Split('.');
@@ -68,8 +71,9 @@ namespace LCChecker.Areas.Second.Controllers
                         Name=row.Cells[CellIndex+1].GetValue(),
                         County=address[2],
                         Area=area,
-                        NewArea=newarea
-
+                        NewArea=newarea,
+                        SurplusHookArea=SurplusHookArea,
+                        TrueHookArea=TrueHookArea
                     });
                 }
             }
