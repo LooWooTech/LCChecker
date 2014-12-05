@@ -138,5 +138,22 @@ namespace LCChecker.Areas.Second.Controllers
             byte[] fileContents = ms.ToArray();
             return File(fileContents, "application/ms-excel", ExcelName);
         }
+
+
+        public ActionResult Reports(City city) {
+            ViewBag.List = db.SecondReports.Where(e => e.City == city).ToList();
+            return View();
+        }
+
+        public ActionResult DownCityReport(City city, SecondReportType Type) {
+            var uploadFileType = (int)Type+20;
+            var file = db.Files.Where(e => e.City == city && e.Type == (UploadFileType)uploadFileType && e.State == UploadFileProceedState.Proceeded).OrderByDescending(e => e.CreateTime).FirstOrDefault();
+            if (file == null) {
+                throw new Exception("没有找到符合条件的文件");
+            }
+            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, file.SavePath);
+            return File(new FileStream(filePath, FileMode.Open), "application/ms-excel", city.ToString() + "-" + Type.ToString() + ".xls");
+            //return View();
+        }
     }
 }

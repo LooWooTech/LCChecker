@@ -1,0 +1,33 @@
+﻿@using LCChecker
+@{
+    ViewBag.Title = "";
+    List<LCChecker.Areas.Second.Models.SecondReport> list = ViewBag.List;
+    Layout = "~/Views/Admin/_Layout.cshtml";
+}
+
+<table class="table table-bordered">
+    <tr>
+        <th>表名</th>
+        <th>状态</th>
+        <th>下载</th>
+    </tr>
+    @foreach (var item in list) { 
+        <tr>
+            <td>@(item.Type.ToString()+":"+item.Type.GetDescription())</td>
+            <td>
+                @switch (item.Result) { 
+                    case null:
+                        <span class="label label-default">未检查</span>
+                        break;
+                        case true:
+                        <span class="label label-success">无误</span>
+                        break;
+                        case false:
+                        <span class="label label-warning">存疑</span>
+                        break;
+                }
+            </td>
+            <td><a href="/Second/Admin/DownCityReport?city=@((int)item.City)&&Type=@((int)item.Type)" class="btn btn-xs btn-primary">下载</a></td>
+        </tr>
+    }
+</table>

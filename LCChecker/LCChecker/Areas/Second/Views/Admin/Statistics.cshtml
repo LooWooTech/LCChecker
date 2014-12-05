@@ -27,7 +27,7 @@
             @foreach (var kv in reportSummary) {
                 var summary = kv.Value;
                 <tr>
-                    <td><a href="">@(summary.City)</a></td>
+                    <td><a href="/Second/Admin/Reports?city=@((int)summary.City)">@(summary.City)</a></td>
                     <td>@(summary.TotalCount)</td>
                     <td>@(summary.SuccessCount)</td>
                     <td>@(summary.ErrorCount)</td>
