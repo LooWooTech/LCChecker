@@ -10,10 +10,26 @@ Target Server Type    : MYSQL
 Target Server Version : 50173
 File Encoding         : 65001
 
-Date: 2014-12-05 16:14:13
+Date: 2014-12-08 17:42:29
 */
 
 SET FOREIGN_KEY_CHECKS=0;
+
+-- ----------------------------
+-- Table structure for coord_newareaprojects
+-- ----------------------------
+DROP TABLE IF EXISTS `coord_newareaprojects`;
+CREATE TABLE `coord_newareaprojects` (
+  `ID` varchar(255) NOT NULL,
+  `CityID` int(11) NOT NULL,
+  `Name` varchar(255) DEFAULT NULL,
+  `Result` bit(1) DEFAULT NULL,
+  `County` varchar(255) DEFAULT NULL,
+  `Note` varchar(255) DEFAULT NULL,
+  `UpdateTime` date NOT NULL,
+  `Visible` bit(1) NOT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for coord_projects
@@ -135,7 +151,7 @@ CREATE TABLE `serecords` (
   `IsError` bit(1) NOT NULL,
   `Note` varchar(1023) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=14705 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=18867 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for sereports
@@ -167,7 +183,7 @@ CREATE TABLE `uploadfiles` (
   PRIMARY KEY (`ID`),
   UNIQUE KEY `PK_FILE_ID` (`ID`) USING BTREE,
   KEY `IX_FILE_CITY` (`CityID`)
-) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for users
