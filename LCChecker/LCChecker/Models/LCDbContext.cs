@@ -16,9 +16,10 @@ namespace LCChecker.Models
         public DbSet<Project> Projects { get; set; }
 
         public DbSet<UploadFile> Files { get; set; }
-
+       // public DbSet<CoordProjectBase> CoordProjectBase { get; set; }
         public DbSet<CoordProject> CoordProjects { get; set; }
 
+        public DbSet<CoordNewAreaProject> CoordNewAreaProjects { get; set; }
         public DbSet<Report> Reports { get; set; }
 
         public DbSet<Record> Records { get; set; }

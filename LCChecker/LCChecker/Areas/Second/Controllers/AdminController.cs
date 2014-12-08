@@ -81,6 +81,137 @@ namespace LCChecker.Areas.Second.Controllers
             return RedirectToAction("Index");
         }
 
+        public ActionResult NewAreaCoord(City?city,NullableFilter result=NullableFilter.All,int page=1) {
+            var Filter = new SecondProjectFilter
+            {
+                City = city,
+                Result = result,
+                Page = new Page(page)
+            };
+            ViewBag.List = SecondProjectHelper.GetNewAreaCoord(Filter);
+            ViewBag.Page = Filter.Page;
+            return View();
+        }
+        [HttpPost]
+        public ActionResult UploadNewAreaCoord()
+        {
+            var file = UploadHelper.GetPostedFile(HttpContext);
+            var list = new List<CoordNewAreaProject>();
+            var excel = XslHelper.GetWorkbook(file);
+            var sheet = excel.GetSheetAt(1);
+            int StartRow = 2;
+            //int StartCell = 0;
+            int CellIndex = 0;
+            int Max = sheet.LastRowNum;
+            for (var i = StartRow; i <= Max; i++)
+            {
+                var row = sheet.GetRow(i);
+                if (row == null)
+                    continue;
+                if (string.IsNullOrEmpty(row.Cells[CellIndex + 1].ToString()))
+                {
+                    continue;
+                }
+
+                var id = row.Cells[CellIndex + 4].GetValue().Trim();
+
+
+                City city = 0;
+                var address = row.Cells[CellIndex + 3].GetValue().ToString().Replace(',', '.').Split('.');
+                if (Enum.TryParse<City>(address[1], out city))
+                {
+                    list.Add(new CoordNewAreaProject
+                    {
+                        ID = id,
+                        City = city,
+                        Name=row.Cells[CellIndex+1].GetValue(),
+                        County = address[2],
+                        Visible = true
+                    });
+                }
+            }
+            SecondProjectHelper.AddCoordNewArea(list);
+            return RedirectToAction("NewAreaCoord");
+        }
+        [HttpPost]
+        public ActionResult UploadFirstNewArea() {
+            var file = UploadHelper.GetPostedFile(HttpContext);
+            var list = new List<CoordNewAreaProject>();
+            var excel = XslHelper.GetWorkbook(file);
+            var sheet1 = excel.GetSheetAt(0);
+            int Max = sheet1.LastRowNum;
+            int StartRow = 1;
+            for (var i = StartRow; i <= Max; i++) {
+                var row = sheet1.GetRow(i);
+                if (row == null)
+                    continue;
+                var value = row.Cells[3].GetValue().ToString().Trim();
+                if (string.IsNullOrEmpty(value))
+                    continue;
+                if (!value.VerificationID())
+                    continue;
+                City city = 0;
+                var address = row.Cells[1].GetValue().ToString().Trim();
+                if (Enum.TryParse<City>(address, out city)) {
+                    list.Add(new CoordNewAreaProject
+                    {
+                        ID = value,
+                        City = city,
+                        Name = row.Cells[4].GetValue().ToString().Trim(),
+                        County = row.Cells[2].GetValue().ToString().Trim(),
+                        Visible = true
+                    });
+                }
+                
+            }
+            SecondProjectHelper.AddCoordNewArea(list);
+            return RedirectToAction("NewAreaCoord");
+        }
+
+
+
+        [HttpPost]
+        public ActionResult UploadCoord() {
+            var file = UploadHelper.GetPostedFile(HttpContext);
+            var list = new List<CoordProject>();
+            var excel = XslHelper.GetWorkbook(file);
+            var sheet = excel.GetSheetAt(1);
+            int StartRow = 2;
+            //int StartCell = 0;
+            int CellIndex = 0;
+            int Max = sheet.LastRowNum;
+            for (var i = StartRow; i <= Max; i++)
+            {
+                var row = sheet.GetRow(i);
+                if (row == null)
+                    continue;
+                if (string.IsNullOrEmpty(row.Cells[CellIndex + 1].ToString()))
+                {
+                    continue;
+                }
+
+                var id = row.Cells[CellIndex + 4].GetValue().Trim();
+
+
+                City city = 0;
+                var address = row.Cells[CellIndex + 3].GetValue().ToString().Replace(',', '.').Split('.');
+                if (Enum.TryParse<City>(address[1], out city))
+                {
+                    list.Add(new CoordProject
+                    {
+                        ID = id,
+                        City = city,
+                        Name = row.Cells[CellIndex + 1].GetValue(),
+                        County = address[2],
+                        Visible = false,
+                    });
+                }
+            }
+            SecondProjectHelper.AddCoordProject(list);
+            return Redirect("/Admin/CoordProjects");
+            //return RedirectToAction("CoordProjects","Admin");
+        }
+
 
         public ActionResult Statistics() {
             ViewBag.ReportSummary = db.SecondReports.GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
@@ -159,5 +290,7 @@ namespace LCChecker.Areas.Second.Controllers
             return File(new FileStream(filePath, FileMode.Open), "application/ms-excel", city.ToString() + "-" + Type.ToString() + ".xls");
             //return View();
         }
+
+        
     }
 }

@@ -10,6 +10,7 @@ namespace LCChecker
     public class ProjectFileter
     {
         public City? City { get; set; }
+        public string County { get; set; }
 
         public NullableFilter Result { get; set; }
 
@@ -129,6 +130,7 @@ namespace LCChecker
             using (var db = new LCDbContext())
             {
                 var query = db.CoordProjects.AsQueryable();
+                int count = query.Count();
                 if (filter.City.HasValue && filter.City.Value > 0)
                 {
                     query = query.Where(e => e.City == filter.City.Value);
@@ -153,11 +155,58 @@ namespace LCChecker
                 {
                     query = query.Where(e => e.Visible == filter.Visible.Value);
                 }
-
                 //if (filter.Type.HasValue && filter.Type.Value > 0)
                 //{
                 //    query = query.Where(e => e.Type == filter.Type.Value);
                 //}
+                if (filter.County != null&&!string.IsNullOrEmpty(filter.County)) {
+                    query = query.Where(e => e.County == filter.County);
+                }
+
+                if (filter.Page != null)
+                {
+                    filter.Page.RecordCount = query.Count();
+                    query = query.OrderByDescending(e => e.UpdateTime).Skip(filter.Page.PageSize * (filter.Page.PageIndex - 1)).Take(filter.Page.PageSize);
+                }
+                return query.ToList();
+            }
+        }
+
+        public static List<string> GetCoordCounty(City city) {
+            using (var db = new LCDbContext()) {
+                var list = db.CoordProjects.Where(e => e.City == city).GroupBy(e => e.County).Select(g => g.Key).ToList();
+                return list;
+            }
+        }
+
+        public static List<CoordNewAreaProject> GetCoordSeProjects(ProjectFileter filter) {
+            using (var db = new LCDbContext()) {
+                var query = db.CoordNewAreaProjects.AsQueryable();
+                if (filter.City.HasValue && filter.City.Value > 0) {
+                    query = query.Where(e => e.City == filter.City.Value);
+                }
+                switch (filter.Result)
+                {
+                    case NullableFilter.True:
+                    case NullableFilter.False:
+                        var value = filter.Result == NullableFilter.True;
+                        query = query.Where(e => e.Result == value);
+                        break;
+                    case NullableFilter.Null:
+                        query = query.Where(e => e.Result == null);
+                        break;
+                    case NullableFilter.All:
+                    default:
+                        break;
+                }
+
+                if (filter.Visible.HasValue)
+                {
+                    query = query.Where(e => e.Visible == filter.Visible.Value);
+                }
+                if (filter.County != null&&!string.IsNullOrEmpty(filter.County)) {
+                    query = query.Where(e => e.County == filter.County);
+                }
 
                 if (filter.Page != null)
                 {
@@ -165,8 +214,16 @@ namespace LCChecker
                     query = query.OrderByDescending(e => e.UpdateTime).Skip(filter.Page.PageSize * (filter.Page.PageIndex - 1)).Take(filter.Page.PageSize);
                 }
 
+
                 return query.ToList();
             }
         }
+
+        public static List<string> GetNewAreaCounty(City city) {
+            using (var db = new LCDbContext()) {
+                return db.CoordNewAreaProjects.Where(e => e.City == city).GroupBy(e => e.County).Select(g => g.Key).ToList();
+            }
+        }
+
     }
 }

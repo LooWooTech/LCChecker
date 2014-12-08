@@ -141,9 +141,12 @@
     <Compile Include="Areas\Second\Check\SecondCheckEngine.cs" />
     <Compile Include="Areas\Second\Controllers\AdminController.cs" />
     <Compile Include="Areas\Second\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Second\Controllers\NewAreaController.cs" />
     <Compile Include="Areas\Second\Controllers\UserController.cs" />
     <Compile Include="Areas\Second\Helper\EightHelper.cs" />
     <Compile Include="Areas\Second\Helper\SecondProjectHelper.cs" />
+    <Compile Include="Areas\Second\Models\CoordProjectBase.cs" />
+    <Compile Include="Areas\Second\Models\CoordNewAreaProject.cs" />
     <Compile Include="Areas\Second\Models\FarmLand.cs" />
     <Compile Include="Areas\Second\Models\RuleKind.cs" />
     <Compile Include="Areas\Second\Models\SecondProject.cs" />
@@ -345,6 +348,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\Second\Views\Admin\Reports.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Second\Views\NewArea\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Second\Views\Admin\NewAreaCoord.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

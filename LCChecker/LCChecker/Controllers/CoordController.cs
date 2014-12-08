@@ -4,22 +4,25 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using LCChecker.Models;
+using LCChecker.Areas.Second.Models;
 
 namespace LCChecker.Controllers
 {
     public partial class UserController
     {
-        public ActionResult CoordProjects(NullableFilter result = NullableFilter.All, int page = 1)
+        public ActionResult CoordProjects(NullableFilter result = NullableFilter.All, int page = 1,string county=null)
         {
             var filter = new ProjectFileter
             {
                 City = CurrentUser.City,
                 Result = result,
-                Visible = true,
-                Page = new Page(page)
+                Visible=true,
+                Page = new Page(page),
+                County=county
             };
             ViewBag.List = ProjectHelper.GetCoordProjects(filter);
             ViewBag.Page = filter.Page;
+            ViewBag.County = ProjectHelper.GetCoordCounty(CurrentUser.City);
             return View();
         }
 

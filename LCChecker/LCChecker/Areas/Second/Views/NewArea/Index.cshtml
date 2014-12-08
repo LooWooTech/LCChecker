@@ -1,0 +1,96 @@
+﻿@using LCChecker.Models
+@using LCChecker.Areas.Second.Models
+@{
+    ViewBag.Title = "新增耕地坐标点";
+    List<CoordNewAreaProject> list = ViewBag.List;
+    List<string> Countys = ViewBag.County; 
+    Layout = "~/Views/User/_Layout.cshtml";
+}
+
+<div class="alert alert-warning">
+    注意：
+    <ul>
+        <li>新增耕地坐标点文件为国土部格式txt文件</li>
+        <li>新增耕地坐标点文件为项目备案编号（14位），例如33010420060002.txt</li>
+        <li>请将多个文件要锁成zip文件后上传</li>
+    </ul>
+</div>
+<div style="clear:both;overflow:hidden;margin-bottom:10px;">
+    <form class="form-inline"method="post" enctype="multipart/form-data"action="" style="float:left;">
+        <div class="input-group">
+            <input type="file" name="file" class="form-control" style="width:200px;" />
+            <div class="input-group-btn">
+                <select name="type" class="form-control">
+                    <option value="@((int)UploadFileType.新增耕地坐标)">新增耕地坐标</option>
+                </select>
+            </div>
+            <div class="input-group-btn">
+                <button type="submit" class="btn btn-primary">上传新增耕地坐标点</button>
+            </div>
+        </div>
+    </form>
+    <form class="form-inline" style="float:right;">
+        <div class="input-group">
+            <span class="input-group-addon">过滤项目</span>
+            <div class="input-group-btn">
+                <select name="county" class="form-control">
+                    <option value="">全部</option>
+                    @foreach (var item in Countys) { 
+                        <option value="@item" @(Request.QueryString["county"]==item?"selected=selected":"")>@item</option>
+                    }
+                </select>
+            </div>
+            <div class="input-group-btn">
+                <select name="result" class="form-control">
+                    <option value="0">全部</option>
+                    <option value="3" @(Request.QueryString["result"]=="3"?"slected=selected":"")>未上传</option>
+                    <option value="1" @(Request.QueryString["result"]=="1"?"selected=selected":"")>无误</option>
+                    <option value="2" @(Request.QueryString["result"]=="2"?"selected=selected":"")>存疑</option>
+                </select>
+            </div>
+            <div class="input-group-btn">
+                <button type="submit" class="btn btn-primary">过滤</button>
+            </div>
+        </div>
+    </form>
+</div>
+<table class="table table-bordered">
+    <tr>
+        <th style="width:130px">所在地</th>
+        <th style="width:130px;">项目编号</th>
+        <th>项目名称</th>
+        <th style="width:100px">检验结果</th>
+        <th style="width:300px">备注</th>
+    </tr>
+    @foreach (var project in list) { 
+        <tr>
+            <td>@(project.City.ToString())-@(project.County)</td>
+            <td>@(project.ID)</td>
+            <td>@(project.Name)</td>
+            <td>
+                @if (project.Result.HasValue) {
+                    if (project.Result.Value) { 
+                        <span class="label label-success">无误</span>
+                        <a href="#" target="_blank"><span class="label label-success">下载</span></a>
+                    }
+                    else { 
+                        <span class="label label-warning">存疑</span>
+                    }
+                }
+                else { 
+                    <span class="label label-default">未上传</span>
+                }
+            </td>
+            <td>
+                @if (!string.IsNullOrEmpty(project.Note)) { 
+                    @Html.Raw(project.Note.Replace(";","<br />"))
+                }
+            </td>
+        </tr>
+    }
+    <tr>
+        <td colspan="9">
+            @Html.Partial("_pagination",ViewBag.Page as object)
+        </td>
+    </tr>
+</table>

@@ -23,6 +23,8 @@ namespace LCChecker.Areas.Second
     }
 
 
+
+
     public class SeProject {
         public bool IsHasDoubt { get; set; }
         public bool IsApplyDelete { get; set; }
@@ -48,6 +50,29 @@ namespace LCChecker.Areas.Second
                     if (!db.SecondProjects.Any(e => e.ID == item.ID))
                     {
                         db.SecondProjects.Add(item);
+                    }
+                }
+                db.SaveChanges();
+            }
+        }
+
+        public static void AddCoordNewArea(List<CoordNewAreaProject> list) {
+            using (var db = new LCDbContext()) {
+                foreach (var item in list) {
+                    if (!db.CoordNewAreaProjects.Any(e => e.ID == item.ID)) {
+                        db.CoordNewAreaProjects.Add(item);
+                    }
+                }
+                db.SaveChanges();
+            }
+        }
+
+
+        public static void AddCoordProject(List<CoordProject> list) {
+            using (var db = new LCDbContext()) {
+                foreach (var item in list) {
+                    if (!db.CoordProjects.Any(e => e.ID == item.ID)) {
+                        db.CoordProjects.Add(item);
                     }
                 }
                 db.SaveChanges();
@@ -105,6 +130,34 @@ namespace LCChecker.Areas.Second
 
                 return query.ToList();
             }
+        }
+        public static List<CoordNewAreaProject> GetNewAreaCoord(SecondProjectFilter Filter) {
+            using (var db = new LCDbContext()) {
+                var query = db.CoordNewAreaProjects.AsQueryable();
+                if (Filter.City.HasValue && Filter.City.Value > 0) {
+                    query = query.Where(e => e.City == Filter.City.Value);
+                }
+                switch (Filter.Result) { 
+                    case NullableFilter.True:
+                    case NullableFilter.False:
+                        var value = Filter.Result == NullableFilter.True;
+                        query = query.Where(e => e.Result == value);
+                        break;
+                    case NullableFilter.Null:
+                        query = query.Where(e => e.Result == null);
+                        break;
+                    case NullableFilter.All:
+                    default: break;
+                }
+
+                if (Filter.Page != null) {
+                    Filter.Page.RecordCount = query.Count();
+                    query = query.OrderBy(e => e.ID).Skip(Filter.Page.PageSize * (Filter.Page.PageIndex - 1)).Take(Filter.Page.PageSize);
+                }
+
+                return query.ToList();
+            }
+            
         }
 
         public static List<string> GetCountry(City city) {
