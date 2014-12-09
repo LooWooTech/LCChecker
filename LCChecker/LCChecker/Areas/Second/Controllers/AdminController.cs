@@ -224,7 +224,16 @@ namespace LCChecker.Areas.Second.Controllers
             ViewBag.CoordSummary = db.CoordProjects.Where(e => e.Visible == true).GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
             {
                 TotalCount = g.Count(),
-                ErrorCount = g.Count(e => e.Result == false),
+                ErrorCount = g.Count(e => e.Result == false&&e.Exception==false),
+                ExceptionCount=g.Count(e=>e.Result==false&&e.Exception==true),
+                SuccessCount = g.Count(e => e.Result == true),
+                City = g.Key
+            });
+            ViewBag.CoordNewAreaSummary = db.CoordNewAreaProjects.Where(e => e.Visible == true).GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
+            {
+                TotalCount = g.Count(),
+                ErrorCount = g.Count(e => e.Result == false && e.Exception == false),
+                ExceptionCount = g.Count(e => e.Result == false && e.Exception == true),
                 SuccessCount = g.Count(e => e.Result == true),
                 City = g.Key
             });
@@ -259,12 +268,26 @@ namespace LCChecker.Areas.Second.Controllers
                 Data = db.CoordProjects.Where(e => e.Visible == true).GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
                 {
                     TotalCount = g.Count(),
-                    ErrorCount = g.Count(e => e.Result == false),
+                    ErrorCount = g.Count(e => e.Result == false&&e.Exception==false),
+                    ExceptionCount=g.Count(e=>e.Result==false&&e.Exception==true),
                     SuccessCount = g.Count(e => e.Result == true),
                     City = g.Key
                 });
             }
-            else {
+            else if (ID == 3) {
+                ExcelName = "新增耕地坐标统计.xls";
+                HeaderName = "浙江省土地整治项目新增耕地坐标情况统计表";
+                Data = db.CoordNewAreaProjects.Where(e => e.Visible == true).GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
+                {
+                    TotalCount = g.Count(),
+                    ErrorCount = g.Count(e => e.Result == false && e.Exception == false),
+                    ExceptionCount = g.Count(e => e.Result == false && e.Exception == true),
+                    SuccessCount = g.Count(e => e.Result == true),
+                    City = g.Key
+                });
+            }
+            else
+            {
                 return View();
             }
             IWorkbook workbook = XslHelper.CreateExcel(Data, HeaderName);
@@ -290,7 +313,5 @@ namespace LCChecker.Areas.Second.Controllers
             return File(new FileStream(filePath, FileMode.Open), "application/ms-excel", city.ToString() + "-" + Type.ToString() + ".xls");
             //return View();
         }
-
-        
     }
 }

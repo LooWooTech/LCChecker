@@ -75,7 +75,13 @@
                     }
                     else
                     {
-                    <span class="label label-warning">存疑</span>
+                        if (project.Exception) { 
+                            <span class="label label-primary">例外</span>
+                        }
+                        else { 
+                             <span class="label label-warning">存疑</span>
+                        }
+                   
                     }
                 }
                 else

@@ -1,4 +1,5 @@
-﻿using LCChecker.Models;
+﻿using LCChecker.Areas.Second.Models;
+using LCChecker.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,6 +58,21 @@ namespace LCChecker.Areas.Second.Controllers
             }
             ViewBag.List = query.ToList();
             return View();
+        }
+
+        [HttpPost]
+        public ActionResult AddException(string reason,string ID) {
+            if (string.IsNullOrEmpty(reason)) {
+                throw new ArgumentException("请输入添加例外理由！");
+            }
+            CoordNewAreaProject project = db.CoordNewAreaProjects.FirstOrDefault(e => e.ID == ID);
+            if (project == null) {
+                throw new ArgumentException("未找到相关新增耕地坐标项目信息,请与管理员联系！");
+            }
+            project.Exception = true;
+            project.Note = "例外理由：" + reason;
+            db.SaveChanges();
+            return RedirectToAction("Index");
         }
 
 

@@ -46,6 +46,7 @@
                     <option value="3" @(Request.QueryString["result"]=="3"?"slected=selected":"")>未上传</option>
                     <option value="1" @(Request.QueryString["result"]=="1"?"selected=selected":"")>无误</option>
                     <option value="2" @(Request.QueryString["result"]=="2"?"selected=selected":"")>存疑</option>
+                    <option value="4"@(Request.QueryString["result"]=="4"?"selected=selected":"")>例外</option>
                 </select>
             </div>
             <div class="input-group-btn">
@@ -59,7 +60,7 @@
         <th style="width:130px">所在地</th>
         <th style="width:130px;">项目编号</th>
         <th>项目名称</th>
-        <th style="width:100px">检验结果</th>
+        <th style="width:150px">检验结果</th>
         <th style="width:300px">备注</th>
     </tr>
     @foreach (var project in list) { 
@@ -73,8 +74,43 @@
                         <span class="label label-success">无误</span>
                         <a href="#" target="_blank"><span class="label label-success">下载</span></a>
                     }
-                    else { 
-                        <span class="label label-warning">存疑</span>
+                    else {
+                        if (project.Exception) { 
+                            <span class="label label-primary">例外</span>
+                        }
+                        else { 
+                          <span class="label label-warning">存疑</span>
+                    <button type="button" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#@(project.ID)">添加例外</button>
+                    <div class="modal fade"  id="@(project.ID)" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                    <h4 class="modal-title" id="myModalLabel">项目：@(project.Name) 添加例外</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form class="form-horizontal" method="post" action="/Second/NewArea/AddException">
+                                        <div class="form-group">
+                                            <label for="reason" class="control-label col-lg-2">例外理由</label>
+                                            <div class="col-lg-5">
+                                                <input type="text" name="reason" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <input type="text" name="ID" value="@(project.ID)" style="display:none" />
+                                        <div class="form-group">
+                                            <div class="col-lg-10 col-lg-offset-2">
+                                                <button type="submit" class="btn btn-success">例外</button>
+                                            </div>
+                                        </div>
+                                      
+                                    </form>
+                                </div>
+                              
+                            </div>
+                        </div>
+                    </div>
+                        }
+                        
                     }
                 }
                 else { 

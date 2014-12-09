@@ -14,7 +14,8 @@ namespace LCChecker.Models
         public int SuccessCount { get; set; }
 
         public int ErrorCount { get; set; }
+        public int ExceptionCount { get; set; }
 
-        public int UnCheckCount { get { return TotalCount - SuccessCount - ErrorCount; } }
+        public int UnCheckCount { get { return TotalCount - SuccessCount - ErrorCount-ExceptionCount; } }
     }
 }

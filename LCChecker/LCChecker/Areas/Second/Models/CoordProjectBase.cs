@@ -42,6 +42,7 @@ namespace LCChecker.Areas.Second.Models
         public DateTime UpdateTime { get; set; }
 
         public bool Visible { get; set; }
+        public bool Exception { get; set; }
     }
 
 }

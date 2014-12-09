@@ -10,6 +10,7 @@ namespace LCChecker.Models
         All,
         True,
         False,
-        Null
+        Null,
+        Exception
     }
 }
