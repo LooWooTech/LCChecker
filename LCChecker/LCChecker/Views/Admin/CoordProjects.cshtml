@@ -76,7 +76,7 @@
                     else
                     {
                         if (project.Exception) { 
-                            <span class="label label-primary">例外</span>
+                            <span class="label label-info">例外</span>
                         }
                         else { 
                              <span class="label label-warning">存疑</span>
@@ -86,7 +86,14 @@
                 }
                 else
                 {
-                    <span class="label label-default">未上传</span>
+                    if (project.Exception)
+                    {
+                        <span class="label label-info">例外</span>
+                    }
+                    else { 
+                        <span class="label label-default">未上传</span>
+                    }
+                    
                 }
             </td>
             <td>

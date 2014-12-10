@@ -29,6 +29,38 @@
             </div>
         </div>
     </form>
+    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#search" style="display:none">搜索项目</button>
+    <div class="modal fade" id="search" tabindex="-1" role="dialog" aria-labelledby="mysearchlabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">搜索项目</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" method="post" action="">
+                        <div class="form-group">
+                            <label for="serchID" class="control-label col-lg-3">项目编号关键词</label>
+                            <div class="col-lg-9">
+                                <input type="text" name="searchID" class="form-control" placeholder="项目编号关键词"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="SearchName" class="control-label col-lg-3">项目名称关键词</label>
+                            <div class="col-lg-9">
+                                <input type="text" name="searchName" class="form-control" placeholder="项目名称关键词"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-9 col-lg-offset-3">
+                                <button type="submit" class="btn btn-success">搜索</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div> 
     <form class="form form-inline" style="float: right;">
         <div class="input-group">
             <span class="input-group-addon">过滤项目</span>
@@ -83,11 +115,12 @@
                     else
                     {
                         if (project.Exception) { 
-                            <span class="label label-primary">例外</span>
+                            <span class="label label-info">例外</span>
+                            <a href="/User/CancelException?ID=@(project.ID)" class="btn btn-xs btn-danger"><i class="glyphicon glyphicon-remove"></i>&nbsp;取消例外</a>
                         }
                         else { 
                             <span class="label label-warning">存疑</span>
-                     <button type="button" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#@(project.ID)">添加例外</button>
+                     <button type="button" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#@(project.ID)">设置例外</button>
                     <div class="modal fade"  id="@(project.ID)" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
@@ -122,7 +155,44 @@
                 }
                 else
                 {
-                    <span class="label label-default">未上传</span>
+                    if (project.Exception)
+                    {
+                        <span class="label label-info">例外</span>
+                    <a href="/User/CancelException?ID=@(project.ID)" class="btn btn-xs btn-danger"><i class="glyphicon glyphicon-remove"></i>&nbsp;取消例外</a>
+                    }
+                    else { 
+                         <span class="label label-default">未上传</span>
+                      <button type="button" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#@(project.ID)">设置例外</button>
+                    <div class="modal fade"  id="@(project.ID)" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                    <h4 class="modal-title">项目：@(project.Name) 添加例外</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form class="form-horizontal" method="post" action="/User/AddException">
+                                        <div class="form-group">
+                                            <label for="reason" class="control-label col-lg-2">例外理由</label>
+                                            <div class="col-lg-5">
+                                                <input type="text" name="reason" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <input type="text" name="ID" value="@(project.ID)" style="display:none" />
+                                        <div class="form-group">
+                                            <div class="col-lg-10 col-lg-offset-2">
+                                                <button type="submit" class="btn btn-success">例外</button>
+                                            </div>
+                                        </div>
+                                      
+                                    </form>
+                                </div>
+                              
+                            </div>
+                        </div>
+                    </div>
+                    }
+                   
                 }
             </td>
             <td>

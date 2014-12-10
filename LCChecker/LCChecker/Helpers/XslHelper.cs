@@ -413,12 +413,21 @@ namespace LCChecker
         }
 
 
-        public static IWorkbook CreateExcel(Dictionary<City, Summary> Data,string Name) {
-            string[] Header = { "行政区", "项目总数", "通过总数", "失败总数", "未上传数" };
-            int[] He = new int[4];
+        public static IWorkbook CreateExcel(Dictionary<City, Summary> Data,string Name,bool Flag) {
+            string[] Header = { "行政区", "项目总数", "通过总数","例外总数", "失败总数", "未上传数" };
+            string[] Header1 = { "行政区", "项目总数", "通过总数", "失败总数", "未上传数" };
+            int Line = 0;
+            if (Flag)
+            {
+                Line = 4;
+            }
+            else {
+                Line = 5;
+            }
+            int[] He = new int[Line];
             HSSFWorkbook workbook = new HSSFWorkbook();
             ISheet sheet = workbook.CreateSheet("sheet1");
-            for (var j = 0; j < 5; j++)
+            for (var j = 0; j < Line+1; j++)
             {
                 sheet.SetColumnWidth(j, 15 * 256);
             }
@@ -429,34 +438,64 @@ namespace LCChecker
             sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, 4));
             row = sheet.CreateRow(1);
             int i = 0;
-            foreach (var item in Header)
+            if (Flag)
             {
-                cell = row.CreateCell(i++);
-                cell.CellStyle = workbook.GetCellStyle(XslHeaderStyle.小头);
-                cell.SetCellValue(item);
+                foreach (var item in Header1)
+                {
+                    cell = row.CreateCell(i++);
+                    cell.CellStyle = workbook.GetCellStyle(XslHeaderStyle.小头);
+                    cell.SetCellValue(item);
+                }
             }
+            else {
+                foreach (var item in Header)
+                {
+                    cell = row.CreateCell(i++);
+                    cell.CellStyle = workbook.GetCellStyle(XslHeaderStyle.小头);
+                    cell.SetCellValue(item);
+                }
+            }
+           
             i = 2;
             foreach (var item in Data)
             {
                 var summary = item.Value;
                 row = sheet.CreateRow(i++);
-                for (var j = 0; j < 5; j++)
+                for (var j = 0; j < Line+1; j++)
                 {
                     cell = row.CreateCell(j);
                     cell.CellStyle = workbook.GetCellStyle(XslHeaderStyle.默认);
                 }
                 row.GetCell(0).SetCellValue(summary.City.ToString());
+                
                 row.GetCell(1).SetCellValue(summary.TotalCount);
                 He[0] += summary.TotalCount;
+
                 row.GetCell(2).SetCellValue(summary.SuccessCount);
                 He[1] += summary.SuccessCount;
-                row.GetCell(3).SetCellValue(summary.ErrorCount);
-                He[2] += summary.ErrorCount;
-                row.GetCell(4).SetCellValue(summary.UnCheckCount);
-                He[3] += summary.UnCheckCount;
+
+                if (Flag)
+                {
+                    row.GetCell(3).SetCellValue(summary.ErrorCount);
+                    He[2] += summary.ErrorCount;
+
+                    row.GetCell(4).SetCellValue(summary.UnCheckCount);
+                    He[3] += summary.UnCheckCount;
+                }
+                else {
+                    row.GetCell(3).SetCellValue(summary.ExceptionCount);
+                    He[2] += summary.ExceptionCount;
+
+                    row.GetCell(4).SetCellValue(summary.ErrorCount);
+                    He[3] += summary.ErrorCount;
+
+                    row.GetCell(5).SetCellValue(summary.UnCheckCount);
+                    He[4] += summary.UnCheckCount;
+                }
+               
             }
             row = sheet.CreateRow(i++);
-            for (var j = 0; j < 5; j++)
+            for (var j = 0; j < Line+1; j++)
             {
                 cell = row.CreateCell(j);
                 cell.CellStyle = workbook.GetCellStyle(XslHeaderStyle.默认);

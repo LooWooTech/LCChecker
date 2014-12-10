@@ -65,16 +65,32 @@ namespace LCChecker.Areas.Second.Controllers
             if (string.IsNullOrEmpty(reason)) {
                 throw new ArgumentException("请输入添加例外理由！");
             }
-            CoordNewAreaProject project = db.CoordNewAreaProjects.FirstOrDefault(e => e.ID == ID);
+            CoordNewAreaProject project = db.CoordNewAreaProjects.FirstOrDefault(e => e.ID.ToLower() == ID.ToLower());
             if (project == null) {
                 throw new ArgumentException("未找到相关新增耕地坐标项目信息,请与管理员联系！");
             }
             project.Exception = true;
-            project.Note = "例外理由：" + reason;
+            project.Note = "例外理由：" + reason+";"+project.Note;
             db.SaveChanges();
             return RedirectToAction("Index");
         }
 
+
+        public ActionResult CancelException(string ID) {
+            CoordNewAreaProject project = db.CoordNewAreaProjects.FirstOrDefault(e => e.ID.ToLower() == ID.ToLower());
+            if (project == null) {
+                throw new ArgumentException("未找到相关新增耕地坐标项目信息，请与管理员联系！");
+            }
+            project.Exception = false;
+            string[] Notes = project.Note.Split(';');
+            string value = string.Empty;
+            for (var i = 1; i < Notes.Length; i++) {
+                value += Notes[i];
+            }
+            project.Note = value;
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
 
     }
 }

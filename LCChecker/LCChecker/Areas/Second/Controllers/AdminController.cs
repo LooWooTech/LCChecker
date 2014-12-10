@@ -225,16 +225,16 @@ namespace LCChecker.Areas.Second.Controllers
             {
                 TotalCount = g.Count(),
                 ErrorCount = g.Count(e => e.Result == false&&e.Exception==false),
-                ExceptionCount=g.Count(e=>e.Result==false&&e.Exception==true),
-                SuccessCount = g.Count(e => e.Result == true),
+                ExceptionCount=g.Count(e=>e.Exception==true),
+                SuccessCount = g.Count(e => e.Result == true&&e.Exception==false),
                 City = g.Key
             });
             ViewBag.CoordNewAreaSummary = db.CoordNewAreaProjects.Where(e => e.Visible == true).GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
             {
                 TotalCount = g.Count(),
                 ErrorCount = g.Count(e => e.Result == false && e.Exception == false),
-                ExceptionCount = g.Count(e => e.Result == false && e.Exception == true),
-                SuccessCount = g.Count(e => e.Result == true),
+                ExceptionCount = g.Count(e => e.Exception == true),
+                SuccessCount = g.Count(e => e.Result == true&&e.Exception==false),
                 City = g.Key
             });
             return View();
@@ -250,7 +250,9 @@ namespace LCChecker.Areas.Second.Controllers
             Dictionary<City, Summary> Data;
             string ExcelName = "";
             string HeaderName = "";
+            bool flag = false;
             if (ID == 1) {
+                flag = true;
                 ExcelName = "报部表格统计.xls";
                 HeaderName = "浙江土地整治项目核查报部表格情况统计表";
                 Data = db.SecondReports.GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
@@ -269,8 +271,8 @@ namespace LCChecker.Areas.Second.Controllers
                 {
                     TotalCount = g.Count(),
                     ErrorCount = g.Count(e => e.Result == false&&e.Exception==false),
-                    ExceptionCount=g.Count(e=>e.Result==false&&e.Exception==true),
-                    SuccessCount = g.Count(e => e.Result == true),
+                    ExceptionCount=g.Count(e=>e.Exception==true),
+                    SuccessCount = g.Count(e => e.Result == true&&e.Exception==false),
                     City = g.Key
                 });
             }
@@ -281,8 +283,8 @@ namespace LCChecker.Areas.Second.Controllers
                 {
                     TotalCount = g.Count(),
                     ErrorCount = g.Count(e => e.Result == false && e.Exception == false),
-                    ExceptionCount = g.Count(e => e.Result == false && e.Exception == true),
-                    SuccessCount = g.Count(e => e.Result == true),
+                    ExceptionCount = g.Count(e =>e.Exception == true),
+                    SuccessCount = g.Count(e => e.Result == true&&e.Exception==false),
                     City = g.Key
                 });
             }
@@ -290,7 +292,7 @@ namespace LCChecker.Areas.Second.Controllers
             {
                 return View();
             }
-            IWorkbook workbook = XslHelper.CreateExcel(Data, HeaderName);
+            IWorkbook workbook = XslHelper.CreateExcel(Data, HeaderName,flag);
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
             byte[] fileContents = ms.ToArray();

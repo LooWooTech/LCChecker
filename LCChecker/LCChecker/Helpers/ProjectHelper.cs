@@ -141,13 +141,13 @@ namespace LCChecker
                     case NullableFilter.True:
                     case NullableFilter.False:
                         var value = filter.Result == NullableFilter.True;
-                        query = query.Where(e => e.Result == value);
+                        query = query.Where(e => e.Result == value&&e.Exception==false);
                         break;
                     case NullableFilter.Null:
-                        query = query.Where(e => e.Result == null);
+                        query = query.Where(e => e.Result == null&&e.Exception==false);
                         break;
                     case NullableFilter.Exception:
-                        query = query.Where(e => e.Result == false && e.Exception == true);
+                        query = query.Where(e => e.Exception == true);
                         break;
                     case NullableFilter.All:
                     default:
@@ -193,13 +193,13 @@ namespace LCChecker
                     case NullableFilter.True:
                     case NullableFilter.False:
                         var value = filter.Result == NullableFilter.True;
-                        query = query.Where(e => e.Result == value);
+                        query = query.Where(e => e.Result == value&&e.Exception==false);
                         break;
                     case NullableFilter.Null:
-                        query = query.Where(e => e.Result == null);
+                        query = query.Where(e => e.Result == null&&e.Exception==false);
                         break;
                     case NullableFilter.Exception:
-                        query = query.Where(e => e.Result == false && e.Exception == true);
+                        query = query.Where(e => e.Exception == true);
                         break;
                     case NullableFilter.All:
                     default:
