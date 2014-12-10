@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50173
 File Encoding         : 65001
 
-Date: 2014-12-08 17:42:29
+Date: 2014-12-10 10:59:22
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -28,6 +28,7 @@ CREATE TABLE `coord_newareaprojects` (
   `Note` varchar(255) DEFAULT NULL,
   `UpdateTime` date NOT NULL,
   `Visible` bit(1) NOT NULL,
+  `Exception` bit(1) NOT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -44,6 +45,7 @@ CREATE TABLE `coord_projects` (
   `Note` varchar(255) DEFAULT NULL,
   `UpdateTime` date NOT NULL,
   `Visible` bit(1) NOT NULL,
+  `Exception` bit(1) NOT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
