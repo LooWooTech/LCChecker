@@ -13,10 +13,21 @@ namespace LCChecker.Areas.Second
             Whether = projects.ToDictionary(e => e.ID, e => e.IsHasError);
             Dictionary<string, SecondProject> Team = projects.ToDictionary(e => e.ID, e => e);
             var list = new List<IRowRule>();
-            list.Add(new OnlySecondProject() { ColumnIndex = 3, AreaIndex = 0, NewAreaIndex = 0, Projects = Team, Values = new[] { "市", "县", "项目名称" },ID="2401（基本规则）" });
+            list.Add(new OnlySecondProject() { ColumnIndex = 3, AreaIndex = 0, NewAreaIndex = 0, Projects = Team, Values = new[] { "市", "县", "项目名称" }, ID = "2401（基本规则）" });
             list.Add(new CellRangeRowRule() { ColumnIndex = 8, Values = new[] { "是", "否" }, ID = "2402（填写规则）" });
 
             foreach (var item in list) {
+                rules.Add(new RuleInfo() { Rule = item });
+            }
+        }
+
+        public CheckFour(List<pProject> projects) {
+            Whether = projects.ToDictionary(e => e.ID, e => e.IsHasError);
+            var list = new List<IRowRule>();
+            list.Add(new CellRangeRowRule() { ColumnIndex = 8, Values = new[] { "是", "否" }, ID = "2402（填写规则）" });
+
+            foreach (var item in list)
+            {
                 rules.Add(new RuleInfo() { Rule = item });
             }
         }

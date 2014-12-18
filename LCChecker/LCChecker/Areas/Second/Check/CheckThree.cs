@@ -21,5 +21,17 @@ namespace LCChecker.Areas.Second
                 rules.Add(new RuleInfo() { Rule = item });
             }
         }
+
+        public CheckThree(List<pProject> projects) {
+            Whether = projects.ToDictionary(e => e.ID, e => e.IsApplyDelete);
+            var list = new List<IRowRule>();
+            list.Add(new CellRangeRowRule() { ColumnIndex = 8, Values = new[] { "是", "否" }, ID = "2302（填写规则）" });
+            list.Add(new CellRangeRowRule() { ColumnIndex = 9, Values = new[] { "是", "否" }, ID = "2303（填写规则）" });
+
+            foreach (var item in list)
+            {
+                rules.Add(new RuleInfo() { Rule = item });
+            }
+        }
     }
 }

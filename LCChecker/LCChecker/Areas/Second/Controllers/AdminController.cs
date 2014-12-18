@@ -31,6 +31,18 @@ namespace LCChecker.Areas.Second.Controllers
             return View();
         }
 
+        public ActionResult PlanIndex(City? city, NullableFilter result = NullableFilter.All, int page = 1) {
+            var filter = new SecondProjectFilter
+            {
+                City = city,
+                Result = result,
+                Page = new Page(page)
+            };
+            ViewBag.List = SecondProjectHelper.GetPlanProjects(filter);
+            ViewBag.Page = filter.Page;
+            return View();
+        }
+
 
 
         [HttpPost]
@@ -80,6 +92,43 @@ namespace LCChecker.Areas.Second.Controllers
             SecondProjectHelper.AddSecondProjects(list);
             return RedirectToAction("Index");
         }
+        [HttpPost]
+        public ActionResult UploadPlanProject() {
+            var file = UploadHelper.GetPostedFile(HttpContext);
+           // var list = new List<SecondProject>();
+            var plist = new List<pProject>();
+            var excel = XslHelper.GetWorkbook(file);
+            var sheet = excel.GetSheetAt(0);
+            int StartRow = 1;
+            int Max = sheet.LastRowNum;
+            for (var i = StartRow; i <= Max; i++) {
+                var row = sheet.GetRow(i);
+                if (row == null)
+                    continue;
+                var value = row.GetCell(7).ToString().Trim().ToUpper(); ;
+                if (string.IsNullOrEmpty(value))
+                    continue;
+                //if (!SecondProjectHelper.VerificationPID(value))
+                //    continue;
+                City city = 0;
+                var address = row.Cells[3].GetValue().ToString().Replace('，', '.').Split('.');
+                if (Enum.TryParse<City>(address[1], out city)) {
+                    plist.Add(new pProject
+                    {
+                        ID = value,
+                        City = city,
+                        Name = row.Cells[2].GetValue(),
+                        County = address[2],
+                    });
+                }
+            }
+            //SecondProjectHelper.AddSecondProjects(list);
+            SecondProjectHelper.AddPlanProject(plist);
+
+            return RedirectToAction("PlanIndex");
+        }
+
+
 
         public ActionResult NewAreaCoord(City?city,NullableFilter result=NullableFilter.All,int page=1) {
             var Filter = new SecondProjectFilter

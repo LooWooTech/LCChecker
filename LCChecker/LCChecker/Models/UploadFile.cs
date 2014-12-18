@@ -48,6 +48,10 @@ namespace LCChecker.Models
         /// 用于整理表格的标志位
         /// </summary>
         public bool Census { get; set; }
+        /// <summary>
+        /// 用于区分验收未验收报部表格
+        /// </summary>
+        public bool IsPlan { get; set; }
 
 
     }

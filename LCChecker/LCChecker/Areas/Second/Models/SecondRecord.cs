@@ -20,6 +20,7 @@ namespace LCChecker.Areas.Second.Models
         public SecondReportType Type { get; set; }
         [Column(TypeName = "int")]
         public City City { get; set; }
+        public bool IsPlan { get; set; }
 
         public bool IsError { get; set; }
         [MaxLength(1023)]

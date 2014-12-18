@@ -37,11 +37,11 @@ namespace LCChecker.Areas.Second
             return DicDry;
         }
 
-        public bool Check(string FilePath, ref string Mistakes, SecondReportType Type) {
-            return CheckEngine(FilePath, ref Mistakes, Type);
+        public bool Check(string FilePath, ref string Mistakes, SecondReportType Type,bool IsPlan) {
+            return CheckEngine(FilePath, ref Mistakes, Type,IsPlan);
         }
        
-        public bool CheckEngine(string FilePath, ref string Mistakes, SecondReportType Type) {
+        public bool CheckEngine(string FilePath, ref string Mistakes, SecondReportType Type,bool IsPlan) {
             int StartRow = 0, StartCell = 0;
             ISheet sheet = XslHelper.OpenSheet(FilePath, true, ref StartRow, ref StartCell, ref Mistakes, Type);
             if (sheet == null) {
@@ -65,8 +65,16 @@ namespace LCChecker.Areas.Second
                 var value = row.GetCell(StartCell + 3, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
                 if (string.IsNullOrEmpty(value))
                     continue;
-                if (!value.VerificationID())
-                    continue;
+                if (IsPlan)
+                {
+                    if (!Whether.ContainsKey(value))
+                        continue;
+                }
+                else {
+                    if (!value.VerificationID())
+                        continue;
+                }
+                
                 if (IDS.Contains(value))
                 {
                     if (Error.ContainsKey(value))

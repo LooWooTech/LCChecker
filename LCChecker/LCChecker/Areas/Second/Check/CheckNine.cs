@@ -40,6 +40,11 @@ namespace LCChecker.Areas.Second
                 return false;
             }
             StartRow++;
+            IRow checkRow = sheet.GetRow(StartRow);
+            if (!CheckDegree(checkRow, StartCell)) {
+                Mistakes = "附表9项目新增耕地具体情况表格格式请核对";
+                return false;
+            }
             int Max = sheet.LastRowNum;
             for (var i = StartRow+1; i <= Max; i=i+3) {
                 IRow row = sheet.GetRow(i);
@@ -140,6 +145,19 @@ namespace LCChecker.Areas.Second
 
             return true;
 
+        }
+
+        public bool CheckDegree(IRow row, int StartCell) {
+            string[] Degrees = {"一等","二等","三等","四等","五等","六等","七等","八等","九等","十等","十一等","十二等","十三等","十四等","十五等" };
+            int Serial=StartCell+7;
+            foreach (var item in Degrees) {
+                var value = row.GetCell(Serial++).ToString().Trim();
+                if (string.IsNullOrEmpty(value))
+                    return false;
+                if (value.ToLower() != item.ToLower())
+                    return false;
+            }
+            return true;
         }
     }
 }

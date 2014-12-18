@@ -148,8 +148,10 @@
     <Compile Include="Areas\Second\Models\CoordProjectBase.cs" />
     <Compile Include="Areas\Second\Models\CoordNewAreaProject.cs" />
     <Compile Include="Areas\Second\Models\FarmLand.cs" />
+    <Compile Include="Areas\Second\Models\pProject.cs" />
     <Compile Include="Areas\Second\Models\RuleKind.cs" />
     <Compile Include="Areas\Second\Models\SecondProject.cs" />
+    <Compile Include="Areas\Second\Models\SecondProjectBase.cs" />
     <Compile Include="Areas\Second\Models\SecondRecord.cs" />
     <Compile Include="Areas\Second\Models\SecondReport.cs" />
     <Compile Include="Areas\Second\Models\SecondReportType.cs" />
@@ -357,6 +359,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\Second\Views\NewArea\NewAreaUploadResult.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Second\Views\User\planReport.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Second\Views\Admin\PlanIndex.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

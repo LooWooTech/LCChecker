@@ -4,6 +4,7 @@
 @{
     //ViewBag.Title = "检查结果";
     Layout = "~/Views/User/_Layout.cshtml";
+    
 }
 <div style="clear: both; overflow: hidden; margin-bottom: 10px;">
     <form class="form form-inline" style="float: right;">
@@ -31,6 +32,7 @@
                     <option value="false" @(Request.QueryString["isError"] == "false" ? "selected=selected" : "")>提示</option>
                 </select>
             </div>
+            <input value="@(ViewBag.IsPlan?"true":"false")" name="IsPlan" style="display:none" />
             <div class="input-group-btn">
                 <button type="submit" class="btn btn-primary">过滤</button>
             </div>

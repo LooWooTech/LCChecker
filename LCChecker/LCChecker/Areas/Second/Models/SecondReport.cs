@@ -18,6 +18,7 @@ namespace LCChecker.Areas.Second.Models
         public City City { get; set; }
         [Column(TypeName="int")]
         public SecondReportType Type { get; set; }
+        public bool IsPlan { get; set; }
         public bool? Result { get; set; }
         [MaxLength(1023)]
         public string Note { get; set; }

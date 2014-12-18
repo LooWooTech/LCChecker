@@ -13,6 +13,6 @@ namespace LCChecker.Areas.Second
         Dictionary<string, SeProject> GetSeProject();
         Dictionary<string, SeLand> GetPaddy();
         Dictionary<string, SeLand> GetDry();
-        bool Check(string FilePath, ref string Mistakes, SecondReportType Type);
+        bool Check(string FilePath, ref string Mistakes, SecondReportType Type,bool IsPlan);
     }
 }

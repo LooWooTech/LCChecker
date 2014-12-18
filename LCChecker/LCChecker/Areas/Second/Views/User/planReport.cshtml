@@ -1,17 +1,15 @@
-﻿@using LCChecker.Areas.Second.Models
-@using LCChecker
+﻿@using LCChecker
 @{
     List<LCChecker.Areas.Second.Models.SecondReport> list = ViewBag.List;
-    List<LCChecker.Areas.Second.Models.SecondProject> projects = ViewBag.Projects;
-    List<string> Country = ViewBag.Country;
-    ViewBag.Title = "报部表格";
+    List<LCChecker.Areas.Second.Models.pProject> projects = ViewBag.pProjects;
+    List<string> countys = ViewBag.county;
+    ViewBag.Title = "未验收项目报部表格";
     Layout = "~/Views/User/_Layout.cshtml";
 }
 
 <div class="alert alert-warning">
-    1.请严格按照样表填写报部表格。<br />
-    2.请注意<b>表2</b>，<b>表3</b>，<b>表4</b>，<b>表6</b>，<b>表7</b>，<b>表8</b>，<b>表9</b>的项目与<b>表1</b>项目的对应关系，系统检查后会若提示不一致，请与省国土厅联系并进行说明。<br />
-    3.<b>表5</b>请提供纸质表。<br />
+    1、请严格按照样表填写报部表格。<br />
+    1、请注意<b>表2</b>,<b>表3</b>，<b>表4</b>的项目与<b>表1</b>项目的对应关系，系统检查后会若提示不一致，请与省国土厅联系并进行说明。<br />
 </div>
 
 <table class="table table-bordered">
@@ -22,45 +20,44 @@
         <th>样表下载</th>
         <th style="width:200px;">上传验证</th>
     </tr>
-
-    @foreach (var item in list) { 
-        var typevalue=(int)item.Type;
+    @foreach (var item in list)
+    {
+        var typevalue = (int)item.Type;
         <tr>
-            <td>@(item.Type+":"+ item.Type.GetDescription())</td>
-            @switch (item.Result) { 
+            <td>@(item.Type + ":" + item.Type.GetDescription())</td>
+            @switch (item.Result)
+            {
                 case null:
                     <td>
-                        <span class="label label-default">未检查</span> 
+                        <span class="label label-default">未检查</span>
                     </td>
                     <td>---</td>
                     break;
-                    case true:
-                    <td>
-                        <span class="label label-success">无误</span>
-                    </td>
-                    <td><a href="/Second/User/ReportResult?Type=@typevalue&&IsPlan=false" class="btn btn-sm btn-default">查看</a>  </td>
+                case true:
+                <td>
+                    <span class="label label-success">无误</span>
+                </td>
+                <td><a href="/Second/User/ReportResult?Type=@typevalue&&IsPlan=true" class="btn btn-sm btn-default">查看</a>  </td>
                     break;
-                    case false:
-                    <td>
-                        <span class="label label-warning">存疑</span>
-                    </td>
-                    <td><a href="/Second/User/ReportResult?Type=@typevalue&&IsPlan=false" class="btn btn-sm btn-default">查看</a>  </td>
+                case false:
+                <td>
+                    <span class="label label-warning">存疑</span>
+                </td>
+                <td><a href="/Second/User/ReportResult?Type=@typevalue&&IsPlan=true" class="btn btn-sm btn-default">查看</a>  </td>
                     break;
             }
             <td>
                 <a href="/Templates/Second/@(item.Type.ToString()).xls" class="btn btn-sm btn-primary">下载</a>
             </td>
             <td>
-                <form method="post" action="/Second/User/UploadReports?type=@typevalue" class="form-inline" enctype="multipart/form-data">
+                <form method="post" action="/Second/User/UploadReports?type=@typevalue&&IsPlan=true" class="form-inline" enctype="multipart/form-data">
                     <input type="file" name="file" class="form-control input-sm" style="width:100px" />
                     <button type="submit" class="btn btn-sm btn-success">上传</button>
                 </form>
             </td>
         </tr>
     }
-</table> 
-
-
+</table>
 
 <div style="clear: both; overflow: hidden; margin-bottom: 10px;">
     <form class="form form-inline" style="float:left;">
@@ -80,8 +77,9 @@
             <div class="input-group-btn">
                 <select name="country" class="form-control">
                     <option value="">全部</option>
-                    @foreach (var item in Country) { 
-                        <option value="@item" @(Request.QueryString["country"]==item?"selected=selected":"")>@item</option>
+                    @foreach (var item in countys)
+                    {
+                        <option value="@item" @(Request.QueryString["country"] == item ? "selected=selected" : "")>@item</option>
                     }
                 </select>
                 <select name="result" class="form-control">
@@ -97,6 +95,10 @@
         </div>
     </form>
 </div>
+
+
+
+
 <table class="table table-bordered">
     <tr>
         <th style="width: 150px">项目编号</th>
@@ -174,5 +176,3 @@
         });
     });
 </script>
-
-

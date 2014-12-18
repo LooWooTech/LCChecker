@@ -24,6 +24,7 @@ namespace LCChecker.Models
 
         public DbSet<Record> Records { get; set; }
         public DbSet<SecondProject> SecondProjects { get; set; }
+        public DbSet<pProject> pProjects { get; set; }
         public DbSet<SecondRecord> SecondRecords { get; set; }
         public DbSet<SecondReport> SecondReports { get; set; }
         public DbSet<FarmLand> FarmLands { get; set; }

@@ -21,11 +21,11 @@ namespace LCChecker.Areas.Second.Controllers
 
 
         public ActionResult Report(NullableFilter result=NullableFilter.All,int page=1,string PID=null,string country=null) {
-            if (!db.SecondReports.Any(e => e.City == CurrentUser.City))
+            if (!db.SecondReports.Any(e => e.City == CurrentUser.City&&e.IsPlan==false))
             {
-                InitSecondReports();
+                InitSecondReports(false);
             }
-            ViewBag.List = db.SecondReports.Where(e => e.City == CurrentUser.City).ToList();
+            ViewBag.List = db.SecondReports.Where(e => e.City == CurrentUser.City&&e.IsPlan==false).ToList();
             var filter = new SecondProjectFilter
             {
                 City = CurrentUser.City,
@@ -36,24 +36,59 @@ namespace LCChecker.Areas.Second.Controllers
             };
             ViewBag.Projects = SecondProjectHelper.GetProjects(filter);
             ViewBag.Page = filter.Page;
-            ViewBag.Country = SecondProjectHelper.GetCountry(CurrentUser.City);
+            ViewBag.Country = SecondProjectHelper.GetCountry(CurrentUser.City,false);
             return View();
         }
 
-        private void InitSecondReports() {
-            foreach (var item in Enum.GetNames(typeof(SecondReportType))) {
+        private void InitSecondReports(bool isPlan) {
+            foreach (SecondReportType item in Enum.GetValues(typeof(SecondReportType))) {
+                if (isPlan&&item == SecondReportType.附表6) {
+                    return;
+                }
                 db.SecondReports.Add(new SecondReport
                 {
                     City = CurrentUser.City,
-                    Type = (SecondReportType)Enum.Parse(typeof(SecondReportType), item)
+                    Type = item,
+                    IsPlan = isPlan
                 });
                 db.SaveChanges();
             }
+
+
+            //foreach (var item in Enum.GetNames(typeof(SecondReportType))) {
+                
+            //    db.SecondReports.Add(new SecondReport
+            //    {
+            //        City = CurrentUser.City,
+            //        Type = (SecondReportType)Enum.Parse(typeof(SecondReportType), item),
+            //        IsPlan=isPlan
+            //    });
+            //    db.SaveChanges();
+            //}
+        }
+
+        public ActionResult planReport(NullableFilter result=NullableFilter.All,string PID=null,int page=1,string country=null) {
+            if(!db.SecondReports.Any(e=>e.City==CurrentUser.City&&e.IsPlan==true)){
+                InitSecondReports(true);
+            }
+            ViewBag.List = db.SecondReports.Where(e => e.City == CurrentUser.City && e.IsPlan == true).ToList();
+            var filter = new SecondProjectFilter
+            {
+                City = CurrentUser.City,
+                Result = result,
+                Page = new Page(page),
+                ID=PID,
+                Country = country
+            };
+            ViewBag.pProjects=SecondProjectHelper.GetPlanProjects(filter);
+            ViewBag.Page=filter.Page;
+            ViewBag.county = SecondProjectHelper.GetCountry(CurrentUser.City, true);
+            return View();
         }
 
 
         [HttpPost]
-        public ActionResult UploadReports(SecondReportType type) {
+        public ActionResult UploadReports(SecondReportType type,bool IsPlan=false) {
             var file = UploadHelper.GetPostedFile(HttpContext);
             var ext = Path.GetExtension(file.FileName);
             if (ext != ".xls" && ext != ".xlsx") {
@@ -66,14 +101,19 @@ namespace LCChecker.Areas.Second.Controllers
                 CreateTime = DateTime.Now,
                 FileName = file.FileName,
                 SavePath = filePath,
-                Type = (UploadFileType)((int)type + 20)
+                Type = (UploadFileType)((int)type + 20),
+                IsPlan=IsPlan
             });
             var record = db.SecondReports.FirstOrDefault(e => e.City == CurrentUser.City && e.Type == type);
             if (record != null) {
                 record.Result = false;
                 db.SaveChanges();
             }
-            return RedirectToAction("CheckReport", new { ID = fileID, type = type });
+            if (IsPlan)
+            {
+                return RedirectToAction("CheckPlanProject", new { ID = fileID, type = type });
+            }
+            return RedirectToAction("CheckReport", new { ID = fileID, type = type});
         }
 
 
@@ -88,8 +128,10 @@ namespace LCChecker.Areas.Second.Controllers
             }
             string Fault="";
             var filePath = UploadHelper.GetAbsolutePath(file.SavePath);
-            List<SecondProject> projects = db.SecondProjects.Where(e => e.City == CurrentUser.City).ToList();
+           
             ISeCheck engine = null;
+            #region
+            List<SecondProject> projects = db.SecondProjects.Where(e => e.City == CurrentUser.City).ToList();
             switch (type) { 
                 case SecondReportType.附表1:
                     engine = new CheckOne(projects);
@@ -121,14 +163,15 @@ namespace LCChecker.Areas.Second.Controllers
                     throw new ArgumentException("不支持当前业务类型");
             }
 
-            if (!engine.Check(filePath, ref Fault, type)) {
+            #region
+            if (!engine.Check(filePath, ref Fault, type,false)) {
                 file.State = UploadFileProceedState.Error;
                 file.ProcessMessage = "检索失败：" + Fault;
                 db.SaveChanges();
                 throw new ArgumentException("检索表格失败"+Fault);
             }
-           
 
+            
 
 
             var errors = engine.GetError();
@@ -143,7 +186,7 @@ namespace LCChecker.Areas.Second.Controllers
                 }
             }
             db.SaveChanges();
-            var list = db.SecondRecords.Where(e => e.City == CurrentUser.City && e.Type == type).ToList();
+            var list = db.SecondRecords.Where(e => e.City == CurrentUser.City && e.Type == type&&e.IsPlan==false).ToList();
             if (type == SecondReportType.附表1)
             {
                 var Seproject=engine.GetSeProject();
@@ -159,6 +202,8 @@ namespace LCChecker.Areas.Second.Controllers
                     }
                 }
             }
+            #endregion
+            #region
             if (type == SecondReportType.附表9) {
                 var paddys = engine.GetPaddy();
                 var drys = engine.GetDry();
@@ -185,7 +230,9 @@ namespace LCChecker.Areas.Second.Controllers
                 }
                 db.SaveChanges();
             }
+            #endregion
 
+            #region
             SecondRecord.Clear(list);
             List<SecondRecord> records = new List<SecondRecord>();
             foreach (var item in errors.Keys) {
@@ -201,26 +248,138 @@ namespace LCChecker.Areas.Second.Controllers
                     Type=type,
                     City=CurrentUser.City,
                     IsError=true,
-                    Note=Fault
+                    Note=Fault,
+                    IsPlan=false
                 });
             }
+            #endregion
             SecondRecord.AddRecords(records);
-            var reports = db.SecondReports.FirstOrDefault(e => e.City == CurrentUser.City && e.Type == type);
+            var reports = db.SecondReports.FirstOrDefault(e => e.City == CurrentUser.City && e.Type == type&&e.IsPlan==false);
             reports.Result = (errors.Count() == 0);
             if (errors.Count > 0) {
                 file.State = UploadFileProceedState.Error;
             }
             db.SaveChanges();
-            return RedirectToAction("ReportResult", new { Type = type });
+            #endregion
+            return RedirectToAction("ReportResult", new { Type = type,IsPlan=false});
            // return View();
         }
 
+        public ActionResult CheckPlanProject(int ID, SecondReportType Type) {
+            var file = db.Files.FirstOrDefault(e => e.ID == ID);
+            if (file == null)
+            {
+                throw new ArgumentException("参数错误");
+            }
+            else
+            {
+                file.State = UploadFileProceedState.Proceeded;
+            }
+            string Fault = "";
+            var filePath = UploadHelper.GetAbsolutePath(file.SavePath);
 
-        public ActionResult ReportResult(SecondReportType Type=0,RuleKind rule=RuleKind.All,bool? IsError=null,int page=1) {
+            ISeCheck engine = null;
+            List<pProject> projects = db.pProjects.Where(e => e.City == CurrentUser.City).ToList();
+            switch (Type) {
+                case SecondReportType.附表1:
+                    engine = new CheckOne(projects);
+                    break;
+                case SecondReportType.附表2:
+                    engine = new CheckTwo(projects);
+                    break;
+                case SecondReportType.附表3:
+                    engine = new CheckThree(projects);
+                    break;
+                case SecondReportType.附表4:
+                    engine = new CheckFour(projects);
+                    break;
+                default: file.State = UploadFileProceedState.Error;
+                    file.ProcessMessage = "不支持当前业务类型" + (int)Type;
+                    db.SaveChanges();
+                    throw new ArgumentException("不支持当前业务类型");
+            }
+            if (!engine.Check(filePath, ref Fault, Type, true))
+            {
+                file.State = UploadFileProceedState.Error;
+                file.ProcessMessage = "检索失败：" + Fault;
+                db.SaveChanges();
+                throw new ArgumentException("检索表格失败" + Fault);
+            }
+            var errors = engine.GetError();
+            var ids = engine.GetIDS();
+            foreach (var item in projects)
+            {
+                if (ids.Contains(item.ID))
+                {
+                    if (errors.ContainsKey(item.ID))
+                        item.Result = false;
+                    else
+                    {
+                        item.Result = true;
+                    }
+                }
+            }
+            db.SaveChanges();
+            var list = db.SecondRecords.Where(e => e.City == CurrentUser.City && e.Type == Type&&e.IsPlan==true).ToList();
+            if (Type == SecondReportType.附表1)
+            {
+                var Seproject = engine.GetSeProject();
+                foreach (var item in projects)
+                {
+                    if (!errors.ContainsKey(item.ID) && Seproject.ContainsKey(item.ID))
+                    {
+                        item.IsHasDoubt = Seproject[item.ID].IsHasDoubt;
+                        item.IsApplyDelete = Seproject[item.ID].IsApplyDelete;
+                        item.IsHasError = Seproject[item.ID].IsHasError;
+                        item.IsPacket = Seproject[item.ID].IsPacket;
+                        item.IsDescrease = Seproject[item.ID].IsDescrease;
+                        item.IsRelieve = Seproject[item.ID].IsRelieve;
+                        db.SaveChanges();
+                    }
+                }
+            }
+            SecondRecord.Clear(list);
+            List<SecondRecord> records = new List<SecondRecord>();
+            foreach (var item in errors.Keys)
+            {
+                Fault = "";
+                int i = 1;
+                foreach (var msg in errors[item])
+                {
+                    Fault += string.Format("({0}){1}", i, msg);
+                    i++;
+                }
+                records.Add(new SecondRecord()
+                {
+                    ProjectID = item,
+                    Type = Type,
+                    City = CurrentUser.City,
+                    IsError = true,
+                    Note = Fault,
+                    IsPlan = true
+                });
+            }
+            SecondRecord.AddRecords(records);
+            var reports = db.SecondReports.FirstOrDefault(e => e.City == CurrentUser.City && e.Type == Type && e.IsPlan == true);
+            if (errors.Count > 0)
+            {
+                reports.Result = false;
+                file.State = UploadFileProceedState.Error;
+            }
+            else {
+                reports.Result = true;
+            }
+            db.SaveChanges();
+            return RedirectToAction("ReportResult", new { Type = Type, IsPlan = true });
+        }
+
+
+
+        public ActionResult ReportResult(bool IsPlan,SecondReportType Type=0,RuleKind rule=RuleKind.All,bool? IsError=null,int page=1) {
             if (Type == 0) {
                 throw new ArgumentException("参数错误，没有选择具体报部表格");
             }
-            var query = db.SecondRecords.Where(e => e.City == CurrentUser.City && e.Type == Type);
+            var query = db.SecondRecords.Where(e => e.City == CurrentUser.City && e.Type == Type&&e.IsPlan==IsPlan);
             if (IsError != null) {
                 query = query.Where(e => e.IsError == IsError.Value);
             }
@@ -248,6 +407,7 @@ namespace LCChecker.Areas.Second.Controllers
             var list = query.OrderBy(e => e.ID).Skip(paging.PageSize * (paging.PageIndex - 1)).Take(paging.PageSize);
             ViewBag.Page = paging;
             ViewBag.Title = Type.GetDescription();
+            ViewBag.IsPlan = IsPlan;
             return View(list);
         }
 
