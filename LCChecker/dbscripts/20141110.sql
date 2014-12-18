@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50173
 File Encoding         : 65001
 
-Date: 2014-12-10 10:59:22
+Date: 2014-12-18 19:04:31
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -60,7 +60,28 @@ CREATE TABLE `farmland` (
   `Type` int(11) NOT NULL,
   `Degree` int(11) NOT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=139 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Table structure for pproject
+-- ----------------------------
+DROP TABLE IF EXISTS `pproject`;
+CREATE TABLE `pproject` (
+  `ID` varchar(55) NOT NULL,
+  `City` int(11) NOT NULL,
+  `Name` varchar(127) DEFAULT NULL,
+  `Result` tinyint(1) DEFAULT NULL,
+  `County` varchar(55) DEFAULT NULL,
+  `Note` varchar(255) DEFAULT NULL,
+  `UpdateTime` datetime NOT NULL,
+  `IsHasDoubt` bit(1) NOT NULL,
+  `IsApplyDelete` bit(1) NOT NULL,
+  `IsHasError` bit(1) NOT NULL,
+  `IsPacket` bit(1) NOT NULL,
+  `IsDescrease` bit(1) NOT NULL,
+  `IsRelieve` bit(1) NOT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for projects
@@ -149,11 +170,12 @@ CREATE TABLE `serecords` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `ProjectID` varchar(255) NOT NULL,
   `Type` int(11) NOT NULL,
+  `IsPlan` bit(1) NOT NULL,
   `City` int(11) NOT NULL,
   `IsError` bit(1) NOT NULL,
   `Note` varchar(1023) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=18867 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=41668 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for sereports
@@ -163,10 +185,11 @@ CREATE TABLE `sereports` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `City` int(11) NOT NULL,
   `Type` int(11) NOT NULL,
+  `IsPlan` bit(1) NOT NULL,
   `Result` bit(1) DEFAULT NULL,
   `Note` varchar(1023) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=77 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for uploadfiles
@@ -182,10 +205,11 @@ CREATE TABLE `uploadfiles` (
   `State` int(1) NOT NULL DEFAULT '0',
   `ProcessMessage` varchar(1023) DEFAULT NULL,
   `Census` tinyint(1) NOT NULL,
+  `IsPlan` bit(1) NOT NULL,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `PK_FILE_ID` (`ID`) USING BTREE,
   KEY `IX_FILE_CITY` (`CityID`)
-) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=176 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for users
