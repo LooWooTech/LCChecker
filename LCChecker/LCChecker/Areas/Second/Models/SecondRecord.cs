@@ -52,5 +52,22 @@ namespace LCChecker.Areas.Second.Models
                 }
             }
         }
+
+
+        public static void UpDate(int ID,Dictionary<string, List<string>> Error,City city,SecondReportType Type) {
+            using (var db = new LCDbContext()) {
+                var report = db.SecondReports.Find(ID);
+                if (report == null)
+                    return;
+                if (Error.Count > 0)
+                {
+                    report.Result = false;
+                }
+                else {
+                    report.Result = true;
+                }
+                db.SaveChanges();
+            }
+        }
     }
 }

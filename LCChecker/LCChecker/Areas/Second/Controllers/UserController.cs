@@ -104,11 +104,6 @@ namespace LCChecker.Areas.Second.Controllers
                 Type = (UploadFileType)((int)type + 20),
                 IsPlan=IsPlan
             });
-            var record = db.SecondReports.FirstOrDefault(e => e.City == CurrentUser.City && e.Type == type);
-            if (record != null) {
-                record.Result = false;
-                db.SaveChanges();
-            }
             if (IsPlan)
             {
                 return RedirectToAction("CheckPlanProject", new { ID = fileID, type = type });
@@ -277,7 +272,8 @@ namespace LCChecker.Areas.Second.Controllers
             }
             string Fault = "";
             var filePath = UploadHelper.GetAbsolutePath(file.SavePath);
-
+            //初始化未验收项目检查引擎
+            #region
             ISeCheck engine = null;
             List<pProject> projects = db.pProjects.Where(e => e.City == CurrentUser.City).ToList();
             switch (Type) {
@@ -298,6 +294,8 @@ namespace LCChecker.Areas.Second.Controllers
                     db.SaveChanges();
                     throw new ArgumentException("不支持当前业务类型");
             }
+            #endregion
+            //开始进行检查
             if (!engine.Check(filePath, ref Fault, Type, true))
             {
                 file.State = UploadFileProceedState.Error;
@@ -305,8 +303,10 @@ namespace LCChecker.Areas.Second.Controllers
                 db.SaveChanges();
                 throw new ArgumentException("检索表格失败" + Fault);
             }
+            //获取检查结果
             var errors = engine.GetError();
             var ids = engine.GetIDS();
+            //更新数据库中的项目检查结果
             foreach (var item in projects)
             {
                 if (ids.Contains(item.ID))
@@ -320,7 +320,9 @@ namespace LCChecker.Areas.Second.Controllers
                 }
             }
             db.SaveChanges();
+            //获取数据库中存在对应报部表格检查结果
             var list = db.SecondRecords.Where(e => e.City == CurrentUser.City && e.Type == Type&&e.IsPlan==true).ToList();
+            //附表1需要对数据库中的字段进行更新
             if (Type == SecondReportType.附表1)
             {
                 var Seproject = engine.GetSeProject();
@@ -338,7 +340,9 @@ namespace LCChecker.Areas.Second.Controllers
                     }
                 }
             }
+            //更新数据库中相关报部表格中记录  首先需要对之前数据库中存在清空
             SecondRecord.Clear(list);
+            //获取本次报部表格检查结果，并且声称List
             List<SecondRecord> records = new List<SecondRecord>();
             foreach (var item in errors.Keys)
             {
@@ -359,16 +363,20 @@ namespace LCChecker.Areas.Second.Controllers
                     IsPlan = true
                 });
             }
+            //添加本次检查结果
             SecondRecord.AddRecords(records);
-            var reports = db.SecondReports.FirstOrDefault(e => e.City == CurrentUser.City && e.Type == Type && e.IsPlan == true);
+            
+
+            SecondReport reports = db.SecondReports.FirstOrDefault(e => e.City == CurrentUser.City && e.Type == Type && e.IsPlan);
+            SecondRecord.UpDate(reports.ID,errors, CurrentUser.City, Type);
             if (errors.Count > 0)
             {
-                reports.Result = false;
+                //reports.Result = false;
                 file.State = UploadFileProceedState.Error;
             }
-            else {
-                reports.Result = true;
-            }
+            //else {
+            //    reports.Result = true;
+            //}
             db.SaveChanges();
             return RedirectToAction("ReportResult", new { Type = Type, IsPlan = true });
         }
