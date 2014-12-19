@@ -2,13 +2,15 @@
 @{
     ViewBag.Title = "统计概况";
     Dictionary<City, Summary> reportSummary = ViewBag.ReportSummary;
+    Dictionary<City, Summary> planReportSummary = ViewBag.PlanReportSummary;
     Dictionary<City, Summary> coordSummary = ViewBag.CoordSummary;
     Dictionary<City, Summary> coordnewareaSummary = ViewBag.CoordNewAreaSummary;
     Layout = "~/Views/Admin/_Layout.cshtml";
 }
 
 <ul class="nav nav-tabs">
-    <li class="active"><a href="#tab1" data-toggle="tab">报部表统计</a></li>
+    <li class="active"><a href="#tab1" data-toggle="tab">验收报部表统计</a></li>
+    <li class=""><a href="#tab4" data-toggle="tab">未验收报部表统计</a></li>
     <li class=""><a href="#tab2" data-toggle="tab">坐标点存疑统计</a></li>
     <li class=""><a href="#tab3" data-toggle="tab">新增耕地坐标点统计</a></li>
 </ul>
@@ -29,7 +31,7 @@
             @foreach (var kv in reportSummary) {
                 var summary = kv.Value;
                 <tr>
-                    <td><a href="/Second/Admin/Reports?city=@((int)summary.City)">@(summary.City)</a></td>
+                    <td><a href="/Second/Admin/Reports?city=@((int)summary.City)&&IsPlan=false">@(summary.City)</a></td>
                     <td>@(summary.TotalCount)</td>
                     <td>@(summary.SuccessCount)</td>
                     <td>@(summary.ErrorCount)</td>
@@ -87,6 +89,31 @@
                     <td>@(summ.ExceptionCount)</td>
                     <td>@(summ.ErrorCount)</td>
                     <td>@(summ.UnCheckCount)</td>
+                </tr>
+            }
+        </table>
+    </div>
+    <div class="tab-pane fade" id="tab4">
+        <p>
+            @Html.ActionLink("下载统计表格", "Download", "Admin", new { ID = 4 }, new { @class = "btn btn-sm btn-primary", target = "_blank" })
+        </p>
+        <table class="table table-bordered">
+            <tr>
+                <th>市</th>
+                <th>项目总数</th>
+                <th>通过总数</th>
+                <th>失败总数</th>
+                <th>未上传数</th>
+            </tr>
+            @foreach (var kv in planReportSummary)
+            {
+                var summary = kv.Value;
+                <tr>
+                    <td><a href="/Second/Admin/Reports?city=@((int)summary.City)&&IsPlan=true">@(summary.City)</a></td>
+                    <td>@(summary.TotalCount)</td>
+                    <td>@(summary.SuccessCount)</td>
+                    <td>@(summary.ErrorCount)</td>
+                    <td>@(summary.UnCheckCount)</td>
                 </tr>
             }
         </table>

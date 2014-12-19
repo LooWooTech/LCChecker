@@ -263,7 +263,14 @@ namespace LCChecker.Areas.Second.Controllers
 
 
         public ActionResult Statistics() {
-            ViewBag.ReportSummary = db.SecondReports.GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
+            ViewBag.ReportSummary = db.SecondReports.Where(e=>e.IsPlan==false).GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
+            {
+                TotalCount = g.Count(),
+                ErrorCount = g.Count(e => e.Result == false),
+                SuccessCount = g.Count(e => e.Result == true),
+                City = g.Key
+            });
+            ViewBag.PlanReportSummary = db.SecondReports.Where(e => e.IsPlan == true).GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
             {
                 TotalCount = g.Count(),
                 ErrorCount = g.Count(e => e.Result == false),
@@ -303,8 +310,8 @@ namespace LCChecker.Areas.Second.Controllers
             if (ID == 1) {
                 flag = true;
                 ExcelName = "报部表格统计.xls";
-                HeaderName = "浙江土地整治项目核查报部表格情况统计表";
-                Data = db.SecondReports.GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
+                HeaderName = "浙江土地整治项目核查验收报部表格情况统计表";
+                Data = db.SecondReports.Where(e=>e.IsPlan==false).GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
                 {
                     TotalCount = g.Count(),
                     ErrorCount = g.Count(e => e.Result == false),
@@ -337,6 +344,18 @@ namespace LCChecker.Areas.Second.Controllers
                     City = g.Key
                 });
             }
+            else if (ID == 4) {
+                flag = true;
+                ExcelName = "报部表格统计.xls";
+                HeaderName = "浙江土地整治项目核查未验收报部表格情况统计表";
+                Data = db.SecondReports.Where(e => e.IsPlan == true).GroupBy(e => e.City).ToDictionary(g => g.Key, g => new Summary
+                {
+                    TotalCount = g.Count(),
+                    ErrorCount = g.Count(e => e.Result == false),
+                    SuccessCount = g.Count(e => e.Result == true),
+                    City = g.Key
+                });
+            }
             else
             {
                 return View();
@@ -349,14 +368,14 @@ namespace LCChecker.Areas.Second.Controllers
         }
 
 
-        public ActionResult Reports(City city) {
-            ViewBag.List = db.SecondReports.Where(e => e.City == city).ToList();
+        public ActionResult Reports(City city,bool IsPlan) {
+            ViewBag.List = db.SecondReports.Where(e => e.City == city&&e.IsPlan==IsPlan).ToList();
             return View();
         }
 
-        public ActionResult DownCityReport(City city, SecondReportType Type) {
+        public ActionResult DownCityReport(City city, SecondReportType Type,bool IsPlan) {
             var uploadFileType = (int)Type+20;
-            var file = db.Files.Where(e => e.City == city && e.Type == (UploadFileType)uploadFileType && e.State == UploadFileProceedState.Proceeded).OrderByDescending(e => e.CreateTime).FirstOrDefault();
+            var file = db.Files.Where(e => e.City == city && e.Type == (UploadFileType)uploadFileType && e.State == UploadFileProceedState.Proceeded&&e.IsPlan==IsPlan).OrderByDescending(e => e.CreateTime).FirstOrDefault();
             if (file == null) {
                 throw new Exception("没有找到符合条件的文件");
             }

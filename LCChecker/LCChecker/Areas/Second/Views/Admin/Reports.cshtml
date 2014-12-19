@@ -11,7 +11,8 @@
         <th>状态</th>
         <th>下载</th>
     </tr>
-    @foreach (var item in list) { 
+    @foreach (var item in list) {
+        bool val = item.IsPlan;
         <tr>
             <td>@(item.Type.ToString()+":"+item.Type.GetDescription())</td>
             <td>
@@ -27,7 +28,7 @@
                         break;
                 }
             </td>
-            <td><a href="/Second/Admin/DownCityReport?city=@((int)item.City)&&Type=@((int)item.Type)" class="btn btn-xs btn-primary">下载</a></td>
+            <td><a href="/Second/Admin/DownCityReport?city=@((int)item.City)&&Type=@((int)item.Type)&&IsPlan=@(val?"true":"false")" class="btn btn-xs btn-primary">下载</a></td>
         </tr>
     }
 </table>
