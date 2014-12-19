@@ -18,7 +18,8 @@ namespace LCChecker.Areas.Second
         public CheckNine(List<SecondProject> projects) {
             Team= projects.ToDictionary(e => e.ID, e => e);
             var list = new List<IRowRule>();
-            list.Add(new OnlySecondProject() { ColumnIndex = 3, NewAreaIndex = 2, Projects = Team, ID = "2901（基本规则）", Values = new[] { "市", "县", "项目名称", "新增耕地面积" } });
+            //list.Add(new OnlySecondProject() { ColumnIndex = 3, NewAreaIndex = 2, Projects = Team, ID = "2901（基本规则）", Values = new[] { "市", "县", "项目名称", "新增耕地面积" } });
+            list.Add(new OnlySecondProject() { ColumnIndex = 3, NewAreaIndex = 2, Projects = Team, ID = "2901（基本规则）", Values = new[] { "市", "县", "项目名称" } });
             list.Add(new CellRangeRowRule() { ColumnIndex = 22, Values = new[] { "是", "否" } ,ID="2902（填写规则）"});
 
             foreach (var item in list) {
@@ -26,7 +27,8 @@ namespace LCChecker.Areas.Second
             }
         }
 
-        public new bool Check(string FilePath, ref string Mistakes, SecondReportType Type) {
+        public new bool Check(string FilePath, ref string Mistakes, SecondReportType Type, bool IsPlan)
+        {
             return CheckSpecial(FilePath, ref Mistakes, Type);
         }
 
@@ -82,29 +84,38 @@ namespace LCChecker.Areas.Second
                         ErrorRow.Add(Fault);
                     }
                 }
-
                 if (Team.ContainsKey(value))
                 {
-                    var currentProject = Team[value];
                     var sum = Area[0] + Area[2];
-                    if (currentProject.NewArea.HasValue)
+                    var areacell = row.GetCell(StartCell + 5, MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                    double Barea = 0.0;
+                    if (areacell.CellType == CellType.Numeric || areacell.CellType == CellType.Formula)
                     {
-                        if (Math.Abs(currentProject.NewArea.Value - sum) > 0.0001)
+                        try
                         {
-                            ErrorRow.Add("规则2902（数据规则）：水田、旱地的面积之和与复核确认验收项目清单新增耕地面积不符");
+                            Barea = areacell.NumericCellValue;
+                        }
+                        catch
+                        {
+                            Barea = 0.0;
                         }
                     }
                     else
                     {
-                        ErrorRow.Add("错误0000：数据库中没有新增耕地面积值，无法进行水田、旱地面积核对");
+                        double.TryParse(areacell.ToString().Trim(), out Barea);
+                    }
+                    if (Math.Abs(Barea - sum) > 0.0001) {
+                        ErrorRow.Add("规则2902（数据规则）：水田、旱地的面积之和与复核确认验收项目清单新增耕地面积不符");
                     }
                     if (Area[1] != 0 && Degree1[1] != 0)
                     {
                         ErrorRow.Add("错误0091：水浇地栏错误");
                     }
 
-                    foreach (var item in rules) {
-                        if (!item.Rule.Check(row, StartCell)) {
+                    foreach (var item in rules)
+                    {
+                        if (!item.Rule.Check(row, StartCell))
+                        {
                             ErrorRow.Add(item.Rule.Name);
                         }
                     }
@@ -112,6 +123,37 @@ namespace LCChecker.Areas.Second
                 else {
                     ErrorRow.Add("规则0002（一致性）：复核确认验收项目清单中不存在该项目，请核对");
                 }
+                
+
+                //if (Team.ContainsKey(value))
+                //{
+                //    var currentProject = Team[value];
+                //    var sum = Area[0] + Area[2];
+                //    if (currentProject.NewArea.HasValue)
+                //    {
+                //        if (Math.Abs(currentProject.NewArea.Value - sum) > 0.0001)
+                //        {
+                //            ErrorRow.Add("规则2902（数据规则）：水田、旱地的面积之和与复核确认验收项目清单新增耕地面积不符");
+                //        }
+                //    }
+                //    else
+                //    {
+                //        ErrorRow.Add("错误0000：数据库中没有新增耕地面积值，无法进行水田、旱地面积核对");
+                //    }
+                //    if (Area[1] != 0 && Degree1[1] != 0)
+                //    {
+                //        ErrorRow.Add("错误0091：水浇地栏错误");
+                //    }
+
+                //    foreach (var item in rules) {
+                //        if (!item.Rule.Check(row, StartCell)) {
+                //            ErrorRow.Add(item.Rule.Name);
+                //        }
+                //    }
+                //}
+                //else {
+                //    ErrorRow.Add("规则0002（一致性）：复核确认验收项目清单中不存在该项目，请核对");
+                //}
 
                 if (ErrorRow.Count() != 0)
                 {

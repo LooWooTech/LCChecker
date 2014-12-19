@@ -119,25 +119,31 @@ namespace LCChecker.Areas.Second
                 }
 
             }
-            foreach (var item in Whether.Keys) {
-                if (Whether[item]) {
-                    if (Error.ContainsKey(item))
+            if (Type != SecondReportType.附表6) {
+                foreach (var item in Whether.Keys)
+                {
+                    if (Whether[item])
                     {
-                        Error[item].Add("规则0003（一致性）：项目存在复核确认验收清单中，但是不存在本表中");
+                        if (Error.ContainsKey(item))
+                        {
+                            Error[item].Add("规则0003（一致性）：项目存在复核确认验收清单中，但是不存在本表中");
+                        }
+                        else
+                        {
+                            Error.Add(item, new List<string> { "规则0003（一致性）：项目存在复核确认验收清单中，但是不存在本表中" });
+                        }
+
+                        //if (Warning.ContainsKey(item))
+                        //{
+                        //    Warning[item] += "规则000：项目存在复核确认验收清单中，但是不存在本表中";
+                        //}
+                        //else {
+                        //    Warning.Add(item, "规则000：项目存在复核确认验收清单中，但是不存在本表中");
+                        //}
                     }
-                    else {
-                        Error.Add(item, new List<string> { "规则0003（一致性）：项目存在复核确认验收清单中，但是不存在本表中" });
-                    }
-                    
-                    //if (Warning.ContainsKey(item))
-                    //{
-                    //    Warning[item] += "规则000：项目存在复核确认验收清单中，但是不存在本表中";
-                    //}
-                    //else {
-                    //    Warning.Add(item, "规则000：项目存在复核确认验收清单中，但是不存在本表中");
-                    //}
-                }
-            }   
+                }   
+            }
+           
             return true;
         }
 
