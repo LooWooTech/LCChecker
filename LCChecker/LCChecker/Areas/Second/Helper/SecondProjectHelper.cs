@@ -65,6 +65,19 @@ namespace LCChecker.Areas.Second
             }
         }
 
+        public static void UpDateSecondProjects(List<SecondProject> list) {
+            using (var db = new LCDbContext()) {
+                foreach (var item in list) {
+                    var project = db.SecondProjects.Find(item.ID);
+                    if (project == null)
+                        continue;
+                    project.Area = item.Area;
+                    db.SaveChanges();
+                }
+                db.SaveChanges();
+            }
+        }
+
         public static void AddPlanProject(List<pProject> list) {
             List<string> ID = new List<string>();
             using (var db = new LCDbContext()) {

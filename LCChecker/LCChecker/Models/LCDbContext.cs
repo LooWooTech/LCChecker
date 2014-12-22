@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Linq;
 using System.Web;
 
@@ -28,5 +29,11 @@ namespace LCChecker.Models
         public DbSet<SecondRecord> SecondRecords { get; set; }
         public DbSet<SecondReport> SecondReports { get; set; }
         public DbSet<FarmLand> FarmLands { get; set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Conventions.Remove<DecimalPropertyConvention>();
+            //base.OnModelCreating(modelBuilder);
+        }
     }
 }

@@ -89,7 +89,10 @@ namespace LCChecker.Areas.Second.Controllers
                     });
                 }
             }
-            SecondProjectHelper.AddSecondProjects(list);
+            //主要用于更新数据库中seproject中area字段的值
+            SecondProjectHelper.UpDateSecondProjects(list);
+            /*用于导入验收项目*/
+            //SecondProjectHelper.AddSecondProjects(list);
             return RedirectToAction("Index");
         }
         [HttpPost]
