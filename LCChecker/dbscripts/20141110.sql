@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50173
 File Encoding         : 65001
 
-Date: 2014-12-18 19:04:31
+Date: 2014-12-31 17:44:41
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -67,21 +67,18 @@ CREATE TABLE `farmland` (
 -- ----------------------------
 DROP TABLE IF EXISTS `pproject`;
 CREATE TABLE `pproject` (
-  `ID` varchar(55) NOT NULL,
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Key` varchar(55) DEFAULT NULL,
   `City` int(11) NOT NULL,
   `Name` varchar(127) DEFAULT NULL,
-  `Result` tinyint(1) DEFAULT NULL,
   `County` varchar(55) DEFAULT NULL,
   `Note` varchar(255) DEFAULT NULL,
   `UpdateTime` datetime NOT NULL,
-  `IsHasDoubt` bit(1) NOT NULL,
+  `IsRight` bit(1) NOT NULL,
   `IsApplyDelete` bit(1) NOT NULL,
   `IsHasError` bit(1) NOT NULL,
-  `IsPacket` bit(1) NOT NULL,
-  `IsDescrease` bit(1) NOT NULL,
-  `IsRelieve` bit(1) NOT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=31675 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for projects
@@ -155,7 +152,7 @@ CREATE TABLE `seprojects` (
   `IsPacket` bit(1) NOT NULL,
   `IsDescrease` bit(1) NOT NULL,
   `IsRelieve` bit(1) NOT NULL,
-  `Area` float(10,4) DEFAULT NULL,
+  `Area` double(10,4) DEFAULT NULL,
   `NewArea` float(10,4) DEFAULT NULL,
   `SurplusHookArea` float(10,4) DEFAULT NULL,
   `TrueHookArea` float(10,4) DEFAULT NULL,
@@ -168,14 +165,16 @@ CREATE TABLE `seprojects` (
 DROP TABLE IF EXISTS `serecords`;
 CREATE TABLE `serecords` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `ProjectID` varchar(255) NOT NULL,
+  `ProjectID` varchar(255) DEFAULT NULL,
+  `Name` varchar(255) DEFAULT NULL,
+  `County` varchar(55) DEFAULT NULL,
   `Type` int(11) NOT NULL,
   `IsPlan` bit(1) NOT NULL,
   `City` int(11) NOT NULL,
   `IsError` bit(1) NOT NULL,
   `Note` varchar(1023) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=41668 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=71861 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for sereports
@@ -189,7 +188,7 @@ CREATE TABLE `sereports` (
   `Result` bit(1) DEFAULT NULL,
   `Note` varchar(1023) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=77 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for uploadfiles
@@ -209,7 +208,7 @@ CREATE TABLE `uploadfiles` (
   PRIMARY KEY (`ID`),
   UNIQUE KEY `PK_FILE_ID` (`ID`) USING BTREE,
   KEY `IX_FILE_CITY` (`CityID`)
-) ENGINE=InnoDB AUTO_INCREMENT=176 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=265 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for users
