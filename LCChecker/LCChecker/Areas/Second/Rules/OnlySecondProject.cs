@@ -47,14 +47,14 @@ namespace LCChecker.Areas.Second.Rules
                     case "行政区":
                         var division = "浙江省," + project.City.ToString() + "," + project.County;
                         value = row.GetCell(ColumnIndex + xoffset - 1, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
-                        value = value.Replace(" ", "").Replace("，", ",");
+                        value = value.Replace(" ", "").Replace("，", ",").Trim();
                         if (value != division)
                             return false;
                         break;
                     case "项目名称":
                         value = row.GetCell(ColumnIndex + xoffset + 1, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
                         value = value.Replace(" ", "");
-                        var str = project.Name.Replace(" ", "");
+                        var str = project.Name.Replace(" ", "").Trim();
                         if (value != str)
                             return false;
                         break;
@@ -67,7 +67,7 @@ namespace LCChecker.Areas.Second.Rules
                     case "县":
                         value = row.GetCell(ColumnIndex + xoffset - 1, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
                         value = value.Replace(" ", "");
-                        if (value != project.County)
+                        if (value != project.County.Trim())
                             return false;
                         break;
                     case "新增耕地面积":

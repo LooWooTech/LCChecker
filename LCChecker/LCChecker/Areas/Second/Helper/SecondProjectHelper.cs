@@ -78,20 +78,36 @@ namespace LCChecker.Areas.Second
             }
         }
 
-        public static void AddPlanProject(List<pProject> list) {
-            List<string> ID = new List<string>();
+        //public static void AddPlanProject(List<pProject> list) {
+        //    List<string> ID = new List<string>();
+        //    using (var db = new LCDbContext()) {
+        //        foreach (var item in list) {
+        //            if (ID.Contains(item.ID))
+        //            {
+        //                continue;
+        //            }
+        //            else {
+        //                ID.Add(item.ID);
+        //            }
+        //            if (!db.pProjects.Any(e => e.ID == item.ID)) {
+        //                db.pProjects.Add(item);  
+        //            }
+        //        }
+        //        db.SaveChanges();
+        //    }
+        //}
+
+        public static void AddPlanAllProject(List<pProject> list) {
             using (var db = new LCDbContext()) {
                 foreach (var item in list) {
-                    if (ID.Contains(item.ID))
-                    {
-                        continue;
-                    }
-                    else {
-                        ID.Add(item.ID);
-                    }
                     if (!db.pProjects.Any(e => e.ID == item.ID)) {
-                        db.pProjects.Add(item);  
+                        
+                        if (!db.pProjects.Any(e => e.Key.ToUpper() == item.Key.ToUpper() && e.County.ToUpper() == item.County.ToUpper() && e.Name.ToUpper() == item.Name.ToUpper()))
+                        {
+                            db.pProjects.Add(item);
+                        }
                     }
+                    db.SaveChanges();
                 }
                 db.SaveChanges();
             }
@@ -173,8 +189,25 @@ namespace LCChecker.Areas.Second
             }
         }
 
+        public static bool CheckOnly() {
+            using (var db = new LCDbContext()) {
+                var All = db.pProjects.Count();
+                var GNumber = db.pProjects.GroupBy(e => (e.Name + "-" + e.County + "-" + e.Key)).Select(g => g.Key).Count();
+                //Dictionary<string, PlanProject> Group = db.pProjects.GroupBy(e => (e.Name + "-" + e.County + "-" + e.Key)).ToDictionary(g => g.Key, g => new PlanProject
+                //{
+                //    Key = g.Key,
+                //    Count = g.Count()
+                //});
+                if (GNumber != All)
+                    return false;
+                else
+                    return true;
+            }
+        }
 
-        public static List<pProject> GetPlanProjects(SecondProjectFilter filter) {
+        //20141231注释
+        public static List<pProject> GetPlanProjects(SecondProjectFilter filter)
+        {
             using (var db = new LCDbContext())
             {
                 var query = db.pProjects.AsQueryable();
@@ -182,47 +215,47 @@ namespace LCChecker.Areas.Second
                 {
                     query = query.Where(e => e.City == filter.City.Value);
                 }
-                switch (filter.Result)
-                {
-                    case NullableFilter.True:
-                    case NullableFilter.False:
-                        var value = filter.Result == NullableFilter.True;
-                        query = query.Where(e => e.Result == value);
-                        break;
-                    case NullableFilter.Null:
-                        query = query.Where(e => e.Result == null);
-                        break;
-                    case NullableFilter.All:
-                    default: break;
-                }
+                //switch (filter.Result)
+                //{
+                //    case NullableFilter.True:
+                //    case NullableFilter.False:
+                //        var value = filter.Result == NullableFilter.True;
+                //        query = query.Where(e => e.Result == value);
+                //        break;
+                //    case NullableFilter.Null:
+                //        query = query.Where(e => e.Result == null);
+                //        break;
+                //    case NullableFilter.All:
+                //    default: break;
+                //}
                 if (filter.IsApplyDelete.HasValue)
                 {
                     query = query.Where(e => e.IsApplyDelete == filter.IsApplyDelete.Value);
                 }
-                if (filter.IsHasDoubt.HasValue)
-                {
-                    query = query.Where(e => e.IsHasDoubt == filter.IsHasDoubt.Value);
-                }
+                //if (filter.IsHasDoubt.HasValue)
+                //{
+                //    query = query.Where(e => e.IsHasDoubt == filter.IsHasDoubt.Value);
+                //}
 
-                if (filter.IsDescrease.HasValue)
-                {
-                    query = query.Where(e => e.IsDescrease == filter.IsDescrease.Value);
-                }
+                //if (filter.IsDescrease.HasValue)
+                //{
+                //    query = query.Where(e => e.IsDescrease == filter.IsDescrease.Value);
+                //}
 
                 if (filter.IsHasError.HasValue)
                 {
                     query = query.Where(e => e.IsHasError == filter.IsHasError.Value);
                 }
 
-                if (filter.IsRelieve.HasValue)
-                {
-                    query = query.Where(e => e.IsRelieve == filter.IsRelieve.Value);
-                }
-                if (filter.ID != null)
-                {
-                    query = query.Where(e => e.ID.Contains(filter.ID));
-                }
-                if (filter.Country != null&&!string.IsNullOrEmpty(filter.Country))
+                //if (filter.IsRelieve.HasValue)
+                //{
+                //    query = query.Where(e => e.IsRelieve == filter.IsRelieve.Value);
+                //}
+                //if (filter.ID != null)
+                //{
+                //    query = query.Where(e => e.ID.Contains(filter.ID));
+                //}
+                if (filter.Country != null && !string.IsNullOrEmpty(filter.Country))
                 {
                     query = query.Where(e => e.County.ToLower() == filter.Country.ToLower());
                 }
@@ -284,6 +317,25 @@ namespace LCChecker.Areas.Second
                     
                 //}
                 //return Country;
+            }
+        }
+
+        public static bool Check(City city) {
+            using (var db = new LCDbContext()) {
+                SecondReport One = db.SecondReports.FirstOrDefault(e => e.City == city && e.IsPlan && e.Type == SecondReportType.附表1);
+                if (One == null) {
+                    throw new ArgumentException("请首先上传附表1之后，依次上传附表2，附表3，附表4.如有疑问请咨询管理员");
+                }
+                int all = 0;
+                int.TryParse(One.Note, out all);
+                int sum = 0;
+                List<SecondReport> list = db.SecondReports.Where(e => e.City == city && e.IsPlan&&e.Type!=SecondReportType.附表1).ToList();
+                foreach (var item in list) {
+                    int data = 0;
+                    int.TryParse(item.Note, out data);
+                    sum += data;
+                }
+                return sum == all;
             }
         }
 

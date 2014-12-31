@@ -1,15 +1,27 @@
 ﻿@using LCChecker.Models
+@using LCChecker.Areas.Second
 @{
     List<LCChecker.Areas.Second.Models.pProject> list = ViewBag.List;
+    Dictionary<string, int> Group = ViewBag.Group;
     ViewBag.Title = "未验收项目";
     Layout = "~/Views/Admin/_Layout.cshtml";
 }
 
 <div style="clear:both;overflow:hidden;margin-bottom:10px;">
-    <form class="form form-inline" method="post" enctype="multipart/form-data" action="/Second/Admin/UploadPlanProject" style="float:left;">
+    <form class="form form-inline" method="post" enctype="multipart/form-data" action="/Second/Admin/UploadPlan" style="float:left;">
         <div class="input-group">
             <div class="input-group-btn">
                 <input type="file" name="file1" class="form-control" />
+            </div>
+            <div class="input-group-btn">
+                <button type="submit" class="btn btn-primary">上传项目</button>
+            </div>
+        </div>
+    </form>
+    <form class="form form-inline" method="post" enctype="multipart/form-data" action="/Second/Admin/UploadPlanTwo" style="float:right;">
+        <div class="input-group">
+            <div class="input-group-btn">
+                <input type="file" name="file2" class="form-control" />
             </div>
             <div class="input-group-btn">
                 <button type="submit" class="btn btn-primary">上传项目</button>
@@ -41,39 +53,34 @@
     </form>
 </div>
 
+@*<table class="table table-bordered">
+    <tr>
+        <th>键</th>
+        <th>个数</th>
+    </tr>
+    @foreach (var item in Group.Keys) { 
+        <tr>
+            <td>@(item)</td>
+            <td>@(Group[item])</td>
+        </tr>
+    }
+</table>*@
+
 
 
 <table class="table table-bordered">
     <tr>
         <th style="width:120px;">所在地</th>
-        <th style="width:150px;">项目编号</th>
+        <th style="width:150px;">预算编号</th>
         <th>项目名称</th>
-        <th style="width:100px;">检查结果</th>
         <th style="width:300px;">备注</th>
     </tr>
     @foreach (var project in list)
     {
         <tr>
             <td>@(project.City.ToString())-@(project.County)</td>
-            <td>@(project.ID)</td>
+            <td>@(project.Key)</td>
             <td>@(project.Name)</td>
-            <td>
-                @if (project.Result.HasValue)
-                {
-                    if (project.Result.Value)
-                    {
-                        <span class="label label-success">无误</span>
-                    }
-                    else
-                    {
-                        <span class="label label-warning">存疑</span>
-                    }
-                }
-                else
-                {
-                    <span class="label label-default">未上传</span>
-                }
-            </td>
             <td></td>
         </tr>
     }

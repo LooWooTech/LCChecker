@@ -10,7 +10,11 @@ namespace LCChecker.Areas.Second.Models
 {
     [Table("seprojects")]
     public class SecondProject:SecondProjectBase
-    {               
+    {
+        [Key]
+        [MaxLength(55)]
+        public string ID { get; set; }
+        public bool? Result { get; set; }
         /// <summary>
         /// 总规模
         /// </summary>
@@ -21,5 +25,21 @@ namespace LCChecker.Areas.Second.Models
         public double? NewArea { get; set; }
         public double? SurplusHookArea { get; set; }
         public double? TrueHookArea { get; set; }
+        /// <summary>
+        /// 市级自查是否存在疑问   
+        /// </summary>
+        public bool IsHasDoubt { get; set; }
+        /// <summary>
+        /// 假借利用二调新增耕地政策包装项目
+        /// </summary>
+        public bool IsPacket { get; set; }
+        /// <summary>
+        /// 属于可用于占补平衡面积核减
+        /// </summary>
+        public bool IsDescrease { get; set; }
+        /// <summary>
+        /// 属于已挂钩使用需要接触挂钩关系可用于占补平衡
+        /// </summary>
+        public bool IsRelieve { get; set; }
     }
 }

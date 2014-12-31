@@ -32,6 +32,22 @@ namespace LCChecker.Areas.Second.Controllers
         }
 
         public ActionResult PlanIndex(City? city, NullableFilter result = NullableFilter.All, int page = 1) {
+            Dictionary<string, int> Group = db.pProjects.GroupBy(e => (e.Name + "-" + e.County + "-" + e.Key)).ToDictionary(g => g.Key, g => g.Count());
+            Dictionary<string, int> GResultOne = new Dictionary<string, int>();
+            Dictionary<string, int> GResultTwo = new Dictionary<string, int>();
+            Dictionary<string, int> GResultThree = new Dictionary<string, int>();
+            foreach (var item in Group.Keys) {
+                if (Group[item] ==1) {
+                    GResultOne.Add(item, Group[item]);
+                }
+                else if (Group[item] == 2) {
+                    GResultTwo.Add(item, Group[item]);
+                }
+                else if (Group[item] == 3) {
+                    GResultThree.Add(item, Group[item]);
+                }
+            }
+            //ViewBag.Group = GResult;
             var filter = new SecondProjectFilter
             {
                 City = city,
@@ -44,7 +60,10 @@ namespace LCChecker.Areas.Second.Controllers
         }
 
 
-
+        /// <summary>
+        /// 用于上传第二批验收报部表格项目
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult UploadProjects() {
             var file = UploadHelper.GetPostedFile(HttpContext);
@@ -80,7 +99,7 @@ namespace LCChecker.Areas.Second.Controllers
                     {
                         ID=id,
                         City=city,
-                        Name=row.Cells[CellIndex+1].GetValue(),
+                        Name=row.Cells[CellIndex+1].GetValue().Trim(),
                         County=address[2],
                         Area=area,
                         NewArea=newarea,
@@ -95,10 +114,48 @@ namespace LCChecker.Areas.Second.Controllers
             //SecondProjectHelper.AddSecondProjects(list);
             return RedirectToAction("Index");
         }
+        /// <summary>
+        /// 上传部分未验收项目
+        /// </summary>
+        /// <returns></returns>
+        //[HttpPost]
+        //public ActionResult UploadPlanProject() {
+        //    var file = UploadHelper.GetPostedFile(HttpContext);
+        //   // var list = new List<SecondProject>();
+        //    var plist = new List<pProject>();
+        //    var excel = XslHelper.GetWorkbook(file);
+        //    var sheet = excel.GetSheetAt(0);
+        //    int StartRow = 1;
+        //    int Max = sheet.LastRowNum;
+        //    for (var i = StartRow; i <= Max; i++) {
+        //        var row = sheet.GetRow(i);
+        //        if (row == null)
+        //            continue;
+        //        var value = row.GetCell(7).ToString().Trim().ToUpper(); ;
+        //        if (string.IsNullOrEmpty(value))
+        //            continue;
+        //        //if (!SecondProjectHelper.VerificationPID(value))
+        //        //    continue;
+        //        City city = 0;
+        //        var address = row.Cells[3].GetValue().ToString().Replace('，', '.').Split('.');
+        //        if (Enum.TryParse<City>(address[1], out city)) {
+        //            plist.Add(new pProject
+        //            {
+        //               // ID = value,
+        //                City = city,
+        //                Name = row.Cells[2].GetValue().Trim(),
+        //                County = address[2],
+        //            });
+        //        }
+        //    }
+        //    //SecondProjectHelper.AddSecondProjects(list);
+        //    SecondProjectHelper.AddPlanProject(plist);
+
+        //    return RedirectToAction("PlanIndex");
+        //}
         [HttpPost]
-        public ActionResult UploadPlanProject() {
+        public ActionResult UploadPlanTwo() {
             var file = UploadHelper.GetPostedFile(HttpContext);
-           // var list = new List<SecondProject>();
             var plist = new List<pProject>();
             var excel = XslHelper.GetWorkbook(file);
             var sheet = excel.GetSheetAt(0);
@@ -108,28 +165,92 @@ namespace LCChecker.Areas.Second.Controllers
                 var row = sheet.GetRow(i);
                 if (row == null)
                     continue;
-                var value = row.GetCell(7).ToString().Trim().ToUpper(); ;
-                if (string.IsNullOrEmpty(value))
-                    continue;
-                //if (!SecondProjectHelper.VerificationPID(value))
-                //    continue;
+                var Name = row.Cells[2].GetValue().ToString().Trim();
+                var ID = row.Cells[7].GetValue().ToString().Trim();
                 City city = 0;
-                var address = row.Cells[3].GetValue().ToString().Replace('，', '.').Split('.');
+                var address=row.Cells[3].GetValue().ToString().Trim().Replace(',', '.').Replace(',', '.').Split('.');
                 if (Enum.TryParse<City>(address[1], out city)) {
                     plist.Add(new pProject
                     {
-                        ID = value,
-                        City = city,
-                        Name = row.Cells[2].GetValue(),
-                        County = address[2],
+                        Key=ID,
+                        City=city,
+                        Name=Name,
+                        County=address[2].Trim()
                     });
                 }
             }
-            //SecondProjectHelper.AddSecondProjects(list);
-            SecondProjectHelper.AddPlanProject(plist);
+            SecondProjectHelper.AddPlanAllProject(plist);
+                return RedirectToAction("PlanIndex");
+        }
 
+        [HttpPost]
+        public ActionResult UploadPlan()
+        {
+            var file = UploadHelper.GetPostedFile(HttpContext);
+            var plist = new List<pProject>();
+            var excel = XslHelper.GetWorkbook(file);
+            var sheet=excel.GetSheetAt(0);
+            int StartRow = 2;
+            int Max = sheet.LastRowNum;
+            for (var i = StartRow; i <= Max; i++) {
+                var row = sheet.GetRow(i);
+                if (row == null)
+                    continue;
+                var Name = row.Cells[1].GetValue().ToString().Trim();
+                var ID = row.Cells[6].GetValue().ToString().Trim();
+                City city = 0;
+                var address = row.Cells[2].GetValue().ToString().Trim().Replace(',', '.').Replace(',', '.').Split('.');
+                if (Enum.TryParse<City>(address[1], out city)) {
+                    plist.Add(new pProject
+                    {
+                        Key = ID,
+                        City = city,
+                        Name = Name,
+                        County = address[2].Trim(),
+                    });
+                }
+            }
+            SecondProjectHelper.AddPlanAllProject(plist);
             return RedirectToAction("PlanIndex");
         }
+        /// <summary>
+        /// 上传未验收项目 全部 项目多
+        /// </summary>
+        /// <returns></returns>
+        //[HttpPost]
+        //public ActionResult UploadPlanAllProject() {
+        //    var file = UploadHelper.GetPostedFile(HttpContext);
+        //    var plist = new List<pProject>();
+        //    var excel = XslHelper.GetWorkbook(file);
+        //    var sheet = excel.GetSheetAt(0);
+        //    int StartRow = 2;
+        //    int Max = sheet.LastRowNum;
+        //    for (var i = StartRow; i <= Max; i++) {
+        //        var row = sheet.GetRow(i);
+        //        if (row == null)
+        //            continue;
+        //        var value = row.GetCell(6).ToString().Trim();
+        //        City city = 0;
+        //        var address = row.Cells[2].GetValue().ToString().Replace('，', '.').Replace(',','.').Split('.');
+        //        if (Enum.TryParse<City>(address[1], out city))
+        //        {
+        //            plist.Add(new pProject
+        //            {
+        //               // ID = value,
+        //                City = city,
+        //                Name = row.Cells[1].GetValue().ToString().Trim(),
+        //                County = address[2].Trim(),
+        //            });
+        //        }
+        //    }
+        //    SecondProjectHelper.AddPlanAllProject(plist);
+        //   // SecondProjectHelper.AddPlanProject(plist);
+
+        //    return RedirectToAction("PlanIndex");
+        //        //return View();
+        //}
+
+       
 
 
 
@@ -144,6 +265,10 @@ namespace LCChecker.Areas.Second.Controllers
             ViewBag.Page = Filter.Page;
             return View();
         }
+        /// <summary>
+        /// 上传新增耕地坐标
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult UploadNewAreaCoord()
         {

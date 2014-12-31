@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace LCChecker.Areas.Second
 {
-    public class CheckFour:SecondCheckEngine,ISeCheck
+    public class CheckFour:SecondCheckEngine,ISeCheck,ISePlanCheck
     {
         public CheckFour(List<SecondProject> projects) {
             Whether = projects.ToDictionary(e => e.ID, e => e.IsHasError);
@@ -21,8 +21,9 @@ namespace LCChecker.Areas.Second
             }
         }
 
-        public CheckFour(List<pProject> projects) {
-            Whether = projects.ToDictionary(e => e.ID, e => e.IsHasError);
+        public CheckFour(List<pProject> projects)
+        {
+            Whether = projects.ToDictionary(e => (e.Name.Trim().ToUpper() + '-' + e.County.Trim().ToUpper() + '-' + e.Key.Trim().ToUpper()), e => e.IsHasError);
             var list = new List<IRowRule>();
             list.Add(new CellRangeRowRule() { ColumnIndex = 8, Values = new[] { "是", "否" }, ID = "2402（填写规则）" });
 

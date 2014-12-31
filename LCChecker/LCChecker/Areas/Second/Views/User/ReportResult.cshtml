@@ -4,6 +4,8 @@
 @{
     //ViewBag.Title = "检查结果";
     Layout = "~/Views/User/_Layout.cshtml";
+    List<string> Countys = ViewBag.Countys;
+    bool flag = ViewBag.IsPlan ? true : false;
     
 }
 <div style="clear: both; overflow: hidden; margin-bottom: 10px;">
@@ -26,10 +28,11 @@
                 </select>
             </div>
             <div class="input-group-btn">
-                <select name="isError" class="form-control">
+                <select name="County" class="form-control">
                     <option value="">全部</option>
-                    <option value="true" @(Request.QueryString["isError"] == "true" ? "selected=selected" : "")>错误</option>
-                    <option value="false" @(Request.QueryString["isError"] == "false" ? "selected=selected" : "")>提示</option>
+                                        @foreach (var item in Countys) {
+                        <option value="@(item)" @(Request.QueryString["County"] == item ? "selected=selected" : "")>@(item)</option>
+}
                 </select>
             </div>
             <input value="@(ViewBag.IsPlan?"true":"false")" name="IsPlan" style="display:none" />
@@ -39,9 +42,13 @@
         </div>
     </form>
 </div>
-<table class="table table-bordered">
+@if (flag)
+{
+    <table class="table table-bordered">
     <tr>
-        <th style="width: 150px">项目编号</th>
+        <th style="width: 150px">预算编号</th>
+        <th >项目名称</th>
+        <th>所在区/县</th>
         <th style="width: 100px">信息类型</th>
         <th>备注</th>
     </tr>
@@ -49,6 +56,8 @@
     {
         <tr>
             <td>@item.ProjectID</td>
+            <td>@(item.Name)</td>
+            <td>@(item.County)</td>
             <td>
                 @if (item.IsError)
                 {
@@ -86,6 +95,48 @@
         </td>
     </tr>
 </table>
+}
+else { 
+    <table class="table table-bordered">
+        <tr>
+            <th style="width:150px">项目编号</th>
+            <th style="width:100px">信息类型</th>
+            <th>备注</th>
+        </tr>
+        @foreach (var item in Model) { 
+            <tr>
+                <td>@(item.ProjectID)</td>
+                <td>@if (item.IsError)
+{
+    <span class="label label-danger">错误</span>
+}
+else
+{
+    <span class="label label-info">提示</span>
+}</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.Note))
+                    {
+                        if (item.Note.Length > 60)
+                        {
+                            <a href="#@(item.ID)" class="btn-details" data="@(item.ID)">@(item.Note.Substring(0, 60))...</a>
+                            <div id="tips-@(item.ID)" class="tips">
+                                <div class="tooltip-inner">
+                                    @Html.Raw(item.Note.Replace("；", "<br />"))
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <span>@item.Note</span>
+                        }
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+}
+
 <script>
     $(function () {
 

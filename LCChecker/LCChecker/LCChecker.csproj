@@ -138,6 +138,7 @@
     <Compile Include="Areas\Second\Check\CheckThree.cs" />
     <Compile Include="Areas\Second\Check\CheckTwo.cs" />
     <Compile Include="Areas\Second\Check\ISeCheck.cs" />
+    <Compile Include="Areas\Second\Check\ISePlanCheck.cs" />
     <Compile Include="Areas\Second\Check\SecondCheckEngine.cs" />
     <Compile Include="Areas\Second\Controllers\AdminController.cs" />
     <Compile Include="Areas\Second\Controllers\HomeController.cs" />

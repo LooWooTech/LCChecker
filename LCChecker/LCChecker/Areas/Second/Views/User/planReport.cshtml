@@ -11,12 +11,19 @@
     1、请严格按照样表填写报部表格。<br />
     1、请注意<b>表2</b>,<b>表3</b>，<b>表4</b>的项目与<b>表1</b>项目的对应关系，系统检查后会若提示不一致，请与省国土厅联系并进行说明。<br />
 </div>
+<div class="alert alert-danger">
+    1、未验收报部表格只对未验收项目检查. <br />
+    2、未验收项目报部表格新增了最近一次检查的项目数量，如有实际上传的项目数量不一致，请联系相关负责人<br />
+    3、针对每次的报部表格检查结果，新增筛选县/区功能 <br />
+    4、未验收附表1的项目数量等于附表2、附表3、附表4的上传核查项目之和<br />
+</div>
 
 <table class="table table-bordered">
     <tr>
         <th>表单名称</th>
         <th>检查状态</th>
         <th>检查结果</th>
+        <th>检查项目数</th>
         <th>样表下载</th>
         <th style="width:200px;">上传验证</th>
     </tr>
@@ -46,6 +53,7 @@
                 <td><a href="/Second/User/ReportResult?Type=@typevalue&&IsPlan=true" class="btn btn-sm btn-default">查看</a>  </td>
                     break;
             }
+            <td>@(item.Note)</td>
             <td>
                 <a href="/Templates/Second/@(item.Type.ToString()).xls" class="btn btn-sm btn-primary">下载</a>
             </td>
@@ -82,12 +90,12 @@
                         <option value="@item" @(Request.QueryString["country"] == item ? "selected=selected" : "")>@item</option>
                     }
                 </select>
-                <select name="result" class="form-control">
+                @*<select name="result" class="form-control">
                     <option value="0">全部</option>
                     <option value="3" @(Request.QueryString["result"] == "3" ? "selected=selected" : "")>未上传</option>
                     <option value="1" @(Request.QueryString["result"] == "1" ? "selected=selected" : "")>无误</option>
                     <option value="2" @(Request.QueryString["result"] == "2" ? "selected=selected" : "")>存疑</option>
-                </select>
+                </select>*@
             </div>
             <div class="input-group-btn">
                 <button type="submit" class="btn btn-primary">过滤</button>
@@ -104,32 +112,14 @@
         <th style="width: 150px">项目编号</th>
         <th>项目名称</th>
         <th style="width: 100px">所在县</th>
-        <th style="width: 100px">检验结果</th>
         <th style="width: 300px;">备注</th>
     </tr>
     @foreach (var project in projects)
     {
         <tr>
-            <td>@(project.ID)</td>
+            <td>@(project.Key)</td>
             <td>@(project.Name)</td>
             <td>@(project.County)</td>
-            <td>
-                @if (project.Result.HasValue)
-                {
-                    if (project.Result.Value)
-                    {
-                        <span class="label label-success">无误</span>
-                    }
-                    else
-                    {
-                        <span class="label label-warning">存疑</span>
-                    }
-                }
-                else
-                {
-                    <span class="label label-default">未上传</span>
-                }
-            </td>
             <td>
                 @if (!string.IsNullOrEmpty(project.Note))
                 {

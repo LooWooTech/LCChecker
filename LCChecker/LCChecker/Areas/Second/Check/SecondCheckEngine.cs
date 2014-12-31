@@ -14,10 +14,14 @@ namespace LCChecker.Areas.Second
         public Dictionary<string, List<string>> Error = new Dictionary<string, List<string>>();
         public Dictionary<string, string> Warning = new Dictionary<string, string>();
         public List<string> IDS = new List<string>();
+        public Dictionary<string, int> PlanIDS = new Dictionary<string, int>();
         public Dictionary<string, bool> Whether = new Dictionary<string, bool>();
         public Dictionary<string, SeProject> Data = new Dictionary<string, SeProject>();
+        public List<pProject> PlanData = new List<pProject>();
         public Dictionary<string, SeLand> DicPaddy = new Dictionary<string, SeLand>();
         public Dictionary<string, SeLand> DicDry = new Dictionary<string, SeLand>();
+
+        public int Count { get; set; }
 
 
         public Dictionary<string, List<string>> GetError() {
@@ -25,6 +29,16 @@ namespace LCChecker.Areas.Second
         }
         public List<string> GetIDS() {
             return IDS;
+        }
+        public List<pProject> GetPlanData() {
+            return PlanData;
+        }
+        public int GetNumber() {
+            return Count;
+        }
+
+        public Dictionary<string, int> GetPlanIDS() {
+            return PlanIDS;
         }
 
         public Dictionary<string, SeProject> GetSeProject() {
@@ -38,10 +52,99 @@ namespace LCChecker.Areas.Second
         }
 
         public bool Check(string FilePath, ref string Mistakes, SecondReportType Type,bool IsPlan) {
-            return CheckEngine(FilePath, ref Mistakes, Type,IsPlan);
+            if (IsPlan)
+            {
+                return PlanCheckEngine(FilePath, ref Mistakes, Type);
+            }
+            else {
+                return CheckEngine(FilePath, ref Mistakes, Type);
+            }
+            
+        }
+        public bool PlanCheckEngine(string FilePath, ref string Mistakes, SecondReportType Type)
+        {
+            int StartRow = 0, StartCell = 0;
+            ISheet sheet = XslHelper.OpenSheet(FilePath, true, ref StartRow, ref StartCell, ref Mistakes, Type);
+            if (sheet == null) {
+                if (Error.ContainsKey("表格格式内容"))
+                {
+                    Error["表格格式内容"].Add("错误000:0：提交的表格无法检索，请核对格式");
+                }
+                else {
+                    Error.Add("表格格式内容", new List<string> { "错误0000：提交的表格无法检索，请核对格式" });
+                }
+                return false;
+            }
+            StartRow++;
+            Count = 0;
+            int Max = sheet.LastRowNum;
+            for (var i = StartRow; i <= Max; i++) {
+                var row = sheet.GetRow(i);
+                if (row == null)
+                    break;
+                List<string> ErrorRow = new List<string>();
+                var value = row.Cells[StartCell + 3].GetValue().ToString().Trim();
+                var county = row.Cells[StartCell + 2].GetValue().ToString().Trim();
+                var Name = row.Cells[StartCell + 4].GetValue().ToString().Trim();
+                if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(county) && string.IsNullOrEmpty(Name))
+                    continue;
+                var key = Name.ToUpper() + '-' + county.ToUpper() + '-' + value.ToUpper();
+                Count++;
+                if (PlanIDS.ContainsKey(key))
+                {
+                    PlanIDS[key]++;
+                    if (PlanIDS[key] > 2)
+                    {
+                        if (Error.ContainsKey(key))
+                        {
+                            Error[key].Add("错误0001：表格中存在两次以上项目，最多出现两次");
+                        }
+                        else
+                        {
+                            Error.Add(key, new List<string> { "错误0001：表格中存在两次以上项目，最多出现两次" });
+                        }
+                        continue;
+                    }
+                }
+                else {
+                    PlanIDS.Add(key, 1);
+                }
+                if (Whether.ContainsKey(key))
+                {
+                    if (!Whether[key])
+                    {
+                        ErrorRow.Add("规则000（一致性）：与重点复核确认项目以外所有报部备案项目复核确认总表不符");
+                    }
+                    foreach (var item in rules)
+                    {
+                        if (!item.Rule.Check(row, StartCell))
+                        {
+                            ErrorRow.Add(item.Rule.Name);
+                        }
+                    }
+                    if (ErrorRow.Count() != 0)
+                    {
+                        if (Error.ContainsKey(key))
+                        {
+                            Error[key] = ErrorRow;
+                        }
+                        else
+                        {
+                            Error.Add(key, ErrorRow);
+                        }
+                    }
+                }
+                else {
+                    ErrorRow.Add("规则0002（一致性）：复核确认验收项目清单不存在该项目，请核对");
+                    if (!Error.ContainsKey(key)) {
+                        Error.Add(key, ErrorRow);
+                    }
+                }
+            }
+            return true;
         }
        
-        public bool CheckEngine(string FilePath, ref string Mistakes, SecondReportType Type,bool IsPlan) {
+        public bool CheckEngine(string FilePath, ref string Mistakes, SecondReportType Type) {
             int StartRow = 0, StartCell = 0;
             ISheet sheet = XslHelper.OpenSheet(FilePath, true, ref StartRow, ref StartCell, ref Mistakes, Type);
             if (sheet == null) {
@@ -65,16 +168,11 @@ namespace LCChecker.Areas.Second
                 var value = row.GetCell(StartCell + 3, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
                 if (string.IsNullOrEmpty(value))
                     continue;
-                if (IsPlan)
-                {
-                    if (!Whether.ContainsKey(value))
-                        continue;
+                if (!value.VerificationID()) {
+                    Count++;
+                    continue;
                 }
-                else {
-                    if (!value.VerificationID())
-                        continue;
-                }
-                
+                    
                 if (IDS.Contains(value))
                 {
                     if (Error.ContainsKey(value))
@@ -146,6 +244,8 @@ namespace LCChecker.Areas.Second
            
             return true;
         }
+
+     
 
         
     }

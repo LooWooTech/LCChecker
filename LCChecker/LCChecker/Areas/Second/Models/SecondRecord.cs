@@ -16,6 +16,10 @@ namespace LCChecker.Areas.Second.Models
         public int ID { get; set; }
         [MaxLength(55)]
         public string ProjectID { get; set; }
+        [MaxLength(255)]
+        public string Name { get; set; }
+        public string County { get; set; }
+
         [Column(TypeName="int")]
         public SecondReportType Type { get; set; }
         [Column(TypeName = "int")]

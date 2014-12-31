@@ -8,6 +8,7 @@ namespace LCChecker.Areas.Second
 {
     public interface ISeCheck
     {
+        int GetNumber();
         Dictionary<string, List<string>> GetError();
         List<string> GetIDS();
         Dictionary<string, SeProject> GetSeProject();

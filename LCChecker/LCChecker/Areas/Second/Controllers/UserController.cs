@@ -230,6 +230,17 @@ namespace LCChecker.Areas.Second.Controllers
             #region
             SecondRecord.Clear(list);
             List<SecondRecord> records = new List<SecondRecord>();
+            int Count = engine.GetNumber();
+            if (Count != 0) {
+                records.Add(new SecondRecord {
+                    ProjectID = "表格",
+                    Type = type,
+                    City = CurrentUser.City,
+                    IsError = true,
+                    Note = "本次检查有"+Count+"个项目未检查",
+                    IsPlan = false
+                });
+            }
             foreach (var item in errors.Keys) {
                 Fault = "";
                 int i = 1;
@@ -250,7 +261,7 @@ namespace LCChecker.Areas.Second.Controllers
             #endregion
             SecondRecord.AddRecords(records);
             var reports = db.SecondReports.FirstOrDefault(e => e.City == CurrentUser.City && e.Type == type&&e.IsPlan==false);
-            reports.Result = (errors.Count() == 0);
+            reports.Result = ((errors.Count()+Count) == 0);
             if (errors.Count > 0) {
                 file.State = UploadFileProceedState.Error;
             }
@@ -260,7 +271,8 @@ namespace LCChecker.Areas.Second.Controllers
            // return View();
         }
 
-        public ActionResult CheckPlanProject(int ID, SecondReportType Type) {
+        public ActionResult CheckPlanProject(int ID, SecondReportType Type)
+        {
             var file = db.Files.FirstOrDefault(e => e.ID == ID);
             if (file == null)
             {
@@ -274,9 +286,10 @@ namespace LCChecker.Areas.Second.Controllers
             var filePath = UploadHelper.GetAbsolutePath(file.SavePath);
             //初始化未验收项目检查引擎
             #region
-            ISeCheck engine = null;
+            ISePlanCheck engine = null;
             List<pProject> projects = db.pProjects.Where(e => e.City == CurrentUser.City).ToList();
-            switch (Type) {
+            switch (Type)
+            {
                 case SecondReportType.附表1:
                     engine = new CheckOne(projects);
                     break;
@@ -305,45 +318,72 @@ namespace LCChecker.Areas.Second.Controllers
             }
             //获取检查结果
             var errors = engine.GetError();
-            var ids = engine.GetIDS();
-            //更新数据库中的项目检查结果
-            foreach (var item in projects)
-            {
-                if (ids.Contains(item.ID))
-                {
-                    if (errors.ContainsKey(item.ID))
-                        item.Result = false;
-                    else
-                    {
-                        item.Result = true;
-                    }
-                }
-            }
-            db.SaveChanges();
+            var PlanIDS = engine.GetPlanIDS();
+
             //获取数据库中存在对应报部表格检查结果
-            var list = db.SecondRecords.Where(e => e.City == CurrentUser.City && e.Type == Type&&e.IsPlan==true).ToList();
+            var list = db.SecondRecords.Where(e => e.City == CurrentUser.City && e.Type == Type && e.IsPlan == true).ToList();
             //附表1需要对数据库中的字段进行更新
             if (Type == SecondReportType.附表1)
             {
-                var Seproject = engine.GetSeProject();
-                foreach (var item in projects)
-                {
-                    if (!errors.ContainsKey(item.ID) && Seproject.ContainsKey(item.ID))
-                    {
-                        item.IsHasDoubt = Seproject[item.ID].IsHasDoubt;
-                        item.IsApplyDelete = Seproject[item.ID].IsApplyDelete;
-                        item.IsHasError = Seproject[item.ID].IsHasError;
-                        item.IsPacket = Seproject[item.ID].IsPacket;
-                        item.IsDescrease = Seproject[item.ID].IsDescrease;
-                        item.IsRelieve = Seproject[item.ID].IsRelieve;
-                        db.SaveChanges();
+               // var Seproject = engine.GetSeProject();
+                var SePlanProject = engine.GetPlanData();
+                foreach (var item in projects) {
+                    item.IsApplyDelete = false;
+                    item.IsHasError = false;
+                    item.IsRight = false;
+                }
+                db.SaveChanges();
+                foreach (var item in SePlanProject) {
+                    if (item.IsRight || item.IsApplyDelete || item.IsHasError) {
+                        var pproject = db.pProjects.Where(e => e.Key.ToUpper() == item.Key.ToUpper() && e.Name.ToUpper() == item.Name.ToUpper() && e.County.ToUpper() == item.County.ToUpper()).FirstOrDefault();
+                        if (pproject != null)
+                        {
+                            if (item.IsRight) {
+                                pproject.IsRight = true;
+                            }
+                            if (item.IsApplyDelete) {
+                                pproject.IsApplyDelete = true;
+                            }
+                            if (item.IsHasError) {
+                                pproject.IsHasError = true;
+                            }
+                        }
                     }
                 }
+                db.SaveChanges();
             }
+            SecondReport reports = db.SecondReports.FirstOrDefault(e => e.City == CurrentUser.City && e.Type == Type && e.IsPlan);
+            if (errors.Count > 0)
+            {
+                reports.Result = false;
+            }
+            else
+            {
+                reports.Result = true;
+            }
+            reports.Note = engine.GetNumber().ToString();
+            db.SaveChanges();
+           
             //更新数据库中相关报部表格中记录  首先需要对之前数据库中存在清空
             SecondRecord.Clear(list);
             //获取本次报部表格检查结果，并且声称List
             List<SecondRecord> records = new List<SecondRecord>();
+            if (Type == SecondReportType.附表4)
+            {
+                if (!SecondProjectHelper.Check(CurrentUser.City))
+                {
+                    records.Add(new SecondRecord { 
+                        ProjectID="全部",
+                        County="全部",
+                        Name="全部",
+                        Type=Type,
+                        City=CurrentUser.City,
+                        IsError=true,
+                        Note="附表1检查项目等于附表2、附表3以及附表4中的项目之和",
+                        IsPlan=true
+                    });
+                }
+            }
             foreach (var item in errors.Keys)
             {
                 Fault = "";
@@ -353,9 +393,12 @@ namespace LCChecker.Areas.Second.Controllers
                     Fault += string.Format("({0}){1}", i, msg);
                     i++;
                 }
+                var values = item.Split('-');
                 records.Add(new SecondRecord()
                 {
-                    ProjectID = item,
+                    ProjectID = values[2].Trim(),
+                    County = values[1].Trim(),
+                    Name = values[0].Trim(),
                     Type = Type,
                     City = CurrentUser.City,
                     IsError = true,
@@ -365,31 +408,31 @@ namespace LCChecker.Areas.Second.Controllers
             }
             //添加本次检查结果
             SecondRecord.AddRecords(records);
-            
 
-            SecondReport reports = db.SecondReports.FirstOrDefault(e => e.City == CurrentUser.City && e.Type == Type && e.IsPlan);
-            SecondRecord.UpDate(reports.ID,errors, CurrentUser.City, Type);
+
+            
+           
             if (errors.Count > 0)
             {
-                //reports.Result = false;
                 file.State = UploadFileProceedState.Error;
             }
-            //else {
-            //    reports.Result = true;
-            //}
+
             db.SaveChanges();
+            
             return RedirectToAction("ReportResult", new { Type = Type, IsPlan = true });
         }
 
 
 
-        public ActionResult ReportResult(bool IsPlan,SecondReportType Type=0,RuleKind rule=RuleKind.All,bool? IsError=null,int page=1) {
+        public ActionResult ReportResult(bool IsPlan,SecondReportType Type=0,RuleKind rule=RuleKind.All,string County=null,int page=1) {
             if (Type == 0) {
                 throw new ArgumentException("参数错误，没有选择具体报部表格");
             }
             var query = db.SecondRecords.Where(e => e.City == CurrentUser.City && e.Type == Type&&e.IsPlan==IsPlan);
-            if (IsError != null) {
-                query = query.Where(e => e.IsError == IsError.Value);
+            List<string> Countys = query.GroupBy(e => e.County.ToUpper()).Select(g => g.Key).ToList();
+            ViewBag.Countys = Countys;
+            if (!string.IsNullOrEmpty(County)) {
+                query = query.Where(e => e.County.ToUpper() == County.ToUpper());
             }
             string str = string.Empty;
             switch (rule) {

@@ -57,10 +57,7 @@ namespace LCChecker.Areas.Second
                     continue;
                 if (!value.VerificationID())
                     continue;
-                if (!XslHelper.JudgeLand(sheet, i, StartCell)) {
-                    Mistakes = value + "规则000：未找到水田、水浇地、旱地列";
-                    continue;
-                }
+               
                 if (IDS.Contains(value))
                 {
                     if (Error.ContainsKey(value))
@@ -78,6 +75,12 @@ namespace LCChecker.Areas.Second
                 int[] Degree1 = new int[3];
                 double[] Area = new double[3];
                 List<string> ErrorRow = new List<string>();
+                if (!XslHelper.JudgeLand(sheet, i, StartCell))
+                {
+                    ErrorRow.Add("规则000：未找到水田、水浇地、旱地列");
+           
+                    //continue;
+                }
                 for (var j = 0; j < 3; j++) {
                     Fault = "";
                     if (!XslHelper.CheckLand(sheet, i + j, ref Area[j], ref Degree1[j], ref Fault, StartCell + 7)) {
