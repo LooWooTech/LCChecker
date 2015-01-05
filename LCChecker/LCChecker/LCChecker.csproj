@@ -367,6 +367,16 @@
   <ItemGroup>
     <Content Include="Areas\Second\Views\Admin\PlanIndex.cshtml" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Templates\Second\附表1.xls" />
+    <Content Include="Templates\Second\附表2.xls" />
+    <Content Include="Templates\Second\附表3.xls" />
+    <Content Include="Templates\Second\附表4.xls" />
+    <Content Include="Templates\Second\附表6.xls" />
+    <Content Include="Templates\Second\附表7.xls" />
+    <Content Include="Templates\Second\附表8.xls" />
+    <Content Include="Templates\Second\附表9.xls" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

@@ -6,6 +6,10 @@
     ViewBag.Title = "未验收项目";
     Layout = "~/Views/Admin/_Layout.cshtml";
 }
+<div class="alert alert-warning">
+    1、左侧用于上传第二批（第一次）未验收项目<br />
+    2、右侧用于上传第二批（补充）未验收项目<br />
+</div>
 
 <div style="clear:both;overflow:hidden;margin-bottom:10px;">
     <form class="form form-inline" method="post" enctype="multipart/form-data" action="/Second/Admin/UploadPlan" style="float:left;">

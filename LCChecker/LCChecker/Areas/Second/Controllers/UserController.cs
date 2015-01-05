@@ -237,7 +237,7 @@ namespace LCChecker.Areas.Second.Controllers
                     Type = type,
                     City = CurrentUser.City,
                     IsError = true,
-                    Note = "本次检查有"+Count+"个项目未检查",
+                    Note = "本次检查有"+Count+"个项目未检查,请核对项目是否包括在验收项目中",
                     IsPlan = false
                 });
             }
