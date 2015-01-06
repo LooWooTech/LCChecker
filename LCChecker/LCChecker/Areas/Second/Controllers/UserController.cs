@@ -345,7 +345,25 @@ namespace LCChecker.Areas.Second.Controllers
                 db.SaveChanges();
             }
             SecondReport reports = db.SecondReports.FirstOrDefault(e => e.City == CurrentUser.City && e.Type == Type && e.IsPlan);
-            if (errors.Count > 0)
+            List<SecondRecord> records = new List<SecondRecord>();
+            if (Type == SecondReportType.附表4)
+            {
+                if (!SecondProjectHelper.Check(CurrentUser.City))
+                {
+                    records.Add(new SecondRecord
+                    {
+                        ProjectID = "全部",
+                        County = "全部",
+                        Name = "全部",
+                        Type = Type,
+                        City = CurrentUser.City,
+                        IsError = true,
+                        Note = "附表1检查项目等于附表2、附表3以及附表4中的项目之和",
+                        IsPlan = true
+                    });
+                }
+            }
+            if (errors.Count > 0||records.Count>0)
             {
                 reports.Result = false;
             }
@@ -359,23 +377,8 @@ namespace LCChecker.Areas.Second.Controllers
             //更新数据库中相关报部表格中记录  首先需要对之前数据库中存在清空
             SecondRecord.Clear(list);
             //获取本次报部表格检查结果，并且声称List
-            List<SecondRecord> records = new List<SecondRecord>();
-            if (Type == SecondReportType.附表4)
-            {
-                if (!SecondProjectHelper.Check(CurrentUser.City))
-                {
-                    records.Add(new SecondRecord { 
-                        ProjectID="全部",
-                        County="全部",
-                        Name="全部",
-                        Type=Type,
-                        City=CurrentUser.City,
-                        IsError=true,
-                        Note="附表1检查项目等于附表2、附表3以及附表4中的项目之和",
-                        IsPlan=true
-                    });
-                }
-            }
+            
+           
             foreach (var item in errors.Keys)
             {
                 Fault = "";
