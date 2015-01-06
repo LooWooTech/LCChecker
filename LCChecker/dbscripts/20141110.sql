@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50173
 File Encoding         : 65001
 
-Date: 2015-01-05 10:06:28
+Date: 2015-01-06 15:21:20
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -60,7 +60,7 @@ CREATE TABLE `farmland` (
   `Type` int(11) NOT NULL,
   `Degree` int(11) NOT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=139 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=236 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for pproject
@@ -77,8 +77,9 @@ CREATE TABLE `pproject` (
   `IsRight` bit(1) NOT NULL,
   `IsApplyDelete` bit(1) NOT NULL,
   `IsHasError` bit(1) NOT NULL,
+  `IsHad` bit(1) NOT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=34897 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=44461 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for projects
@@ -174,7 +175,7 @@ CREATE TABLE `serecords` (
   `IsError` bit(1) NOT NULL,
   `Note` varchar(1023) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=71863 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=79321 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for sereports
@@ -188,7 +189,7 @@ CREATE TABLE `sereports` (
   `Result` bit(1) DEFAULT NULL,
   `Note` varchar(1023) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=109 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for uploadfiles
@@ -208,7 +209,7 @@ CREATE TABLE `uploadfiles` (
   PRIMARY KEY (`ID`),
   UNIQUE KEY `PK_FILE_ID` (`ID`) USING BTREE,
   KEY `IX_FILE_CITY` (`CityID`)
-) ENGINE=InnoDB AUTO_INCREMENT=269 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=302 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for users
