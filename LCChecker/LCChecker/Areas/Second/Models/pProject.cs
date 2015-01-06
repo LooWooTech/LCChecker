@@ -11,5 +11,6 @@ namespace LCChecker.Areas.Second.Models
         public int ID { get; set; }
         public string Key { get; set; }
         public bool IsRight { get; set; }
+        public bool IsHad { get; set; }
     }
 }

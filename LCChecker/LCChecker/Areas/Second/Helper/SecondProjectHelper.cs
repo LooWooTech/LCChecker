@@ -101,13 +101,8 @@ namespace LCChecker.Areas.Second
             using (var db = new LCDbContext()) {
                 foreach (var item in list) {
                     if (!db.pProjects.Any(e => e.ID == item.ID)) {
-                        
-                        if (!db.pProjects.Any(e => e.Key.ToUpper() == item.Key.ToUpper() && e.County.ToUpper() == item.County.ToUpper() && e.Name.ToUpper() == item.Name.ToUpper()))
-                        {
-                            db.pProjects.Add(item);
-                        }
+                        db.pProjects.Add(item);
                     }
-                    db.SaveChanges();
                 }
                 db.SaveChanges();
             }

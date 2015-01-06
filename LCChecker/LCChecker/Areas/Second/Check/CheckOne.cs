@@ -43,7 +43,17 @@ namespace LCChecker.Areas.Second
 
         public CheckOne(List<pProject> projects) {
 
-            Whether = projects.ToDictionary(e => (e.Name.Trim().ToUpper() + '-' + e.County.Trim().ToUpper() + '-' + e.Key.Trim().ToUpper()), e => true);
+            //Whether = projects.ToDictionary(e => (e.Name.Trim().ToUpper() + '-' + e.County.Trim().ToUpper() + '-' + e.Key.Trim().ToUpper()), e => true);
+            foreach (var item in projects) {
+                var key = item.Name.Trim().ToUpper() + '-' + item.County.Trim().ToUpper() + '-' + item.Key.Trim().ToUpper();
+                if (PlanIDS.ContainsKey(key))
+                {
+                    PlanIDS[key]++;
+                }
+                else {
+                    PlanIDS.Add(key, 1);
+                }
+            }
             var list = new List<IRowRule>();
             list.Add(new CellRangeRowRule() { ColumnIndex = 5, Values = new[] { "是", "否" }, ID = "2102（填写规则）" });
             list.Add(new CellRangeRowRule() { ColumnIndex = 6, Values = new[] { "是", "否" }, ID = "2103（填写规则）" });
@@ -116,9 +126,9 @@ namespace LCChecker.Areas.Second
                 var row = sheet.GetRow(i);
                 if (row == null)
                     break;
-                var value = row.Cells[StartCell + 3].GetValue().ToString().Trim();
-                var county = row.Cells[StartCell + 2].GetValue().ToString().Trim();
-                var Name = row.Cells[StartCell + 4].GetValue().ToString().Trim();
+                var value = row.Cells[StartCell + 3].GetValue().Replace(" ","").ToString().Trim();
+                var county = row.Cells[StartCell + 2].GetValue().Replace(" ","").ToString().Trim();
+                var Name = row.Cells[StartCell + 4].GetValue().Replace(" ","").ToString().Trim();
                 var key = Name.ToUpper() + '-' + county.ToUpper() + '-' + value.ToUpper();
                 if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(county) && string.IsNullOrEmpty(Name))
                     continue;
@@ -142,7 +152,24 @@ namespace LCChecker.Areas.Second
                     IsRight=!(SeProject.IsHasDoubt||SeProject.IsPacket||SeProject.IsDescrease||SeProject.IsRelieve)
                 });
             }
+            Fit();
                 return true;
+        }
+
+        public void  Fit() {
+            foreach (var item in PlanIDS.Keys) {
+                if (PlanIDS[item] > 0) {
+                    if (Error.ContainsKey(item))
+                    {
+                        List<string> Buffer = Error[item];
+                        Buffer.Add("规则0002（一致性）：复核确认未验收项目清单中存在该项目，但是不存在在本表中");
+                        Error[item] = Buffer;
+                    }
+                    else {
+                        Error.Add(item, new List<string>() { "规则0002（一致性）：复核确认未验收项目清单中存在该项目，但是不存在在本表中" });
+                    }
+                }
+            }
         }
 
         public bool GetProject(string FilePath,ref string Misatkes, SecondReportType Type) {

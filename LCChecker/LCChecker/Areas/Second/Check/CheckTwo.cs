@@ -24,7 +24,19 @@ namespace LCChecker.Areas.Second
 
         public CheckTwo(List<pProject> projects)
         {
-            Whether = projects.ToDictionary(e => (e.Name.Trim().ToUpper() + '-' + e.County.Trim().ToUpper() + '-' + e.Key.Trim().ToUpper()), e =>e.IsRight);
+            //Whether = projects.ToDictionary(e => (e.Name.Trim().ToUpper() + '-' + e.County.Trim().ToUpper() + '-' + e.Key.Trim().ToUpper()), e =>e.IsRight);
+            foreach (var item in projects) {
+                if (item.IsRight) { 
+                    var key=item.Name.Trim().ToUpper()+'-'+item.County.Trim().ToUpper()+'-'+item.Key.Trim().ToUpper();
+                    if (PlanIDS.ContainsKey(key))
+                    {
+                        PlanIDS[key]++;
+                    }
+                    else {
+                        PlanIDS.Add(key, 1);
+                    }
+                }
+            }
             var list = new List<IRowRule>();
             list.Add(new CellRangeRowRule() { ColumnIndex = 9, Values = new[] { "是", "否" }, ID = "2203（填写规则）" });
 

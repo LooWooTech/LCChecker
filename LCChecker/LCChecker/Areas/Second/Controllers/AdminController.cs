@@ -165,8 +165,8 @@ namespace LCChecker.Areas.Second.Controllers
                 var row = sheet.GetRow(i);
                 if (row == null)
                     continue;
-                var Name = row.Cells[2].GetValue().ToString().Trim();
-                var ID = row.Cells[7].GetValue().ToString().Trim();
+                var Name = row.Cells[2].GetValue().Replace(" ","").ToString().Trim();
+                var ID = row.Cells[7].GetValue().Replace(" ","").ToString().Trim();
                 City city = 0;
                 var address=row.Cells[3].GetValue().ToString().Trim().Replace(',', '.').Replace(',', '.').Split('.');
                 if (Enum.TryParse<City>(address[1], out city)) {
@@ -196,8 +196,8 @@ namespace LCChecker.Areas.Second.Controllers
                 var row = sheet.GetRow(i);
                 if (row == null)
                     continue;
-                var Name = row.Cells[1].GetValue().ToString().Trim();
-                var ID = row.Cells[6].GetValue().ToString().Trim();
+                var Name = row.Cells[1].GetValue().Replace(" ","").ToString().Trim();
+                var ID = row.Cells[6].GetValue().Replace(" ","").ToString().Trim();
                 City city = 0;
                 var address = row.Cells[2].GetValue().ToString().Trim().Replace(',', '.').Replace(',', '.').Split('.');
                 if (Enum.TryParse<City>(address[1], out city)) {

@@ -318,36 +318,28 @@ namespace LCChecker.Areas.Second.Controllers
             }
             //获取检查结果
             var errors = engine.GetError();
-            var PlanIDS = engine.GetPlanIDS();
 
             //获取数据库中存在对应报部表格检查结果
             var list = db.SecondRecords.Where(e => e.City == CurrentUser.City && e.Type == Type && e.IsPlan == true).ToList();
             //附表1需要对数据库中的字段进行更新
             if (Type == SecondReportType.附表1)
             {
-               // var Seproject = engine.GetSeProject();
                 var SePlanProject = engine.GetPlanData();
                 foreach (var item in projects) {
+                    item.IsRight = false;
                     item.IsApplyDelete = false;
                     item.IsHasError = false;
-                    item.IsRight = false;
+                    item.IsHad = false;
                 }
                 db.SaveChanges();
                 foreach (var item in SePlanProject) {
-                    if (item.IsRight || item.IsApplyDelete || item.IsHasError) {
-                        var pproject = db.pProjects.Where(e => e.Key.ToUpper() == item.Key.ToUpper() && e.Name.ToUpper() == item.Name.ToUpper() && e.County.ToUpper() == item.County.ToUpper()).FirstOrDefault();
-                        if (pproject != null)
-                        {
-                            if (item.IsRight) {
-                                pproject.IsRight = true;
-                            }
-                            if (item.IsApplyDelete) {
-                                pproject.IsApplyDelete = true;
-                            }
-                            if (item.IsHasError) {
-                                pproject.IsHasError = true;
-                            }
-                        }
+                    var pproject = db.pProjects.Where(e => e.Key.Trim().ToUpper() == item.Key.Trim().ToUpper() && e.Name.Trim().ToUpper() == item.Name.Trim().ToUpper() && e.County.Trim().ToUpper() == item.County.Trim().ToUpper()&&e.IsHad==false).FirstOrDefault();
+                    if (pproject != null) {
+                        pproject.IsHad = true;
+                        pproject.IsRight = item.IsRight;
+                        pproject.IsHasError = item.IsHasError;
+                        pproject.IsApplyDelete = item.IsApplyDelete;
+                        db.SaveChanges();
                     }
                 }
                 db.SaveChanges();

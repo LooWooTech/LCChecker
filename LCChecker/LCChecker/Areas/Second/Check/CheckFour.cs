@@ -23,7 +23,19 @@ namespace LCChecker.Areas.Second
 
         public CheckFour(List<pProject> projects)
         {
-            Whether = projects.ToDictionary(e => (e.Name.Trim().ToUpper() + '-' + e.County.Trim().ToUpper() + '-' + e.Key.Trim().ToUpper()), e => e.IsHasError);
+            //Whether = projects.ToDictionary(e => (e.Name.Trim().ToUpper() + '-' + e.County.Trim().ToUpper() + '-' + e.Key.Trim().ToUpper()), e => e.IsHasError);
+            foreach (var item in projects) {
+                if (item.IsHasError) {
+                    var key = item.Name.Trim().ToUpper() + '-' + item.County.Trim().ToUpper() + '-' + item.Key.Trim().ToUpper();
+                    if (PlanIDS.ContainsKey(key))
+                    {
+                        PlanIDS[key]++;
+                    }
+                    else {
+                        PlanIDS.Add(key, 1);
+                    }
+                }
+            }
             var list = new List<IRowRule>();
             list.Add(new CellRangeRowRule() { ColumnIndex = 8, Values = new[] { "是", "否" }, ID = "2402（填写规则）" });
 

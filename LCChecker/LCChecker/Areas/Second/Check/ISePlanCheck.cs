@@ -9,7 +9,7 @@ namespace LCChecker.Areas.Second
     public interface ISePlanCheck
     {
         Dictionary<string, List<string>> GetError();
-        Dictionary<string, int> GetPlanIDS();
+       // Dictionary<string, int> GetPlanIDS();
 
         List<pProject> GetPlanData();
         int GetNumber();

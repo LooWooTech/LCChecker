@@ -37,10 +37,6 @@ namespace LCChecker.Areas.Second
             return Count;
         }
 
-        public Dictionary<string, int> GetPlanIDS() {
-            return PlanIDS;
-        }
-
         public Dictionary<string, SeProject> GetSeProject() {
             return Data;
         }
@@ -83,63 +79,100 @@ namespace LCChecker.Areas.Second
                 if (row == null)
                     break;
                 List<string> ErrorRow = new List<string>();
-                var value = row.Cells[StartCell + 3].GetValue().ToString().Trim();
-                var county = row.Cells[StartCell + 2].GetValue().ToString().Trim();
-                var Name = row.Cells[StartCell + 4].GetValue().ToString().Trim();
+                var value = row.Cells[StartCell + 3].GetValue().Replace(" ","").ToString().Trim();
+                var county = row.Cells[StartCell + 2].GetValue().Replace(" ","").ToString().Trim();
+                var Name = row.Cells[StartCell + 4].GetValue().Replace(" ","").ToString().Trim();
                 if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(county) && string.IsNullOrEmpty(Name))
                     continue;
                 var key = Name.ToUpper() + '-' + county.ToUpper() + '-' + value.ToUpper();
                 Count++;
                 if (PlanIDS.ContainsKey(key))
                 {
-                    PlanIDS[key]++;
-                    if (PlanIDS[key] > 2)
+                    if (PlanIDS[key] > 0)
                     {
-                        if (Error.ContainsKey(key))
+                        PlanIDS[key]--;
+                        foreach (var item in rules)
                         {
-                            Error[key].Add("错误0001：表格中存在两次以上项目，最多出现两次");
+                            if (!item.Rule.Check(row, StartCell))
+                            {
+                                ErrorRow.Add(item.Rule.Name);
+                            }
                         }
-                        else
-                        {
-                            Error.Add(key, new List<string> { "错误0001：表格中存在两次以上项目，最多出现两次" });
-                        }
-                        continue;
+                    }
+                    else
+                    {
+                        ErrorRow.Add("规则000（一致性）：与复核确认未验收项目清单数目不一致，请核对项目");
                     }
                 }
                 else {
-                    PlanIDS.Add(key, 1);
+                    ErrorRow.Add("规则000（一致性）：与重点复核确认项目以外所有报部备案项目复核确认总表不符");
                 }
-                if (Whether.ContainsKey(key))
-                {
-                    if (!Whether[key])
+                if (ErrorRow.Count != 0) {
+                    if (Error.ContainsKey(key))
                     {
-                        ErrorRow.Add("规则000（一致性）：与重点复核确认项目以外所有报部备案项目复核确认总表不符");
+                        List<string> Buffer = Error[key];
+                        foreach (var item in ErrorRow) {
+                            Buffer.Add(item);
+                        }
+                        Error[key] = Buffer;
                     }
-                    foreach (var item in rules)
+                    else
                     {
-                        if (!item.Rule.Check(row, StartCell))
-                        {
-                            ErrorRow.Add(item.Rule.Name);
-                        }
-                    }
-                    if (ErrorRow.Count() != 0)
-                    {
-                        if (Error.ContainsKey(key))
-                        {
-                            Error[key] = ErrorRow;
-                        }
-                        else
-                        {
-                            Error.Add(key, ErrorRow);
-                        }
-                    }
-                }
-                else {
-                    ErrorRow.Add("规则0002（一致性）：复核确认验收项目清单不存在该项目，请核对");
-                    if (!Error.ContainsKey(key)) {
                         Error.Add(key, ErrorRow);
                     }
                 }
+                #region
+                //if (PlanIDS.ContainsKey(key))
+                //{
+                //    PlanIDS[key]++;
+                //    if (PlanIDS[key] > 2)
+                //    {
+                //        if (Error.ContainsKey(key))
+                //        {
+                //            Error[key].Add("错误0001：表格中存在两次以上项目，最多出现两次");
+                //        }
+                //        else
+                //        {
+                //            Error.Add(key, new List<string> { "错误0001：表格中存在两次以上项目，最多出现两次" });
+                //        }
+                //        continue;
+                //    }
+                //}
+                //else {
+                //    PlanIDS.Add(key, 1);
+                //}
+                //if (Whether.ContainsKey(key))
+                //{
+                //    if (!Whether[key])
+                //    {
+                //        ErrorRow.Add("规则000（一致性）：与重点复核确认项目以外所有报部备案项目复核确认总表不符");
+                //    }
+                //    foreach (var item in rules)
+                //    {
+                //        if (!item.Rule.Check(row, StartCell))
+                //        {
+                //            ErrorRow.Add(item.Rule.Name);
+                //        }
+                //    }
+                //    if (ErrorRow.Count() != 0)
+                //    {
+                //        if (Error.ContainsKey(key))
+                //        {
+                //            Error[key] = ErrorRow;
+                //        }
+                //        else
+                //        {
+                //            Error.Add(key, ErrorRow);
+                //        }
+                //    }
+                //}
+                //else {
+                //    ErrorRow.Add("规则0002（一致性）：复核确认验收项目清单不存在该项目，请核对");
+                //    if (!Error.ContainsKey(key)) {
+                //        Error.Add(key, ErrorRow);
+                //    }
+                //}
+                #endregion
             }
             return true;
         }
