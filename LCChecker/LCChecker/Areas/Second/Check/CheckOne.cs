@@ -135,12 +135,12 @@ namespace LCChecker.Areas.Second
                 if (Error.ContainsKey(key))
                     continue;
                 var SeProject = new SeProject {
-                    IsHasDoubt = row.Cells[StartCell + 5].GetValue() == "是",
-                    IsApplyDelete = row.Cells[StartCell + 6].GetValue() == "是",
-                    IsHasError = row.Cells[StartCell + 7].GetValue() == "是",
-                    IsPacket = row.Cells[StartCell + 8].GetValue() == "是",
-                    IsDescrease = row.Cells[StartCell + 9].GetValue() == "是",
-                    IsRelieve = row.Cells[StartCell + 10].GetValue() == "是"
+                    IsHasDoubt = row.Cells[StartCell + 5].GetValue().ToString().Trim() == "是",
+                    IsApplyDelete = row.Cells[StartCell + 6].GetValue().ToString().Trim() == "是",
+                    IsHasError = row.Cells[StartCell + 7].GetValue().ToString().Trim() == "是",
+                    IsPacket = row.Cells[StartCell + 8].GetValue().ToString().Trim() == "是",
+                    IsDescrease = row.Cells[StartCell + 9].GetValue().ToString().Trim() == "是",
+                    IsRelieve = row.Cells[StartCell + 10].GetValue().ToString().Trim() == "是"
                 };
                 PlanData.Add(new pProject
                 {
@@ -201,12 +201,12 @@ namespace LCChecker.Areas.Second
                 if (!Data.ContainsKey(value)) {
                     Data.Add(value, new SeProject
                     {
-                        IsHasDoubt = row.Cells[StartCell + 5].GetValue() == "是",
-                        IsApplyDelete = row.Cells[StartCell + 6].GetValue() == "是",
-                        IsHasError = row.Cells[StartCell + 7].GetValue() == "是",
-                        IsPacket=row.Cells[StartCell+8].GetValue()=="是",
-                        IsDescrease = row.Cells[StartCell + 9].GetValue() == "是",
-                        IsRelieve = row.Cells[StartCell + 10].GetValue() == "是"
+                        IsHasDoubt = row.Cells[StartCell + 5].GetValue().ToString().Trim() == "是",
+                        IsApplyDelete = row.Cells[StartCell + 6].GetValue().ToString().Trim() == "是",
+                        IsHasError = row.Cells[StartCell + 7].GetValue().ToString().Trim() == "是",
+                        IsPacket=row.Cells[StartCell+8].GetValue().ToString().Trim()=="是",
+                        IsDescrease = row.Cells[StartCell + 9].GetValue().ToString().Trim() == "是",
+                        IsRelieve = row.Cells[StartCell + 10].GetValue().ToString().Trim() == "是"
                     });
                 }
             }
