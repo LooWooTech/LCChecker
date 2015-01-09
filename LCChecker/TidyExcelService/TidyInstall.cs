@@ -20,6 +20,7 @@ namespace TidyExcelService
 
             processInstall.Account = ServiceAccount.LocalSystem;
             this.serviceInstall.ServiceName = "LCChecker TIDY Service";
+            this.serviceInstall.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
 
             this.Installers.Add(this.serviceInstall);
             this.Installers.Add(this.processInstall);

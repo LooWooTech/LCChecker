@@ -511,5 +511,21 @@ namespace LCChecker.Areas.Second.Controllers
             return File(new FileStream(filePath, FileMode.Open), "application/ms-excel", city.ToString() + "-" + Type.ToString() + ".xls");
             //return View();
         }
+
+
+        public ActionResult DownLoadSummary(SecondReportType Type,bool IsPlan) {
+            string FilePath = string.Empty;
+            string FileName=string.Empty;
+            if (IsPlan)
+            {
+                FileName=Type.ToString()+"-未验收总表.xls";
+                FilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/"+Type.ToString()+"-未验收总表.xls");
+            }
+            else {
+                FileName=Type.ToString()+"-验收总表.xls";
+                FilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/" + Type.ToString() + "-验收总表.xls");
+            }
+            return File(new FileStream(FilePath, FileMode.Open), "application/ms-excel", FileName);
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿@using LCChecker.Models
+@using LCChecker.Areas.Second.Models
 @{
     ViewBag.Title = "统计概况";
     Dictionary<City, Summary> reportSummary = ViewBag.ReportSummary;
@@ -19,6 +20,15 @@
     <div class="tab-pane fade active in" id="tab1">
         <p>
             @Html.ActionLink("下载统计表格", "Download", "Admin", new {ID=1 }, new { @class="btn btn-sm btn-primary",target="_blank"})
+            @foreach(SecondReportType item in Enum.GetValues(typeof(SecondReportType))){
+                if (item == SecondReportType.附表8)
+                {
+                    continue;
+                }
+                <span ><a href="/Second/Admin/DownLoadSummary?Type=@(item)&&IsPlan=false" class="btn btn-sm btn-primary" target="_blank"><i class="glyphicon glyphicon-download-alt"></i>&nbsp; @(item.ToString())</a></span>
+               
+            }
+            
         </p>
         <table class="table table-bordered">
             <tr>
@@ -44,6 +54,7 @@
     <div class="tab-pane fade" id="tab2">
         <p>
             @Html.ActionLink("下载统计表格", "Download", "Admin", new {ID=2 }, new { @class="btn btn-sm btn-primary",target="_blank"})
+           
         </p>
         <table class="table table-bordered">
             <tr>
@@ -96,6 +107,15 @@
     <div class="tab-pane fade" id="tab4">
         <p>
             @Html.ActionLink("下载统计表格", "Download", "Admin", new { ID = 4 }, new { @class = "btn btn-sm btn-primary", target = "_blank" })
+            @foreach (SecondReportType item in Enum.GetValues(typeof(SecondReportType)))
+{
+    if (item == SecondReportType.附表6)
+    {
+        break;
+    }
+                <span ><a href="/Second/Admin/DownLoadSummary?Type=@(item)&&IsPlan=true" class="btn btn-sm btn-primary" target="_blank"><i class="glyphicon glyphicon-download-alt"></i>&nbsp;@(item.ToString())</a></span>
+
+}
         </p>
         <table class="table table-bordered">
             <tr>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -22,11 +23,20 @@ namespace TidyExcelService
         }
 
         public void MainLoop() {
-            var loopInterval = int.Parse(ConfigurationManager.AppSettings["LoopInterval"]);
-            while (Signal) {
-                TidyExcel.Process();
-                Thread.Sleep(loopInterval);
+            try
+            {
+                var loopInterval = int.Parse(ConfigurationManager.AppSettings["LoopInterval"]);
+                while (Signal)
+                {
+                    TidyExcel.Process();
+                    Thread.Sleep(loopInterval);
+                }
             }
+            catch (Exception er) {
+                var Loggerror = log4net.LogManager.GetLogger("logerror");
+                Loggerror.ErrorFormat("服务遍历操作时发生错误：{0}", er);
+            }
+            
         }
     }
 }

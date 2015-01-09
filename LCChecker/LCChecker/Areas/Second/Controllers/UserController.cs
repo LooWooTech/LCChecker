@@ -345,6 +345,8 @@ namespace LCChecker.Areas.Second.Controllers
                 db.SaveChanges();
             }
             SecondReport reports = db.SecondReports.FirstOrDefault(e => e.City == CurrentUser.City && e.Type == Type && e.IsPlan);
+            reports.Note = engine.GetNumber().ToString();
+            db.SaveChanges();
             List<SecondRecord> records = new List<SecondRecord>();
             if (Type == SecondReportType.附表4)
             {
@@ -371,7 +373,7 @@ namespace LCChecker.Areas.Second.Controllers
             {
                 reports.Result = true;
             }
-            reports.Note = engine.GetNumber().ToString();
+            
             db.SaveChanges();
            
             //更新数据库中相关报部表格中记录  首先需要对之前数据库中存在清空

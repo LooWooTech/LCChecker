@@ -25,9 +25,10 @@ namespace TidyExcelService
                     int CityID = 0;
                     string SavePath = "";
                     int Type = 0;
+                    bool Flag = false;
                     using (var cmd = coon.CreateCommand())
                     {
-                        cmd.CommandText = "SELECT ID,CityID,SavePath,Type FROM `uploadfiles` WHERE Type BETWEEN 20 And 30  AND State=1 AND Census=0 ORDER BY ID";
+                        cmd.CommandText = "SELECT ID,CityID,SavePath,Type,IsPlan FROM `uploadfiles` WHERE Type BETWEEN 20 And 30  AND State=1 AND Census=0 ORDER BY ID";
                         using (var reader = cmd.ExecuteReader())
                         {
                             if (reader.Read() == false) return;
@@ -36,9 +37,12 @@ namespace TidyExcelService
                             CityID = Convert.ToInt32(reader[1]);
                             SavePath = reader[2].ToString();
                             Type = Convert.ToInt32(reader[3]);
+                            Flag = Convert.ToBoolean(reader[4]);
                             reader.Close();
                         }
                     }
+
+                    
 
                     List<string> FilesPath = new List<string>();
                     foreach (City item in Enum.GetValues(typeof(City)))
@@ -49,22 +53,33 @@ namespace TidyExcelService
                         }
                         using (var cmd = coon.CreateCommand())
                         {
-                            cmd.CommandText = string.Format("SELECT SavePath from uploadfiles WHERE CreateTime=(SELECT MAX(CreateTime) FROM `uploadfiles` WHERE CityID={0} ANd type={1} AND State=1)", (int)item, Type);
+                            if (Flag)
+                            {
+                                cmd.CommandText = string.Format("SELECT SavePath from uploadfiles WHERE CreateTime=(SELECT MAX(CreateTime) FROM `uploadfiles` WHERE CityID={0} ANd type={1} AND State=1 AND IsPlan=1)", (int)item, Type);
+                            }
+                            else {
+                                cmd.CommandText = string.Format("SELECT SavePath from uploadfiles WHERE CreateTime=(SELECT MAX(CreateTime) FROM `uploadfiles` WHERE CityID={0} ANd type={1} AND State=1 AND IsPlan=0)", (int)item, Type);
+                            }
+                            
                             using (var reader = cmd.ExecuteReader())
                             {
-                                if (reader.Read() == false) return;
+                                if (reader.Read() == false) continue; 
                                 string SavePaths = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../LCChecker/", reader[0].ToString());
                                 FilesPath.Add(SavePaths);
                             }
                         }
                     }
                     SecondReportType NewType = (SecondReportType)(Type - 20);
-                    if (NewType == SecondReportType.附表8)
-                    {
-                        TidyEight(FilesPath);
-                    }
-                    else {
-                        Tidy(FilesPath, NewType);
+                    //if (NewType == SecondReportType.附表8)
+                    //{
+                    //    TidyEight(FilesPath);
+                    //}
+                    //else {
+                    //    Tidy(FilesPath, NewType,Flag);
+                    //}
+
+                    if (NewType != SecondReportType.附表8) {
+                        Tidy(FilesPath, NewType, Flag);
                     }
 
                     
@@ -89,7 +104,7 @@ namespace TidyExcelService
         }
 
 
-        public static void Tidy(List<string> FilePaths,SecondReportType Type) {
+        public static void Tidy(List<string> FilePaths,SecondReportType Type,bool IsPlan) {
             string TemplatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../LCChecker/Templates/Second", Type.ToString() + ".xls");
             IWorkbook workbook = null;
             try
@@ -111,7 +126,7 @@ namespace TidyExcelService
                 case SecondReportType.附表1: StartNumber = 6; Lines=11; xoffset=3;break;
                 case SecondReportType.附表2: StartNumber = 6; Lines = 10; xoffset=3;break;
                 case SecondReportType.附表3: StartNumber = 6; Lines = 10; xoffset=4;break;
-                case SecondReportType.附表4: StartNumber = 6; Lines = 9; xoffset=4;break;
+                case SecondReportType.附表4: StartNumber = 5; Lines = 9; xoffset=4;break;
                 case SecondReportType.附表6: StartNumber = 5; Lines = 9; xoffset=5;break;
                 case SecondReportType.附表7: StartNumber = 5; Lines = 11; xoffset=4;break;
 
@@ -149,16 +164,18 @@ namespace TidyExcelService
                 }
                 StartRow++;
                 int Max=MacSheet.LastRowNum;
-                for (var i = 0; i <= Max; i=i+AddLine)
+                for (var i = StartNumber; i <= Max; i=i+AddLine)
                 {
                     IRow MacRow = MacSheet.GetRow(i);
                     if (MacRow == null)
                         break;
                     var value = MacRow.GetCell(StartCell + 3, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
-                    if (string.IsNullOrEmpty(value))
-                        continue;
-                    if (!value.VerificationID())
-                        continue;
+                    if (!IsPlan) {
+                        if (string.IsNullOrEmpty(value))
+                            continue;
+                        if (!value.VerificationID())
+                            continue;
+                    }
                     sheet.ShiftRows(sheet.LastRowNum - xoffset, sheet.LastRowNum, AddLine, true, false);
                     if (Type == SecondReportType.附表9)
                     {
@@ -251,7 +268,7 @@ namespace TidyExcelService
                     else {
                         IRow row = sheet.GetRow(StartNumber);
                         if (row == null) {
-                            row.Sheet.CreateRow(StartNumber);
+                            row=sheet.CreateRow(StartNumber);
                             if (TemplateRow[0].RowStyle != null) {
                                 row.RowStyle = TemplateRow[0].RowStyle;
                             }
@@ -296,7 +313,14 @@ namespace TidyExcelService
 
                 }
             }
-            TemplatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../LCChecker/App_Data", Type.ToString() + "-总表.xls");
+            if (IsPlan)
+            {
+                TemplatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../LCChecker/App_Data", Type.ToString() + "-未验收总表.xls");
+            }
+            else {
+                TemplatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../LCChecker/App_Data", Type.ToString() + "-验收总表.xls");
+            }
+            
             using (var fs = new FileStream(TemplatePath, FileMode.OpenOrCreate, FileAccess.Write)) {
                 workbook.Write(fs);
                 fs.Flush();
