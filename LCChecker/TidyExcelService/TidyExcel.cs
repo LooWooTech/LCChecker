@@ -16,6 +16,14 @@ namespace TidyExcelService
     {
 
         public static void Process() {
+            string error = string.Empty;
+            string TemplatePath = string.Empty;
+            if (!GetPath(ref TemplatePath, ref error))
+            {
+                var Loggerror = log4net.LogManager.GetLogger("logerror");
+                Loggerror.ErrorFormat("读取路径时发生错误：{0}", error);
+                return;
+            }
             try
             {
                 using (var coon = new MySqlConnection(ConfigurationManager.ConnectionStrings["TIDY"].ConnectionString))
@@ -42,6 +50,8 @@ namespace TidyExcelService
                         }
                     }
 
+                   
+                   
                     
 
                     List<string> FilesPath = new List<string>();
@@ -64,7 +74,7 @@ namespace TidyExcelService
                             using (var reader = cmd.ExecuteReader())
                             {
                                 if (reader.Read() == false) continue; 
-                                string SavePaths = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../LCChecker/", reader[0].ToString());
+                                string SavePaths = Path.Combine(TemplatePath, reader[0].ToString());
                                 FilesPath.Add(SavePaths);
                             }
                         }
@@ -79,7 +89,8 @@ namespace TidyExcelService
                     //}
 
                     if (NewType != SecondReportType.附表8) {
-                        Tidy(FilesPath, NewType, Flag);
+                       // TemplatePath = Path.Combine(TemplatePath, "templates");
+                        Tidy(FilesPath, NewType, Flag,TemplatePath);
                     }
 
                     
@@ -104,8 +115,8 @@ namespace TidyExcelService
         }
 
 
-        public static void Tidy(List<string> FilePaths,SecondReportType Type,bool IsPlan) {
-            string TemplatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../LCChecker/Templates/Second", Type.ToString() + ".xls");
+        public static void Tidy(List<string> FilePaths,SecondReportType Type,bool IsPlan,string Template) {
+            string TemplatePath = Path.Combine(Template,"templates/Second", Type.ToString() + ".xls");
             IWorkbook workbook = null;
             try
             {
@@ -123,12 +134,12 @@ namespace TidyExcelService
             int AddLine = 1;
             int[] Merge = { 0, 1, 2, 3, 4, 5, 22 };
             switch (Type) {
-                case SecondReportType.附表1: StartNumber = 6; Lines=11; xoffset=3;break;
-                case SecondReportType.附表2: StartNumber = 6; Lines = 10; xoffset=3;break;
-                case SecondReportType.附表3: StartNumber = 6; Lines = 10; xoffset=4;break;
-                case SecondReportType.附表4: StartNumber = 5; Lines = 9; xoffset=4;break;
-                case SecondReportType.附表6: StartNumber = 5; Lines = 9; xoffset=5;break;
-                case SecondReportType.附表7: StartNumber = 5; Lines = 11; xoffset=4;break;
+                case SecondReportType.附表1: StartNumber = 6; Lines=11; xoffset=2;break;
+                case SecondReportType.附表2: StartNumber = 6; Lines = 10; xoffset=2;break;
+                case SecondReportType.附表3: StartNumber = 6; Lines = 10; xoffset=3;break;
+                case SecondReportType.附表4: StartNumber = 5; Lines = 9; xoffset=3;break;
+                case SecondReportType.附表6: StartNumber = 5; Lines = 9; xoffset=4;break;
+                case SecondReportType.附表7: StartNumber = 5; Lines = 11; xoffset=3;break;
 
                 case SecondReportType.附表8: StartNumber = 6; Lines = 25; xoffset = 4; return;
                 
@@ -315,10 +326,10 @@ namespace TidyExcelService
             }
             if (IsPlan)
             {
-                TemplatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../LCChecker/App_Data", Type.ToString() + "-未验收总表.xls");
+                TemplatePath = Path.Combine(Template, "App_Data", Type.ToString() + "-未验收总表.xls");
             }
             else {
-                TemplatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../LCChecker/App_Data", Type.ToString() + "-验收总表.xls");
+                TemplatePath = Path.Combine(Template, "App_Data", Type.ToString() + "-验收总表.xls");
             }
             
             using (var fs = new FileStream(TemplatePath, FileMode.OpenOrCreate, FileAccess.Write)) {
@@ -567,6 +578,26 @@ namespace TidyExcelService
                     default: cell.SetCellValue(SourceCell.ToString().Trim()); break;
                 }
             }
+        }
+
+
+        public static bool GetPath(ref string FilePath,ref string Error) {
+            var BaseFolder = ConfigurationManager.AppSettings["BaseFolder"];
+            DirectoryInfo dir = new DirectoryInfo(BaseFolder);
+            if (!dir.Exists) {
+                return false;
+            }
+            try {
+                string file = Path.Combine(BaseFolder, "templatePath.txt");
+                FileStream fs = new FileStream(file, FileMode.Open);
+                StreamReader sr = new StreamReader(fs);
+                FilePath = sr.ReadLine();
+                sr.Close();
+            }catch(IOException e){
+                Error = e.ToString();
+                return false;
+            }
+            return true;
         }
 
 

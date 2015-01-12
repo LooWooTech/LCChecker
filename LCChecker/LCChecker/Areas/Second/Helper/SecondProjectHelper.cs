@@ -2,6 +2,8 @@
 using LCChecker.Models;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -332,6 +334,31 @@ namespace LCChecker.Areas.Second
                 }
                 return sum == all;
             }
+        }
+
+        public static void CheckDirectory() {
+            var baseFolder = ConfigurationManager.AppSettings["BaseFolder"];
+            DirectoryInfo dir = new DirectoryInfo(baseFolder);
+            if (!dir.Exists) {
+                dir.Create();
+            }
+            string file = Path.Combine(baseFolder, "Instruction.txt");
+            if (!File.Exists(file)) {
+                using (StreamWriter sw = File.CreateText(file))
+                {
+                    sw.WriteLine("本文件夹用于项目-浙江省土地整治项目核查平台使用(LCCHecker)");
+                    sw.WriteLine("主要用于整理整个浙江省每个市上传的表格汇总整理时，使服务与平台保存目录识别");
+                }
+            }
+           
+            file = Path.Combine(baseFolder, "templatePath.txt");
+            if (!File.Exists(file)) {
+                using (StreamWriter sw = File.CreateText(file)) {
+                    string txt = AppDomain.CurrentDomain.BaseDirectory;
+                    sw.WriteLine(txt);
+                }
+            }
+            //return true;
         }
 
     

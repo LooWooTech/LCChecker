@@ -19,6 +19,7 @@ namespace LCChecker.Areas.Second.Controllers
 
         public ActionResult Index(City?city,NullableFilter result=NullableFilter.All,int page=1)
         {
+            SecondProjectHelper.CheckDirectory();
             var Filter = new SecondProjectFilter
             {
                 City=city,
