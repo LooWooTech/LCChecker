@@ -134,9 +134,9 @@ namespace TidyExcelService
             int AddLine = 1;
             int[] Merge = { 0, 1, 2, 3, 4, 5, 22 };
             switch (Type) {
-                case SecondReportType.附表1: StartNumber = 6; Lines=11; xoffset=2;break;
-                case SecondReportType.附表2: StartNumber = 6; Lines = 10; xoffset=2;break;
-                case SecondReportType.附表3: StartNumber = 6; Lines = 10; xoffset=3;break;
+                case SecondReportType.附表1: StartNumber = 6; Lines = 11; xoffset = 2; break;
+                case SecondReportType.附表2: StartNumber = 6; Lines = 10; xoffset = 2; break;
+                case SecondReportType.附表3: StartNumber = 6; Lines = 10; xoffset = 3; break;
                 case SecondReportType.附表4: StartNumber = 5; Lines = 9; xoffset=3;break;
                 case SecondReportType.附表6: StartNumber = 5; Lines = 9; xoffset=4;break;
                 case SecondReportType.附表7: StartNumber = 5; Lines = 11; xoffset=3;break;
@@ -153,8 +153,17 @@ namespace TidyExcelService
                 TemplateRow[k] = sheet.GetRow(StartNumber + k);
             }
                 //sheet.GetRow(StartNumber);
-
+            int cishu=0;
             foreach (var file in FilePaths) {
+                string fileName = string.Format("第{0}次整理", cishu);
+                cishu++;
+                string tempFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../temp", Type.ToString()+"-"+fileName+ ".xls");
+                using (var fs = new FileStream(tempFile, FileMode.OpenOrCreate, FileAccess.Write)) {
+                    workbook.Write(fs);
+                    fs.Flush();
+                }
+
+
                 IWorkbook Macbook = null;
                 try
                 {
@@ -175,17 +184,23 @@ namespace TidyExcelService
                 }
                 StartRow++;
                 int Max=MacSheet.LastRowNum;
-                for (var i = StartNumber; i <= Max; i=i+AddLine)
+                for (var i = StartRow; i <= Max; i=i+AddLine)
                 {
                     IRow MacRow = MacSheet.GetRow(i);
                     if (MacRow == null)
                         break;
                     var value = MacRow.GetCell(StartCell + 3, MissingCellPolicy.CREATE_NULL_AS_BLANK).ToString().Trim();
                     if (!IsPlan) {
-                        if (string.IsNullOrEmpty(value))
+
+                        if (string.IsNullOrEmpty(value)||!value.VerificationID()) { 
+                            if(Type==SecondReportType.附表9){
+                                i=i-2;
+                            }
                             continue;
-                        if (!value.VerificationID())
-                            continue;
+                        }
+                        //    continue;
+                        //if ()
+                        //    continue;
                     }
                     sheet.ShiftRows(sheet.LastRowNum - xoffset, sheet.LastRowNum, AddLine, true, false);
                     if (Type == SecondReportType.附表9)
@@ -211,70 +226,143 @@ namespace TidyExcelService
                         }
                         IRow rowOne=sheet.GetRow(StartNumber-3);
                         rowOne.GetCell(0).SetCellValue(id++);
-                        Copy(ref rowOne, ref MacRow, 1, StartCell + 1, Lines - 1);
+                        for (var j = 1; j < Lines; j++) {
+                            var cell = rowOne.GetCell(j);
+                            var maccell = MacRow.GetCell(StartCell + j);
+                            if (maccell == null) {
+                                cell.SetCellValue("");
+                                continue;
+                            }
+                            switch (maccell.CellType) {
+                                case CellType.String: cell.SetCellValue(maccell.StringCellValue); break;
+                                case CellType.Numeric: cell.SetCellValue(maccell.NumericCellValue); break;
+                                case CellType.Boolean: cell.SetCellValue(maccell.BooleanCellValue); break;
+                                case CellType.Formula:
+                                    double data = 0;
+                                    try
+                                    {
+                                        data = maccell.NumericCellValue;
+                                    }
+                                    catch {
+                                        data = 0.0;
+                                    }
+                                    cell.SetCellValue(data);break;
+                                default: cell.SetCellValue(maccell.ToString().Trim()); break;
+                            }
+                        }
+                        for (var j = 1; j < 3; j++) {
+                            rowOne = sheet.GetRow(StartNumber-3+j);
+                            MacRow=MacSheet.GetRow(i+j);
+                            for (var k = 6; k < Lines; k++) {
+                                var cell = rowOne.GetCell(k);
+                                var maccell = MacRow.GetCell(StartCell + k);
+                                if (maccell == null)
+                                {
+                                    cell.SetCellValue("");
+                                    continue;
+                                }
+                                switch (maccell.CellType)
+                                {
+                                    case CellType.String: cell.SetCellValue(maccell.StringCellValue); break;
+                                    case CellType.Numeric: cell.SetCellValue(maccell.NumericCellValue); break;
+                                    case CellType.Boolean: cell.SetCellValue(maccell.BooleanCellValue); break;
+                                    case CellType.Formula:
+                                        double data = 0;
+                                        try
+                                        {
+                                            data = maccell.NumericCellValue;
+                                        }
+                                        catch
+                                        {
+                                            data = 0.0;
+                                        }
+                                        cell.SetCellValue(data); break;
+                                    default: cell.SetCellValue(maccell.ToString().Trim()); break;
+                                }
+                            }
+                        }
+
+                          //  Copy(ref rowOne, ref MacRow, 1, StartCell + 1, Lines - 1);
 
                         #region
-                        //for (var j=1;j<Lines;j++){
-                        //    var cell=rowOne.GetCell(j);
-                        //    var maccell=MacRow.GetCell(j);
-                        //    if(maccell==null){
+                        //for (var j = 1; j < Lines; j++)
+                        //{
+                        //    var cell = rowOne.GetCell(j);
+                        //    var maccell = MacRow.GetCell(j);
+                        //    if (maccell == null)
+                        //    {
                         //        cell.SetCellValue("");
                         //        continue;
                         //    }
-                        //    switch(maccell.CellType){
-                        //        case CellType.Boolean:cell.SetCellValue(maccell.BooleanCellValue);break;
-                        //        case CellType.Numeric:cell.SetCellValue(maccell.NumericCellValue);break;
-                        //        case CellType.String:cell.SetCellValue(maccell.StringCellValue);break;
+                        //    switch (maccell.CellType)
+                        //    {
+                        //        case CellType.Boolean: cell.SetCellValue(maccell.BooleanCellValue); break;
+                        //        case CellType.Numeric: cell.SetCellValue(maccell.NumericCellValue); break;
+                        //        case CellType.String: cell.SetCellValue(maccell.StringCellValue); break;
                         //        case CellType.Formula:
-                        //            double data=.0;
-                        //            try{
-                        //                data=maccell.NumericCellValue;
-                        //            }catch{
-                        //                data=.0;
+                        //            double data = .0;
+                        //            try
+                        //            {
+                        //                data = maccell.NumericCellValue;
                         //            }
-                        //            cell.SetCellValue(data);break;
-                        //        case CellType.Blank:cell.SetCellValue("");break;
-                        //        default:cell.SetCellValue(maccell.ToString().Trim());break;
+                        //            catch
+                        //            {
+                        //                data = .0;
+                        //            }
+                        //            cell.SetCellValue(data); break;
+                        //        case CellType.Blank: cell.SetCellValue(""); break;
+                        //        default: cell.SetCellValue(maccell.ToString().Trim()); break;
                         //    }
 
                         //}
                         #endregion
+
+
                         
-                        int m=1;
-                         for(var j=StartNumber-2;j<StartNumber;j++){
-                             rowOne=sheet.GetRow(j);
-                             MacRow=MacSheet.GetRow(i+m);
-                             m++;
-                             Copy(ref rowOne, ref MacRow, 6, StartCell + 6, Lines - 6);
+                        //int m=1;
+                        // for(var j=StartNumber-2;j<StartNumber;j++){
+                        //     rowOne=sheet.GetRow(j);
+                        //     MacRow=MacSheet.GetRow(i+m);
+                        //     m++;
+                        //     Copy(ref rowOne, ref MacRow, 6, StartCell + 6, Lines - 6);
+
+
+
+
                              #region
-                             //for (var k=6;k<Lines;k++){
-                             //   var cell=rowOne.GetCell(k);
-                             //    var maccell=MacRow.GetCell(k);
-                             //    if(maccell==null)
+                             //for (var k = 6; k < Lines; k++)
+                             //{
+                             //    var cell = rowOne.GetCell(k);
+                             //    var maccell = MacRow.GetCell(k);
+                             //    if (maccell == null)
                              //    {
                              //        cell.SetCellValue("");
                              //        continue;
                              //    }
-                             //    switch(maccell.CellType){
-                             //        case CellType.Numeric:cell.SetCellValue(maccell.NumericCellValue);break;
-                             //        case CellType.String:cell.SetCellValue(maccell.StringCellValue);break;
-                             //        case CellType.Boolean:cell.SetCellValue(maccell.BooleanCellValue);break;
+                             //    switch (maccell.CellType)
+                             //    {
+                             //        case CellType.Numeric: cell.SetCellValue(maccell.NumericCellValue); break;
+                             //        case CellType.String: cell.SetCellValue(maccell.StringCellValue); break;
+                             //        case CellType.Boolean: cell.SetCellValue(maccell.BooleanCellValue); break;
                              //        case CellType.Formula:
-                             //            double data=0.0;
-                             //            try{
-                             //               data=maccell.NumericCellValue;
-                             //            }catch{
-                             //               data=0.0;
+                             //            double data = 0.0;
+                             //            try
+                             //            {
+                             //                data = maccell.NumericCellValue;
                              //            }
-                             //            cell.SetCellValue(data);break;
-                             //       case CellType.Blank: cell.SetCellValue(""); break;
-                             //       case CellType.Unknown: cell.SetCellValue(""); break;
-                             //       case CellType.Error: cell.SetCellValue(""); break;
-                             //       default: cell.SetCellValue(maccell.ToString().Trim()); break;
+                             //            catch
+                             //            {
+                             //                data = 0.0;
+                             //            }
+                             //            cell.SetCellValue(data); break;
+                             //        case CellType.Blank: cell.SetCellValue(""); break;
+                             //        case CellType.Unknown: cell.SetCellValue(""); break;
+                             //        case CellType.Error: cell.SetCellValue(""); break;
+                             //        default: cell.SetCellValue(maccell.ToString().Trim()); break;
                              //    }
                              //}
                              #endregion
-                         }
+                        // }
                     }
                     else {
                         IRow row = sheet.GetRow(StartNumber);

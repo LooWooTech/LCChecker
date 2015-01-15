@@ -134,8 +134,14 @@ else
                 </td>
             </tr>
         }
+        <tr>
+            <td colspan="10">
+                @Html.Partial("_pagination", ViewBag.Page as object)
+            </td>
+        </tr>
     </table>
 }
+
 
 <script>
     $(function () {
