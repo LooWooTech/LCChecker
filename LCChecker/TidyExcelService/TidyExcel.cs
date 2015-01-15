@@ -152,18 +152,7 @@ namespace TidyExcelService
             {
                 TemplateRow[k] = sheet.GetRow(StartNumber + k);
             }
-                //sheet.GetRow(StartNumber);
-            int cishu=0;
             foreach (var file in FilePaths) {
-                string fileName = string.Format("第{0}次整理", cishu);
-                cishu++;
-                string tempFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../temp", Type.ToString()+"-"+fileName+ ".xls");
-                using (var fs = new FileStream(tempFile, FileMode.OpenOrCreate, FileAccess.Write)) {
-                    workbook.Write(fs);
-                    fs.Flush();
-                }
-
-
                 IWorkbook Macbook = null;
                 try
                 {
