@@ -156,8 +156,22 @@
                 }
             </td>
             <td>
-                @if (!string.IsNullOrEmpty(project.Note)) { 
-                    @Html.Raw(project.Note.Replace(";","<br />"))
+                @if (project.Result.HasValue) {
+                    if (!project.Result.Value)
+                    {
+                        if (project.Exception) {
+                            if (!string.IsNullOrEmpty(project.Note)) { 
+                                @Html.Raw(project.Note.Replace(";", "<br />"))
+                            }
+                        }
+                        else {
+                            if (!string.IsNullOrEmpty(project.Error)) { 
+                                @Html.Raw(project.Error.Replace(";", "<br />"))
+                            }
+                        }
+
+                    }
+                    
                 }
             </td>
         </tr>

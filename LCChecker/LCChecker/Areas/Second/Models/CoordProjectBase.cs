@@ -39,6 +39,9 @@ namespace LCChecker.Areas.Second.Models
         [MaxLength(1023)]
         public string Note { get; set; }
 
+        [MaxLength(1023)]
+        public string Error { get; set; }
+
         public DateTime UpdateTime { get; set; }
 
         public bool Visible { get; set; }
