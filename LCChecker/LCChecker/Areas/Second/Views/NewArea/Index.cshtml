@@ -172,7 +172,15 @@
                         }
 
                     }
-                    
+
+                }
+                else {
+                    if (project.Exception) { 
+                         if (!string.IsNullOrEmpty(project.Error))
+                            {
+                                @Html.Raw(project.Error.Replace(";", "<br />"))
+                            }
+                    } 
                 }
             </td>
         </tr>
