@@ -377,6 +377,9 @@
     <Content Include="Templates\Second\附表8.xls" />
     <Content Include="Templates\Second\附表9.xls" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Templates\Second\Mistakes.xls" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
