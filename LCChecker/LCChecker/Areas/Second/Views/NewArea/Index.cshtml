@@ -27,6 +27,7 @@
             <div class="input-group-btn">
                 <button type="submit" class="btn btn-primary">上传新增耕地坐标点</button>
                 <a href="/Second/NewArea/NewAreaUploadResult" class="btn btn-default">查看上传历史</a>
+                <a href="/Second/User/DownLoadReason?IsPlan=true" class="btn btn-primary">下载存疑项目表格</a>
             </div>
         </div>
     </form>
@@ -160,13 +161,13 @@
                     if (!project.Result.Value)
                     {
                         if (project.Exception) {
-                            if (!string.IsNullOrEmpty(project.Note)) { 
-                                @Html.Raw(project.Note.Replace(";", "<br />"))
+                            if (!string.IsNullOrEmpty(project.Error)) { 
+                                @Html.Raw(project.Error.Replace(";", "<br />"))
                             }
                         }
                         else {
-                            if (!string.IsNullOrEmpty(project.Error)) { 
-                                @Html.Raw(project.Error.Replace(";", "<br />"))
+                            if (!string.IsNullOrEmpty(project.Note)) { 
+                                @Html.Raw(project.Note.Replace(";", "<br />"))
                             }
                         }
 

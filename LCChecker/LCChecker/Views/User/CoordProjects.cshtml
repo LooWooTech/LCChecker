@@ -26,6 +26,7 @@
                 <button type="submit" class="btn btn-primary">上传坐标点</button>
                 <a href="/User/CoordProjectUploadResult" class="btn btn-default">查看上传历史</a>
                 <a href="/User/DownloadCoord?id=ALL" class="btn btn-primary" target="_blank">下载坐标文件</a> 
+                <a href="/Second/User/DownLoadReason?IsPlan=false" class="btn btn-default"target="_blank">下载存疑项目文件</a>
             </div>
         </div>
     </form>
@@ -202,16 +203,16 @@
                     {
                         if (project.Exception)
                         {
-                            if (!string.IsNullOrEmpty(project.Note))
+                            if (!string.IsNullOrEmpty(project.Error))
                             {
-                                @Html.Raw(project.Note.Replace(";", "<br />"))
+                                @Html.Raw(project.Error.Replace(";", "<br />"))
                             }
                         }
                         else
                         {
-                            if (!string.IsNullOrEmpty(project.Error))
+                            if (!string.IsNullOrEmpty(project.Note))
                             {
-                                @Html.Raw(project.Error.Replace(";", "<br />"))
+                                @Html.Raw(project.Note.Replace(";", "<br />"))
                             }
                         }
 

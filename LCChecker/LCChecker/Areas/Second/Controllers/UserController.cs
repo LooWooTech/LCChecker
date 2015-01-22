@@ -1,5 +1,6 @@
 ﻿using LCChecker.Areas.Second.Models;
 using LCChecker.Models;
+using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -457,6 +458,98 @@ namespace LCChecker.Areas.Second.Controllers
             ViewBag.Title = Type.GetDescription();
             ViewBag.IsPlan = IsPlan;
             return View(list);
+        }
+
+        public ActionResult DownLoadReason(bool IsPlan) {
+            List<string[]> Data = new List<string[]>();
+            List<CoordProjectBase> projects = new List<CoordProjectBase>();
+            string HeadName = string.Empty;
+            if (IsPlan)
+            {
+                HeadName = CurrentUser.City.ToString()+"新增耕地坐标存疑项目清单";
+                projects = db.CoordNewAreaProjects.Where(e => e.Result == false && e.Exception == false && e.City == CurrentUser.City).Select(e => new CoordProjectBase
+                {
+                    ID=e.ID,
+                    City= e.City,
+                    County= e.County,
+                    Name= e.Name,
+                    Note= e.Note
+                }).ToList();
+            }
+            else {
+                HeadName = CurrentUser.City.ToString() + "坐标存疑项目清单";
+                projects = db.CoordProjects.Where(e => e.Result == false && e.Visible == true && e.Exception == false && e.City == CurrentUser.City).Select(e => new CoordProjectBase
+                {
+                    ID= e.ID,
+                    City= e.City,
+                    County= e.County,
+                    Name= e.Name,
+                    Note= e.Note
+                }).ToList();
+               
+            }
+            foreach (var item in projects) {
+                string[] values = new string[5] { 
+                    item.ID,
+                    item.City.ToString(),
+                    item.County,
+                    item.Name,
+                    item.Note
+                };
+                Data.Add(values);
+            }
+            string templatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates/Second/Mistakes.xls");
+            IWorkbook workbook = null;
+            try
+            {
+                using (var fs = new FileStream(templatePath, FileMode.Open, FileAccess.Read)) {
+                    workbook = WorkbookFactory.Create(fs);
+                }
+            }
+            catch (Exception er){
+                throw new ArgumentException(er.ToString());
+            }
+            int SerialNumber = 1;
+            int StartRow = 3;
+            ISheet sheet = workbook.GetSheetAt(0);
+            IRow TemplateRow = sheet.GetRow(StartRow);
+            IRow row = sheet.GetRow(0);
+            ICell cell = row.GetCell(0);
+            cell.SetCellValue(HeadName);
+            foreach (var array in Data) {
+                row = sheet.GetRow(StartRow);
+                if (row == null) {
+                    row = sheet.CreateRow(StartRow);
+                    if (TemplateRow.RowStyle != null) {
+                        row.RowStyle = TemplateRow.RowStyle;
+                    }
+                   
+                }
+                cell = row.GetCell(0);
+                if (cell == null) {
+                    cell = row.CreateCell(0,TemplateRow.GetCell(0).CellType);
+                    cell.CellStyle = TemplateRow.GetCell(0).CellStyle;
+                }
+                cell.SetCellValue(SerialNumber);
+                SerialNumber++;
+                StartRow++;
+                int TempNumber = 1;
+                foreach (var item in array) {
+                    cell = row.GetCell(TempNumber);
+                    if (cell == null) {
+                        cell = row.CreateCell(TempNumber, TemplateRow.GetCell(TempNumber).CellType);
+                        cell.CellStyle = TemplateRow.GetCell(TempNumber).CellStyle;
+                    }
+                    cell.SetCellValue(item);
+                    TempNumber++;
+                }
+
+            }
+            using (var ms = new MemoryStream()) {
+                workbook.Write(ms);
+                return File(ms.ToArray(), "application/ms-excel", HeadName + ".xls");
+            }
+            //return File();
         }
 
         
