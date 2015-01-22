@@ -76,7 +76,7 @@ namespace LCChecker.Controllers
                 throw new ArgumentException("未找到相关坐标点项目信息，添加例外失败！请与管理员联系！");
             }
             project.Exception = true;
-            project.Note = "例外理由：" + reason+";"+project.Note;
+            project.Error = "例外理由：" + reason+";"+project.Error;
             db.SaveChanges();
             return RedirectToAction("CoordProjects");
         }
@@ -88,12 +88,12 @@ namespace LCChecker.Controllers
                 throw new ArgumentException("未找到相关坐标点项目信息，取消例外失败！请与管理员联系！");
             }
             project.Exception = false;
-            string[] Notevalue = project.Note.Split(';');
+            string[] Notevalue = project.Error.Split(';');
             string value = string.Empty;
             for (var i = 1; i < Notevalue.Length; i++) {
                 value += Notevalue[i];
             }
-            project.Note = value;
+            project.Error = value;
             db.SaveChanges();
             return RedirectToAction("CoordProjects");
         }

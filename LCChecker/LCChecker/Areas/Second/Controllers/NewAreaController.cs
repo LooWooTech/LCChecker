@@ -70,7 +70,7 @@ namespace LCChecker.Areas.Second.Controllers
                 throw new ArgumentException("未找到相关新增耕地坐标项目信息,请与管理员联系！");
             }
             project.Exception = true;
-            project.Note = "例外理由：" + reason+";"+project.Note;
+            project.Error = "例外理由：" + reason+";"+project.Error;
             db.SaveChanges();
             return RedirectToAction("Index");
         }
@@ -82,12 +82,12 @@ namespace LCChecker.Areas.Second.Controllers
                 throw new ArgumentException("未找到相关新增耕地坐标项目信息，请与管理员联系！");
             }
             project.Exception = false;
-            string[] Notes = project.Note.Split(';');
+            string[] Notes = project.Error.Split(';');
             string value = string.Empty;
             for (var i = 1; i < Notes.Length; i++) {
                 value += Notes[i];
             }
-            project.Note = value;
+            project.Error = value;
             db.SaveChanges();
             return RedirectToAction("Index");
         }
