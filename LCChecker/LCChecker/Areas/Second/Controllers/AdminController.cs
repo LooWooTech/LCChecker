@@ -528,5 +528,43 @@ namespace LCChecker.Areas.Second.Controllers
             }
             return File(new FileStream(FilePath, FileMode.Open), "application/ms-excel", FileName);
         }
+
+        [HttpPost]
+        public ActionResult UploadFirstLand() {
+            var file = UploadHelper.GetPostedFile(HttpContext);
+            var wenjian = UploadHelper.Upload(file);
+            var filePath = UploadHelper.GetAbsolutePath(wenjian);
+            Dictionary<string, SeLand> Paddy = new Dictionary<string, SeLand>();
+            Dictionary<string, SeLand> Dry = new Dictionary<string, SeLand>();
+            string Fault = string.Empty;
+            int Count = 0;
+            if (!CheckNine.GetData(filePath, ref Fault, ref Paddy, ref Dry, ref Count))
+            {
+                throw new ArgumentException(Fault);
+            }
+            else {
+                var farmland = db.FarmLands.ToList();
+                foreach (var item in farmland) {
+                    if (Paddy.ContainsKey(item.ProjectID) && item.Type == LandType.Paddy) {
+                        item.Area = Paddy[item.ProjectID].Area;
+                        item.Degree = Paddy[item.ProjectID].Degree;
+                        Paddy.Remove(item.ProjectID);
+                    }
+                    if (Dry.ContainsKey(item.ProjectID) && item.Type == LandType.Dry) {
+                        item.Area = Dry[item.ProjectID].Area;
+                        item.Degree = Dry[item.ProjectID].Degree;
+                        Dry.Remove(item.ProjectID);
+                    }
+                } db.SaveChanges();
+                foreach (var item in Paddy.Keys) {
+                    db.FarmLands.Add(new FarmLand() { ProjectID = item, Type = LandType.Paddy, Area = Paddy[item].Area, Degree = Paddy[item].Degree });
+                }
+                foreach (var item in Dry.Keys) {
+                    db.FarmLands.Add(new FarmLand() { ProjectID = item, Type = LandType.Dry, Area = Dry[item].Area, Degree = Dry[item].Degree });
+                }
+                db.SaveChanges();
+            }
+            return Redirect("/Admin/CoordProjects");
+        }
     }
 }

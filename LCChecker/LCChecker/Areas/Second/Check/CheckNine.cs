@@ -5,6 +5,7 @@ using LCChecker.Rules;
 using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 
@@ -12,6 +13,10 @@ namespace LCChecker.Areas.Second
 {
     public class CheckNine:SecondCheckEngine,ISeCheck
     {
+        //private List<string> _NID;
+        //public List<string> NID {
+        //    get { return _NID == null ? _NID = new List<string>() : _NID; }
+        //}
 
         
         public Dictionary<string, SecondProject> Team;
@@ -202,6 +207,84 @@ namespace LCChecker.Areas.Second
                 if (value.ToLower() != item.ToLower())
                     return false;
             }
+            return true;
+        }
+
+
+        public static bool GetData(string FilePath,ref string Error,ref Dictionary<string,SeLand> Paddy,ref Dictionary<string,SeLand> Dry,ref int Count) {
+            Dictionary<string, int> NID = new Dictionary<string, int>();
+            IWorkbook workbook = null;
+            try
+            {
+                using (var fs = new FileStream(FilePath, FileMode.Open, FileAccess.Read))
+                {
+                    workbook = WorkbookFactory.Create(fs);
+                }
+            }
+            catch (Exception er) {
+                Error = er.ToString();
+                return false;
+            }
+            ISheet sheet = workbook.GetSheetAt(0);
+            if (sheet == null) {
+                Error = "获取sheet失败";
+                return false;
+            }
+            int Max = sheet.LastRowNum;
+            int StartRow = 6;
+            IRow row=sheet.GetRow(0);
+            ICell cell=row.GetCell(0);
+            if (cell.ToString().Trim() != "附表9") {
+                Error = "不支持该文件";
+                return false;
+            }
+            for (var i = StartRow; i <= Max; i = i + 3) {
+                row = sheet.GetRow(i);
+                if (row == null) {
+                    break;
+                }
+                cell = row.GetCell(3);
+                if (cell == null)
+                    continue;
+                string value = cell.ToString().Trim();
+                if (string.IsNullOrEmpty(value))
+                    continue;
+                if (!value.VerificationID())
+                    continue;
+                if (NID.ContainsKey(value))
+                {
+                    NID[value]++;
+                    continue;
+                }
+                else {
+                    NID.Add(value, 1);
+                }
+                string Fault = "";
+                int[] Degree1 = new int[3];
+                double[] Area = new double[3];
+                if (!XslHelper.JudgeLand(sheet, i, 0))
+                    continue;
+                for (var j = 0; j < 3; j++)
+                {
+                    Fault = "";
+                    if (!XslHelper.CheckLand(sheet, i + j, ref Area[j], ref Degree1[j], ref Fault, 7))
+                    {
+                        continue;
+                    }
+                }
+                if (Degree1[0] != 0 && Math.Abs(Area[0] - 0) > 0.0001) {
+                    if (!Paddy.ContainsKey(value)) {
+                        Paddy.Add(value,new SeLand (){ Degree = (Degree)Degree1[0], Area = Area[0] });
+                    }
+                }
+                if (Degree1[2] != 0 && Math.Abs(Area[2] - 0) > 0.0001) {
+                    if (!Dry.ContainsKey(value)) {
+                        Dry.Add(value, new SeLand() { Degree = (Degree)Degree1[2], Area = Area[2] });
+                    }
+                }
+
+            }
+            Count = NID.Count();
             return true;
         }
     }
