@@ -17,7 +17,9 @@
     3、针对每次的报部表格检查结果，新增筛选县/区功能 <br />
     4、未验收附表1的项目数量等于附表2、附表3、附表4的上传核查项目之和<br />
 </div>
-
+<div class="alert alert-danger">
+    报部表格上传端口已经关闭
+</div>
 <table class="table table-bordered">
     <tr>
         <th>表单名称</th>
@@ -58,10 +60,10 @@
                 <a href="/Templates/Second/@(item.Type.ToString()).xls" class="btn btn-sm btn-primary">下载</a>
             </td>
             <td>
-                <form method="post" action="/Second/User/UploadReports?type=@typevalue&&IsPlan=true" class="form-inline" enctype="multipart/form-data">
+                @*<form method="post" action="/Second/User/UploadReports?type=@typevalue&&IsPlan=true" class="form-inline" enctype="multipart/form-data">
                     <input type="file" name="file" class="form-control input-sm" style="width:100px" />
                     <button type="submit" class="btn btn-sm btn-success">上传</button>
-                </form>
+                </form>*@
             </td>
         </tr>
     }
