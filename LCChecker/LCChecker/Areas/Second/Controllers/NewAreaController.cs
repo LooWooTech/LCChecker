@@ -13,13 +13,13 @@ namespace LCChecker.Areas.Second.Controllers
         //
         // GET: /Second/NewArea/
 
-        public ActionResult Index(NullableFilter result=NullableFilter.All,int Page=1,string county=null)
+        public ActionResult Index(NullableFilter result=NullableFilter.All,int page=1,string county=null)
         {
             var filter = new ProjectFileter
             {
                 City=CurrentUser.City,
                 Result=result,
-                Page=new Page(Page),
+                Page=new Page(page),
                 County=county
             };
             ViewBag.List = ProjectHelper.GetCoordSeProjects(filter);
@@ -61,7 +61,7 @@ namespace LCChecker.Areas.Second.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddException(string reason, string ID, int result=0, int Page = 1, string county = null)
+        public ActionResult AddException(string reason, string ID, int result=0, int page = 1, string county = null)
         {
             if (string.IsNullOrEmpty(reason)) {
                 throw new ArgumentException("请输入添加例外理由！");
@@ -73,11 +73,11 @@ namespace LCChecker.Areas.Second.Controllers
             project.Exception = true;
             project.Error = "例外理由：" + reason+";"+project.Error;
             db.SaveChanges();
-            return RedirectToAction("Index", new { result,Page,county});
+            return RedirectToAction("Index", new { result,page,county});
         }
 
 
-        public ActionResult CancelException(string ID, int result=0, int Page = 1, string county = null)
+        public ActionResult CancelException(string ID, int result=0, int page = 1, string county = null)
         {
             CoordNewAreaProject project = db.CoordNewAreaProjects.FirstOrDefault(e => e.ID.ToLower() == ID.ToLower());
             if (project == null) {
@@ -91,7 +91,7 @@ namespace LCChecker.Areas.Second.Controllers
             }
             project.Error = value;
             db.SaveChanges();
-            return RedirectToAction("Index", new { result,Page,county});
+            return RedirectToAction("Index", new { result,page,county});
         }
 
     }

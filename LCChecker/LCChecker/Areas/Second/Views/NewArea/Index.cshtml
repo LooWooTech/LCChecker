@@ -80,7 +80,7 @@
                     else {
                         if (project.Exception) { 
                             <span class="label label-info">例外</span>
-    <a href="/Second/NewArea/CancelException?ID=@(project.ID)&&result=@(Request.QueryString["result"])&&Page=@(exp.PageIndex)&&county=@(Request.QueryString["county"])" class="btn btn-xs btn-danger"><i class="glyphicon glyphicon-remove"></i>&nbsp;取消例外</a>
+    <a href="/Second/NewArea/CancelException?ID=@(project.ID)&&result=@(Request.QueryString["result"])&&page=@(exp.PageIndex)&&county=@(Request.QueryString["county"])" class="btn btn-xs btn-danger"><i class="glyphicon glyphicon-remove"></i>&nbsp;取消例外</a>
                         }
                         else
                         {
@@ -104,7 +104,7 @@
                                         <input type="text" name="ID" value="@(project.ID)" style="display:none" />
                                         <input type="text" name="county" value="@(Request.QueryString["county"])" style="display:none" />
                                         <input type="text" name="result" value="@(Request.QueryString["result"])" style="display:none" />
-                                        <input type="text" name="Page" value="@(exp.PageIndex)" style="display:none" />
+                                        <input type="text" name="page" value="@(exp.PageIndex)" style="display:none" />
                                         <div class="form-group">
                                             <div class="col-lg-10 col-lg-offset-2">
                                                 <button type="submit" class="btn btn-success">例外</button>
@@ -124,7 +124,7 @@
                 else {
                     if (project.Exception) { 
                         <span class="label label-info">例外</span>
-    <a href="/Second/NewArea/CancelException?ID=@(project.ID)&&result=@(Request.QueryString["result"])&&Page=@exp.PageIndex)&&county=@(Request.QueryString["county"])" class="btn btn-xs btn-danger"><i class="glyphicon glyphicon-remove"></i>&nbsp; 取消例外</a>
+    <a href="/Second/NewArea/CancelException?ID=@(project.ID)&&result=@(Request.QueryString["result"])&&page=@exp.PageIndex)&&county=@(Request.QueryString["county"])" class="btn btn-xs btn-danger"><i class="glyphicon glyphicon-remove"></i>&nbsp; 取消例外</a>
                     }
                     else
                     {
@@ -148,7 +148,7 @@
                                         <input type="text" name="ID" value="@(project.ID)" style="display:none" />
                                         <input type="text" name="county" value="@(Request.QueryString["county"])" style="display:none" />
                                         <input type="text" name="result" value="@(Request.QueryString["result"])" style="display:none" />
-                                        <input type="text" name="Page" value="@(exp.PageIndex)" style="display:none" />
+                                        <input type="text" name="page" value="@(exp.PageIndex)" style="display:none" />
                                         <div class="form-group">
                                             <div class="col-lg-10 col-lg-offset-2">
                                                 <button type="submit" class="btn btn-success">例外</button>
