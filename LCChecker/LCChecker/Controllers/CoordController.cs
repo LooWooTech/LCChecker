@@ -67,7 +67,7 @@ namespace LCChecker.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddException(string reason, string ID) {
+        public ActionResult AddException(string reason, string ID,int result=0,int page=1,string county=null) {
             if (string.IsNullOrEmpty(reason)) {
                 throw new ArgumentException("请输入添加例外理由！");
             }
@@ -78,11 +78,12 @@ namespace LCChecker.Controllers
             project.Exception = true;
             project.Error = "例外理由：" + reason+";"+project.Error;
             db.SaveChanges();
-            return RedirectToAction("CoordProjects");
+            return RedirectToAction("CoordProjects", new { result,page,county});
         }
 
 
-        public ActionResult CancelException(string ID) {
+        public ActionResult CancelException(string ID, int result=0, int page = 1, string county = null)
+        {
             CoordProject project = db.CoordProjects.FirstOrDefault(e => e.ID.ToLower() == ID.ToLower());
             if (project == null) {
                 throw new ArgumentException("未找到相关坐标点项目信息，取消例外失败！请与管理员联系！");
@@ -95,7 +96,7 @@ namespace LCChecker.Controllers
             }
             project.Error = value;
             db.SaveChanges();
-            return RedirectToAction("CoordProjects");
+            return RedirectToAction("CoordProjects", new { result,page,county});
         }
     }
 }
