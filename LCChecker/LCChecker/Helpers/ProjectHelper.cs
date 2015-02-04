@@ -147,7 +147,7 @@ namespace LCChecker
                         query = query.Where(e => e.Result == null&&e.Exception==false);
                         break;
                     case NullableFilter.Exception:
-                        query = query.Where(e => e.Exception == true);
+                        query = query.Where(e => e.Exception == true&&e.Result!=true);
                         break;
                     case NullableFilter.All:
                     default:
