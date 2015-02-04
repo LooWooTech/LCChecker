@@ -124,7 +124,7 @@
                 else {
                     if (project.Exception) { 
                         <span class="label label-info">例外</span>
-    <a href="/Second/NewArea/CancelException?ID=@(project.ID)&&result=@(Request.QueryString["result"])&&page=@exp.PageIndex)&&county=@(Request.QueryString["county"])" class="btn btn-xs btn-danger"><i class="glyphicon glyphicon-remove"></i>&nbsp; 取消例外</a>
+    <a href="/Second/NewArea/CancelException?ID=@(project.ID)&&result=@(Request.QueryString["result"])&&page=@(exp.PageIndex)&&county=@(Request.QueryString["county"])" class="btn btn-xs btn-danger"><i class="glyphicon glyphicon-remove"></i>&nbsp; 取消例外</a>
                     }
                     else
                     {
