@@ -466,14 +466,17 @@ namespace LCChecker.Areas.Second.Controllers
             string HeadName = string.Empty;
             if (IsPlan)
             {
-                HeadName = CurrentUser.City.ToString()+"新增耕地坐标存疑项目清单";
-                projects = db.CoordNewAreaProjects.Where(e => e.Result == false && e.Exception == false && e.City == CurrentUser.City).Select(e => new CoordProjectBase
+                HeadName = CurrentUser.City.ToString()+"新增耕地坐标项目清单";
+                projects = db.CoordNewAreaProjects.Where(e => e.City == CurrentUser.City).Select(e => new CoordProjectBase
                 {
                     ID=e.ID,
                     City= e.City,
                     County= e.County,
                     Name= e.Name,
-                    Note= e.Note
+                    Note= e.Note,
+                    Result=e.Result,
+                    Exception=e.Exception,
+                    Error=e.Error
                 }).ToList();
             }
             else {
@@ -488,17 +491,61 @@ namespace LCChecker.Areas.Second.Controllers
                 }).ToList();
                
             }
-            foreach (var item in projects) {
-                string[] values = new string[5] { 
+            if (IsPlan)
+            {
+                foreach (var item in projects) {
+                    string Status = string.Empty;
+                    string Note = "";
+                    if (item.Result.HasValue)
+                    {
+                        if (item.Result.Value)
+                        {
+                            Status = "无误";
+                        }
+                        else
+                        {
+                            Status = item.Exception?"例外":"存疑";
+                            Note = item.Exception ? item.Error :item.Note;
+                        }
+                    }
+                    else {
+                        Status =item.Exception?"例外": "未上传";
+                        Note = item.Exception ? item.Error : "";
+                    }
+                    string[] values = new string[6] { 
+                        item.ID,
+                        item.City.ToString(),
+                        item.County,
+                        item.Name,
+                        Status,
+                        Note
+                    };
+                    Data.Add(values);
+                }
+            }
+            else {
+                foreach (var item in projects)
+                {
+                    string[] values = new string[5] { 
                     item.ID,
                     item.City.ToString(),
                     item.County,
                     item.Name,
                     item.Note
                 };
-                Data.Add(values);
+                    Data.Add(values);
+                }
             }
-            string templatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates/Second/Mistakes.xls");
+            
+            string templatePath =string.Empty ;
+            if (IsPlan)
+            {
+                templatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates/Second/NewArea.xls");
+            }
+            else {
+                templatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates/Second/Mistakes.xls");
+            }
+            
             IWorkbook workbook = null;
             try
             {

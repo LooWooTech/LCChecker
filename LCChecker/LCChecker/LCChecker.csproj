@@ -145,6 +145,7 @@
     <Compile Include="Areas\Second\Controllers\NewAreaController.cs" />
     <Compile Include="Areas\Second\Controllers\UserController.cs" />
     <Compile Include="Areas\Second\Helper\EightHelper.cs" />
+    <Compile Include="Areas\Second\Helper\GetEight.cs" />
     <Compile Include="Areas\Second\Helper\SecondProjectHelper.cs" />
     <Compile Include="Areas\Second\Models\CoordProjectBase.cs" />
     <Compile Include="Areas\Second\Models\CoordNewAreaProject.cs" />
