@@ -76,7 +76,7 @@ namespace LCChecker.Controllers
                 throw new ArgumentException("未找到相关坐标点项目信息，添加例外失败！请与管理员联系！");
             }
             project.Exception = true;
-            project.Error = "例外理由：" + reason+";"+project.Error;
+            project.Error = "例外理由：" + reason+";";
             db.SaveChanges();
             return RedirectToAction("CoordProjects", new { result,page,county});
         }
