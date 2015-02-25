@@ -209,7 +209,7 @@ namespace LCChecker.Controllers
                 {
                     db.SaveChanges();
                 }
-                catch (DbEntityValidationException dbEx)
+                catch //(DbEntityValidationException dbEx)
                 { 
                 
                 }

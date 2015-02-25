@@ -30,7 +30,7 @@ namespace LCChecker.Areas.Second
             }
         }
 
-        public new bool Check(string FilePath, ref string Mistakes, SecondReportType Type) {
+        public bool Check(string FilePath, ref string Mistakes, SecondReportType Type) {
             return CheckSpecial(FilePath, ref Mistakes, Type);
         }
 
@@ -229,23 +229,6 @@ namespace LCChecker.Areas.Second
             return true;
         }
 
-
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         //public int GetLength(ISheet sheet,int RowIndex,int Index) {
         //    int length = 0;
         //    int Max=sheet.LastRowNum;
@@ -360,16 +343,6 @@ namespace LCChecker.Areas.Second
         //                AfBalance = Area[3]
         //            });
         //        }
-
-
-
-
-
-
-
-
- 
-
         //    }
         //        return true;
         //}

@@ -65,11 +65,8 @@ namespace LCChecker.Areas.Second
         }
 
         public static bool Save(List<string> Data,string FilePath) {
-            IWorkbook workbook = null;
-            foreach (var item in Data) { 
-                
-            }
-            return true;
+            throw new NotImplementedException();
+            
         }
 
     }

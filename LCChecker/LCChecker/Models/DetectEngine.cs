@@ -727,7 +727,7 @@ namespace LCChecker.Models
                         MasCell.SetCellValue(cell.BooleanCellValue);
                         break;
                     case  CellType.Formula:
-                        double val;
+                        
                         try
                         {
                             MasCell.SetCellValue(cell.NumericCellValue);
