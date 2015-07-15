@@ -130,6 +130,7 @@
     </Compile>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\CoordController.cs" />
+    <Compile Include="Controllers\LabController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Helpers\AuthUtility.cs" />
     <Compile Include="Controllers\AdminController.cs" />
